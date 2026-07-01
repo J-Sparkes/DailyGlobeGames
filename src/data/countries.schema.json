@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://geography-game.dev/schemas/countries.json",
+  "title": "Country Graph Dataset",
+  "description": "Node-by-node geography game country graph. Each country is a node with searchable aliases and neighbor edges (including maritime links).",
+  "type": "object",
+  "required": ["version", "countries"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Semantic version of the dataset format.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO date when this dataset was last modified."
+    },
+    "countries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/country"
+      }
+    }
+  },
+  "$defs": {
+    "country": {
+      "type": "object",
+      "required": ["id", "name", "mapName", "aliases", "neighbors", "inDailyPool"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable slug identifier (e.g. united-kingdom).",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Canonical display name shown after a correct guess."
+        },
+        "mapName": {
+          "type": "string",
+          "description": "Exact name used in the world TopoJSON properties.name field."
+        },
+        "aliases": {
+          "type": "array",
+          "description": "Accepted answer strings for fuse.js fuzzy matching.",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "neighbors": {
+          "type": "array",
+          "description": "IDs of adjoining countries the player may click next.",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "uniqueItems": true
+        },
+        "inDailyPool": {
+          "type": "boolean",
+          "description": "Whether this country can be selected as the daily starting node."
+        },
+        "iso3166Alpha2": {
+          "type": "string",
+          "description": "Optional ISO 3166-1 alpha-2 code for future Supabase integration.",
+          "pattern": "^[A-Z]{2}$"
+        }
+      }
+    }
+  }
+}

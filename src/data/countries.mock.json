@@ -1,0 +1,702 @@
+{
+  "version": "0.2.0",
+  "updatedAt": "2026-06-30",
+  "countries": [
+    {
+      "id": "united-kingdom",
+      "name": "United Kingdom",
+      "mapName": "United Kingdom",
+      "aliases": [
+        "United Kingdom",
+        "UK",
+        "U.K.",
+        "Great Britain",
+        "Britain",
+        "England",
+        "Scotland",
+        "Wales"
+      ],
+      "neighbors": [
+        "ireland",
+        "france"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "GB"
+    },
+    {
+      "id": "ireland",
+      "name": "Ireland",
+      "mapName": "Ireland",
+      "aliases": [
+        "Ireland",
+        "Republic of Ireland",
+        "Eire",
+        "Éire"
+      ],
+      "neighbors": [
+        "united-kingdom"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "IE"
+    },
+    {
+      "id": "france",
+      "name": "France",
+      "mapName": "France",
+      "aliases": [
+        "France",
+        "French Republic"
+      ],
+      "neighbors": [
+        "germany",
+        "switzerland",
+        "luxembourg",
+        "belgium",
+        "spain",
+        "italy",
+        "united-kingdom"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "FR"
+    },
+    {
+      "id": "germany",
+      "name": "Germany",
+      "mapName": "Germany",
+      "aliases": [
+        "Germany",
+        "Deutschland",
+        "Federal Republic of Germany"
+      ],
+      "neighbors": [
+        "france",
+        "poland",
+        "austria",
+        "switzerland",
+        "luxembourg",
+        "belgium",
+        "netherlands",
+        "denmark",
+        "czechia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "DE"
+    },
+    {
+      "id": "spain",
+      "name": "Spain",
+      "mapName": "Spain",
+      "aliases": [
+        "Spain",
+        "España"
+      ],
+      "neighbors": [
+        "france",
+        "portugal"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "ES"
+    },
+    {
+      "id": "italy",
+      "name": "Italy",
+      "mapName": "Italy",
+      "aliases": [
+        "Italy",
+        "Italia"
+      ],
+      "neighbors": [
+        "france",
+        "austria",
+        "switzerland",
+        "slovenia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "IT"
+    },
+    {
+      "id": "portugal",
+      "name": "Portugal",
+      "mapName": "Portugal",
+      "aliases": [
+        "Portugal"
+      ],
+      "neighbors": [
+        "spain"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "PT"
+    },
+    {
+      "id": "netherlands",
+      "name": "Netherlands",
+      "mapName": "Netherlands",
+      "aliases": [
+        "Netherlands",
+        "Holland",
+        "The Netherlands"
+      ],
+      "neighbors": [
+        "germany",
+        "belgium"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "NL"
+    },
+    {
+      "id": "belgium",
+      "name": "Belgium",
+      "mapName": "Belgium",
+      "aliases": [
+        "Belgium"
+      ],
+      "neighbors": [
+        "france",
+        "germany",
+        "luxembourg",
+        "netherlands"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "BE"
+    },
+    {
+      "id": "switzerland",
+      "name": "Switzerland",
+      "mapName": "Switzerland",
+      "aliases": [
+        "Switzerland",
+        "Swiss"
+      ],
+      "neighbors": [
+        "france",
+        "austria",
+        "germany",
+        "italy"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "CH"
+    },
+    {
+      "id": "austria",
+      "name": "Austria",
+      "mapName": "Austria",
+      "aliases": [
+        "Austria",
+        "Österreich",
+        "Osterreich"
+      ],
+      "neighbors": [
+        "hungary",
+        "germany",
+        "switzerland",
+        "italy",
+        "slovenia",
+        "slovakia",
+        "czechia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "AT"
+    },
+    {
+      "id": "poland",
+      "name": "Poland",
+      "mapName": "Poland",
+      "aliases": [
+        "Poland",
+        "Polska"
+      ],
+      "neighbors": [
+        "russia",
+        "belarus",
+        "ukraine",
+        "lithuania",
+        "germany",
+        "slovakia",
+        "czechia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "PL"
+    },
+    {
+      "id": "czechia",
+      "name": "Czechia",
+      "mapName": "Czechia",
+      "aliases": [
+        "Czechia",
+        "Czech Republic",
+        "Czech"
+      ],
+      "neighbors": [
+        "poland",
+        "austria",
+        "germany",
+        "slovakia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "CZ"
+    },
+    {
+      "id": "slovakia",
+      "name": "Slovakia",
+      "mapName": "Slovakia",
+      "aliases": [
+        "Slovakia",
+        "Slovak Republic"
+      ],
+      "neighbors": [
+        "ukraine",
+        "poland",
+        "austria",
+        "hungary",
+        "czechia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "SK"
+    },
+    {
+      "id": "hungary",
+      "name": "Hungary",
+      "mapName": "Hungary",
+      "aliases": [
+        "Hungary",
+        "Magyarország",
+        "Magyarorszag"
+      ],
+      "neighbors": [
+        "ukraine",
+        "austria",
+        "romania",
+        "croatia",
+        "slovenia",
+        "slovakia",
+        "serbia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "HU"
+    },
+    {
+      "id": "romania",
+      "name": "Romania",
+      "mapName": "Romania",
+      "aliases": [
+        "Romania",
+        "Roumania"
+      ],
+      "neighbors": [
+        "ukraine",
+        "hungary",
+        "moldova",
+        "bulgaria",
+        "serbia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "RO"
+    },
+    {
+      "id": "bulgaria",
+      "name": "Bulgaria",
+      "mapName": "Bulgaria",
+      "aliases": [
+        "Bulgaria"
+      ],
+      "neighbors": [
+        "romania",
+        "greece",
+        "turkey",
+        "macedonia",
+        "serbia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "BG"
+    },
+    {
+      "id": "greece",
+      "name": "Greece",
+      "mapName": "Greece",
+      "aliases": [
+        "Greece",
+        "Hellas"
+      ],
+      "neighbors": [
+        "bulgaria",
+        "turkey",
+        "albania",
+        "macedonia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "GR"
+    },
+    {
+      "id": "turkey",
+      "name": "Turkey",
+      "mapName": "Turkey",
+      "aliases": [
+        "Turkey",
+        "Türkiye",
+        "Turkiye"
+      ],
+      "neighbors": [
+        "bulgaria",
+        "greece"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "TR"
+    },
+    {
+      "id": "ukraine",
+      "name": "Ukraine",
+      "mapName": "Ukraine",
+      "aliases": [
+        "Ukraine"
+      ],
+      "neighbors": [
+        "russia",
+        "belarus",
+        "poland",
+        "hungary",
+        "moldova",
+        "romania",
+        "slovakia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "UA"
+    },
+    {
+      "id": "belarus",
+      "name": "Belarus",
+      "mapName": "Belarus",
+      "aliases": [
+        "Belarus",
+        "Byelorussia"
+      ],
+      "neighbors": [
+        "russia",
+        "ukraine",
+        "poland",
+        "lithuania",
+        "latvia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "BY"
+    },
+    {
+      "id": "moldova",
+      "name": "Moldova",
+      "mapName": "Moldova",
+      "aliases": [
+        "Moldova"
+      ],
+      "neighbors": [
+        "ukraine",
+        "romania"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "MD"
+    },
+    {
+      "id": "russia",
+      "name": "Russia",
+      "mapName": "Russia",
+      "aliases": [
+        "Russia",
+        "Russian Federation"
+      ],
+      "neighbors": [
+        "norway",
+        "belarus",
+        "ukraine",
+        "poland",
+        "lithuania",
+        "latvia",
+        "estonia",
+        "finland"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "RU"
+    },
+    {
+      "id": "norway",
+      "name": "Norway",
+      "mapName": "Norway",
+      "aliases": [
+        "Norway",
+        "Norge"
+      ],
+      "neighbors": [
+        "russia",
+        "sweden",
+        "finland"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "NO"
+    },
+    {
+      "id": "sweden",
+      "name": "Sweden",
+      "mapName": "Sweden",
+      "aliases": [
+        "Sweden",
+        "Sverige"
+      ],
+      "neighbors": [
+        "norway",
+        "finland"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "SE"
+    },
+    {
+      "id": "finland",
+      "name": "Finland",
+      "mapName": "Finland",
+      "aliases": [
+        "Finland",
+        "Suomi"
+      ],
+      "neighbors": [
+        "russia",
+        "norway",
+        "sweden"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "FI"
+    },
+    {
+      "id": "denmark",
+      "name": "Denmark",
+      "mapName": "Denmark",
+      "aliases": [
+        "Denmark",
+        "Danmark"
+      ],
+      "neighbors": [
+        "germany"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "DK"
+    },
+    {
+      "id": "iceland",
+      "name": "Iceland",
+      "mapName": "Iceland",
+      "aliases": [
+        "Iceland",
+        "Island"
+      ],
+      "neighbors": [],
+      "inDailyPool": false,
+      "iso3166Alpha2": "IS"
+    },
+    {
+      "id": "estonia",
+      "name": "Estonia",
+      "mapName": "Estonia",
+      "aliases": [
+        "Estonia"
+      ],
+      "neighbors": [
+        "russia",
+        "latvia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "EE"
+    },
+    {
+      "id": "latvia",
+      "name": "Latvia",
+      "mapName": "Latvia",
+      "aliases": [
+        "Latvia"
+      ],
+      "neighbors": [
+        "russia",
+        "belarus",
+        "lithuania",
+        "estonia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "LV"
+    },
+    {
+      "id": "lithuania",
+      "name": "Lithuania",
+      "mapName": "Lithuania",
+      "aliases": [
+        "Lithuania"
+      ],
+      "neighbors": [
+        "russia",
+        "belarus",
+        "poland",
+        "latvia"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "LT"
+    },
+    {
+      "id": "croatia",
+      "name": "Croatia",
+      "mapName": "Croatia",
+      "aliases": [
+        "Croatia",
+        "Hrvatska"
+      ],
+      "neighbors": [
+        "hungary",
+        "slovenia",
+        "bosnia-and-herz",
+        "serbia",
+        "montenegro"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "HR"
+    },
+    {
+      "id": "slovenia",
+      "name": "Slovenia",
+      "mapName": "Slovenia",
+      "aliases": [
+        "Slovenia"
+      ],
+      "neighbors": [
+        "austria",
+        "hungary",
+        "croatia",
+        "italy"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "SI"
+    },
+    {
+      "id": "bosnia-and-herz",
+      "name": "Bosnia and Herzegovina",
+      "mapName": "Bosnia and Herz.",
+      "aliases": [
+        "Bosnia and Herzegovina",
+        "Bosnia",
+        "Bosnia and Herz."
+      ],
+      "neighbors": [
+        "croatia",
+        "serbia",
+        "montenegro"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "BA"
+    },
+    {
+      "id": "serbia",
+      "name": "Serbia",
+      "mapName": "Serbia",
+      "aliases": [
+        "Serbia"
+      ],
+      "neighbors": [
+        "hungary",
+        "romania",
+        "bulgaria",
+        "croatia",
+        "bosnia-and-herz",
+        "macedonia",
+        "montenegro",
+        "kosovo"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "RS"
+    },
+    {
+      "id": "montenegro",
+      "name": "Montenegro",
+      "mapName": "Montenegro",
+      "aliases": [
+        "Montenegro"
+      ],
+      "neighbors": [
+        "albania",
+        "croatia",
+        "bosnia-and-herz",
+        "serbia",
+        "kosovo"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "ME"
+    },
+    {
+      "id": "macedonia",
+      "name": "North Macedonia",
+      "mapName": "Macedonia",
+      "aliases": [
+        "North Macedonia",
+        "Macedonia",
+        "FYROM"
+      ],
+      "neighbors": [
+        "bulgaria",
+        "greece",
+        "albania",
+        "serbia",
+        "kosovo"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "MK"
+    },
+    {
+      "id": "albania",
+      "name": "Albania",
+      "mapName": "Albania",
+      "aliases": [
+        "Albania"
+      ],
+      "neighbors": [
+        "greece",
+        "macedonia",
+        "montenegro",
+        "kosovo"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "AL"
+    },
+    {
+      "id": "kosovo",
+      "name": "Kosovo",
+      "mapName": "Kosovo",
+      "aliases": [
+        "Kosovo"
+      ],
+      "neighbors": [
+        "albania",
+        "macedonia",
+        "serbia",
+        "montenegro"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "XK"
+    },
+    {
+      "id": "cyprus",
+      "name": "Cyprus",
+      "mapName": "Cyprus",
+      "aliases": [
+        "Cyprus"
+      ],
+      "neighbors": [],
+      "inDailyPool": false,
+      "iso3166Alpha2": "CY"
+    },
+    {
+      "id": "luxembourg",
+      "name": "Luxembourg",
+      "mapName": "Luxembourg",
+      "aliases": [
+        "Luxembourg"
+      ],
+      "neighbors": [
+        "france",
+        "germany",
+        "belgium"
+      ],
+      "inDailyPool": false,
+      "iso3166Alpha2": "LU"
+    }
+  ]
+}
