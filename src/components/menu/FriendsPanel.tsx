@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { addFriendApi, fetchFriends, removeFriendApi } from "@/lib/api/client";
 import {
   addFriend,
   getFriends,
@@ -14,35 +16,48 @@ interface FriendsPanelProps {
 }
 
 export function FriendsPanel({ onFriendsChange }: FriendsPanelProps) {
-  const [friends, setFriends] = useState<Friend[]>(() => getFriends());
+  const { user, profile: cloudProfile, configured } = useAuth();
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [username, setUsername] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState("");
 
-  const profile = getProfile();
+  const localProfile = getProfile();
+  const hasProfile = Boolean(cloudProfile || localProfile);
 
-  const refresh = () => {
-    setFriends(getFriends());
-    onFriendsChange();
-  };
-
-  const handleAdd = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!profile) return;
-
-    const added = addFriend(displayName || username, username);
-    if (!added) {
-      setError("Could not add friend. Check the username and try again.");
-      return;
+  const refresh = useCallback(async () => {
+    if (configured && user) {
+      const remote = await fetchFriends();
+      setFriends(remote);
+    } else {
+      setFriends(getFriends());
     }
+    onFriendsChange();
+  }, [configured, user, onFriendsChange]);
 
-    setUsername("");
-    setDisplayName("");
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  const handleAdd = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!hasProfile) return;
+
     setError("");
-    refresh();
+    try {
+      if (configured && user) {
+        await addFriendApi(username.trim());
+      } else if (localProfile) {
+        const added = addFriend(username, username);
+        if (!added) throw new Error("Could not add friend");
+      }
+      setUsername("");
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not add friend");
+    }
   };
 
-  if (!profile) {
+  if (!hasProfile) {
     return (
       <p className="text-sm text-slate-400">
         Create a profile first to build your friends list.
@@ -53,8 +68,8 @@ export function FriendsPanel({ onFriendsChange }: FriendsPanelProps) {
   return (
     <div className="space-y-5">
       <p className="text-sm text-slate-400">
-        Add friends by username. Rankings compare your best streaks — full
-        cross-device friends sync when cloud accounts launch.
+        Add friends by username to compare daily scores on the friends
+        leaderboard.
       </p>
 
       <form onSubmit={handleAdd} className="space-y-2">
@@ -66,13 +81,6 @@ export function FriendsPanel({ onFriendsChange }: FriendsPanelProps) {
             setError("");
           }}
           placeholder="Friend's username"
-          className="w-full rounded-lg border border-white/15 bg-black/50 px-4 py-3 text-base text-white placeholder:text-slate-500"
-        />
-        <input
-          type="text"
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-          placeholder="Display name (optional)"
           className="w-full rounded-lg border border-white/15 bg-black/50 px-4 py-3 text-base text-white placeholder:text-slate-500"
         />
         {error && <p className="text-sm text-red-400">{error}</p>}
@@ -102,9 +110,13 @@ export function FriendsPanel({ onFriendsChange }: FriendsPanelProps) {
               </div>
               <button
                 type="button"
-                onClick={() => {
-                  removeFriend(friend.id);
-                  refresh();
+                onClick={async () => {
+                  if (configured && user) {
+                    await removeFriendApi(friend.id);
+                  } else {
+                    removeFriend(friend.id);
+                  }
+                  await refresh();
                 }}
                 className="shrink-0 text-xs text-red-400/80 hover:text-red-300"
               >

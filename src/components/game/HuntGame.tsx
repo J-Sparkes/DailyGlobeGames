@@ -4,12 +4,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HuntGlobeBridge } from "@/components/game/GlobeBridge";
 import { HuntDailyResult } from "@/components/game/HuntDailyResult";
 import {
+  DailyDateStaleBanner,
+  GameLiveRegion,
   HudAnchor,
-  HudBadge,
   HudLayer,
-  HudMeta,
   HudPanel,
-  HudPrompt,
   HudScroll,
   HudSpacer,
   HudToolbar,
@@ -19,16 +18,16 @@ import { GameMenu } from "@/components/menu/GameMenu";
 import type { HuntGuessMarker } from "@/components/map/HuntGlobe";
 import { getCountryDisplayName } from "@/lib/country-resolve";
 import { getDateSeed } from "@/lib/daily-seed";
-import { pickDailyHuntCountry } from "@/lib/daily-hunt";
+import { fetchHuntDaily, submitHuntGuess, submitHuntResult } from "@/lib/api/client";
 import { isUnlimitedPlaysEnabled } from "@/lib/daily-play";
 import { isTouchDevice } from "@/lib/device";
-import { haversineKm, kmToMiles } from "@/lib/geo-distance";
 import { getFeatureCentroid } from "@/lib/geo-centroid";
-import {
-  appendHuntGameHistory,
-} from "@/lib/profile-storage";
+import { appendHuntGameHistory } from "@/lib/profile-storage";
 import { playCorrectGuessSound, primeAudio } from "@/lib/sounds";
 import { useVisualViewportInset } from "@/lib/use-visual-viewport-inset";
+import { useDailyDateRollover } from "@/lib/use-daily-date-rollover";
+import { acquireGlobeInputLock, releaseGlobeInputLock } from "@/lib/globe-input-lock";
+import { appendHuntGuess, buildWinningHuntGuess } from "@/lib/hunt-guess";
 import {
   clearHuntDailyStorage,
   createInitialHuntProgress,
@@ -40,7 +39,6 @@ import {
 } from "@/lib/hunt-daily-play";
 import {
   formatMiles,
-  getWarmerHint,
   MAX_HUNT_GUESSES,
   scoreForGuess,
 } from "@/lib/hunt-scoring";
@@ -74,12 +72,17 @@ export function HuntGame() {
   const hiddenCountryIdRef = useRef(hiddenCountryId);
   const phaseRef = useRef(phase);
   const completedResultRef = useRef(completedResult);
+  const processingGuessRef = useRef(false);
+  const dateStale = useDailyDateRollover(dateSeed);
 
   useEffect(() => {
     guessesRef.current = guesses;
     hiddenCountryIdRef.current = hiddenCountryId;
     phaseRef.current = phase;
     completedResultRef.current = completedResult;
+    if (phase === "playing") {
+      releaseGlobeInputLock(processingGuessRef);
+    }
   }, [guesses, hiddenCountryId, phase, completedResult]);
 
   const featureById = useMemo(() => {
@@ -111,17 +114,16 @@ export function HuntGame() {
 
     const progress = getHuntProgressForToday();
     if (progress) {
-      setHiddenCountryId(progress.hiddenCountryId);
+      setHiddenCountryId(progress.hiddenCountryId ?? null);
       setGuesses(progress.guesses);
       setPhase(progress.phase);
       if (progress.guesses.length > 0) {
         setLastGuess(progress.guesses[progress.guesses.length - 1] ?? null);
       }
     } else {
-      const picked = pickDailyHuntCountry(features);
-      setHiddenCountryId(picked);
+      void fetchHuntDaily(dateSeed);
       if (!unlimited) {
-        saveHuntProgress(createInitialHuntProgress(picked));
+        saveHuntProgress(createInitialHuntProgress());
       }
     }
 
@@ -129,11 +131,11 @@ export function HuntGame() {
   }, [mapReady, features, unlimited]);
 
   useEffect(() => {
-    if (!initialized || completedResult || !hiddenCountryId || unlimited) return;
+    if (!initialized || completedResult || unlimited) return;
 
     saveHuntProgress({
       date: dateSeed,
-      hiddenCountryId,
+      hiddenCountryId: hiddenCountryId ?? undefined,
       guesses,
       phase,
     });
@@ -171,12 +173,11 @@ export function HuntGame() {
       finalGuesses: HuntGuess[],
       won: boolean,
       solvedOnGuess: number | null,
+      revealedHiddenId: string,
     ) => {
-      if (!hiddenCountryId) return;
-
       const result: CompletedHuntResult = {
         date: dateSeed,
-        hiddenCountryId,
+        hiddenCountryId: revealedHiddenId,
         guesses: finalGuesses,
         won,
         solvedOnGuess,
@@ -187,46 +188,37 @@ export function HuntGame() {
       appendHuntGameHistory(result);
       setCompletedResult(result);
       setFreshComplete(true);
+      setHiddenCountryId(revealedHiddenId);
       setPhase("playing");
+      void submitHuntResult({
+        date: dateSeed,
+        won,
+        solvedOnGuess,
+        guessCount: finalGuesses.length,
+      });
     },
-    [hiddenCountryId, dateSeed],
+    [dateSeed],
   );
 
   const handlePlayAgain = useCallback(() => {
     if (!mapReady || features.length === 0) return;
 
     clearHuntDailyStorage();
-    const picked = pickDailyHuntCountry(features);
-    setHiddenCountryId(picked);
+    setHiddenCountryId(null);
     setGuesses([]);
     setPhase("playing");
     setCompletedResult(null);
     setLastGuess(null);
     setFreshComplete(false);
+    void fetchHuntDaily(dateSeed);
     if (!unlimited) {
-      saveHuntProgress(createInitialHuntProgress(picked));
+      saveHuntProgress(createInitialHuntProgress());
     }
-  }, [mapReady, features, unlimited]);
-
-  const getDistanceMiles = useCallback(
-    (fromCountryId: string, toCountryId: string): number | null => {
-      const fromFeature = featureById.get(fromCountryId);
-      const toFeature = featureById.get(toCountryId);
-      if (!fromFeature || !toFeature) return null;
-
-      const from = getFeatureCentroid(fromFeature);
-      const to = getFeatureCentroid(toFeature);
-      return kmToMiles(
-        haversineKm(from.lat, from.lng, to.lat, to.lng),
-      );
-    },
-    [featureById],
-  );
+  }, [mapReady, features, unlimited, dateSeed]);
 
   const handleCountryClick = useCallback(
-    (countryId: string) => {
-      const hiddenId = hiddenCountryIdRef.current;
-      if (!hiddenId || phaseRef.current !== "playing" || completedResultRef.current) {
+    async (countryId: string) => {
+      if (phaseRef.current !== "playing" || completedResultRef.current) {
         return;
       }
 
@@ -234,44 +226,75 @@ export function HuntGame() {
       if (currentGuesses.some((guess) => guess.countryId === countryId)) return;
 
       primeAudio();
+      if (!acquireGlobeInputLock(processingGuessRef)) return;
 
-      if (countryId === hiddenId) {
-        playCorrectGuessSound();
-        const guessNumber = currentGuesses.length + 1;
-        finishGame(currentGuesses, true, guessNumber);
-        return;
+      try {
+        const response = await submitHuntGuess({
+          date: dateSeed,
+          countryId,
+          previousDistanceMiles: currentGuesses.at(-1)?.distanceMiles ?? null,
+        });
+
+        if (response.won && response.hiddenCountryId) {
+          playCorrectGuessSound();
+          const previousMiles = currentGuesses.at(-1)?.distanceMiles ?? null;
+          const winningGuess = buildWinningHuntGuess(
+            response.hiddenCountryId,
+            previousMiles,
+          );
+          const finalGuesses = appendHuntGuess(currentGuesses, winningGuess);
+          guessesRef.current = finalGuesses;
+          setGuesses(finalGuesses);
+          finishGame(finalGuesses, true, finalGuesses.length, response.hiddenCountryId);
+          return;
+        }
+
+        phaseRef.current = "guess-result";
+
+        const guess: HuntGuess = {
+          countryId,
+          distanceMiles: response.distanceMiles,
+          warmer: response.warmer,
+        };
+
+        const nextGuesses = appendHuntGuess(currentGuesses, guess);
+        guessesRef.current = nextGuesses;
+        setGuesses(nextGuesses);
+        setLastGuess(guess);
+        setPhase("guess-result");
+      } catch {
+        releaseGlobeInputLock(processingGuessRef);
       }
-
-      const distanceMiles = getDistanceMiles(countryId, hiddenId);
-      if (distanceMiles === null) return;
-
-      const previousMiles = currentGuesses.at(-1)?.distanceMiles ?? null;
-      const guess: HuntGuess = {
-        countryId,
-        distanceMiles,
-        warmer: getWarmerHint(distanceMiles, previousMiles),
-      };
-
-      const nextGuesses = [...currentGuesses, guess];
-      setGuesses(nextGuesses);
-      setLastGuess(guess);
-      setPhase("guess-result");
     },
-    [getDistanceMiles, finishGame],
+    [dateSeed, finishGame],
   );
 
-  const handleContinue = useCallback(() => {
+  const handleContinue = useCallback(async () => {
     if (guesses.length >= MAX_HUNT_GUESSES) {
-      finishGame(guesses, false, null);
+      const res = await fetch("/api/daily/hunt/reveal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: dateSeed, guessCount: guesses.length }),
+      });
+      const data = (await res.json()) as { hiddenCountryId?: string };
+      finishGame(guesses, false, null, data.hiddenCountryId ?? "unknown");
       return;
     }
     setPhase("playing");
     setLastGuess(null);
-  }, [guesses, finishGame]);
+  }, [guesses, finishGame, dateSeed]);
 
-  const controlHint = isTouch
-    ? "Swipe to spin · pinch to zoom · tap a country"
-    : "Drag to spin · scroll to zoom · click a country";
+  const huntPrompt =
+    isPlaying && phase === "playing"
+      ? guessesRemaining === 1
+        ? "1 guess left — tap a country"
+        : `${guessesRemaining} guesses left — tap a country`
+      : undefined;
+
+  const huntLiveMessage = useMemo(() => {
+    if (completedResult) return completedResult.won ? "Hunt won." : "Hunt complete.";
+    return huntPrompt ?? "Tap a country on the globe.";
+  }, [completedResult, huntPrompt]);
 
   const warmerLabel =
     lastGuess?.warmer === "warmer"
@@ -281,6 +304,10 @@ export function HuntGame() {
         : lastGuess?.warmer === "same"
           ? "Same distance"
           : null;
+
+  const controlHint = isTouch
+    ? "Swipe to spin · pinch to zoom · tap a country"
+    : "Drag to spin · scroll to zoom · click a country";
 
   const huntGlobeProps = useMemo(
     () =>
@@ -306,7 +333,7 @@ export function HuntGame() {
   );
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-transparent">
+    <div className="relative h-full w-full pointer-events-none">
       <HuntGlobeBridge props={huntGlobeProps} />
       <GameMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
@@ -316,39 +343,27 @@ export function HuntGame() {
         </div>
       )}
 
+      <GameLiveRegion message={huntLiveMessage} />
+
       <HudLayer>
         <HudAnchor position="top">
+          {dateStale && (
+            <DailyDateStaleBanner onRefresh={() => window.location.reload()} />
+          )}
           <HudPanel>
             <HudToolbar
               onMenuOpen={() => setMenuOpen(true)}
+              date={isPlaying ? dateSeed : undefined}
               stat={
                 isPlaying
                   ? { label: "Left", value: guessesRemaining }
                   : undefined
               }
-              badge={
-                isPlaying && phase === "playing" ? (
-                  <HudBadge>{dateSeed}</HudBadge>
-                ) : undefined
-              }
+              prompt={huntPrompt}
+              meta={isPlaying && phase === "playing" ? controlHint : undefined}
             >
               <ModeSwitcher />
             </HudToolbar>
-
-            {isPlaying && phase === "playing" && (
-              <>
-                <HudPrompt>
-                  {guessesRemaining === 1
-                    ? "1 guess left — tap a country"
-                    : `${guessesRemaining} guesses left — tap a country`}
-                </HudPrompt>
-                <HudMeta>{controlHint}</HudMeta>
-              </>
-            )}
-
-            {unlimited && (
-              <p className="mt-1 text-[10px] text-amber-200/90">Test mode</p>
-            )}
           </HudPanel>
         </HudAnchor>
 
@@ -396,7 +411,7 @@ export function HuntGame() {
               <button
                 type="button"
                 onClick={handleContinue}
-                className="touch-target mt-2.5 w-full min-h-10 rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-400"
+                className="touch-target btn-primary mt-2.5 w-full min-h-10 rounded-lg px-4 py-2 text-sm font-semibold"
               >
                 {guesses.length >= MAX_HUNT_GUESSES
                   ? "Reveal answer"

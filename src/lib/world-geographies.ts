@@ -12,6 +12,13 @@ export type CountryFeature = Feature<
   { name: string; countryId: string }
 >;
 
+export class MapLoadError extends Error {
+  constructor(message = "Failed to load world map data") {
+    super(message);
+    this.name = "MapLoadError";
+  }
+}
+
 let cache: CountryFeature[] | null = null;
 let loadPromise: Promise<CountryFeature[]> | null = null;
 
@@ -21,9 +28,18 @@ export async function loadCountryFeatures(): Promise<CountryFeature[]> {
 
   loadPromise = (async () => {
     const response = await fetch("/world-countries-110m.json");
-    const topo = (await response.json()) as Topology<{
-      countries: GeometryCollection;
-    }>;
+    if (!response.ok) {
+      throw new MapLoadError(`Map fetch failed (${response.status})`);
+    }
+
+    let topo: Topology<{ countries: GeometryCollection }>;
+    try {
+      topo = (await response.json()) as Topology<{
+        countries: GeometryCollection;
+      }>;
+    } catch {
+      throw new MapLoadError("Invalid map data");
+    }
 
     const collection = feature(topo, topo.objects.countries);
 
@@ -44,7 +60,15 @@ export async function loadCountryFeatures(): Promise<CountryFeature[]> {
     });
 
     return cache;
-  })();
+  })().catch((err) => {
+    loadPromise = null;
+    throw err;
+  });
 
   return loadPromise;
+}
+
+export function clearCountryFeaturesCache(): void {
+  cache = null;
+  loadPromise = null;
 }

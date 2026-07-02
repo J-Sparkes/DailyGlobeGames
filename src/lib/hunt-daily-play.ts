@@ -8,7 +8,7 @@ export type HuntPhase = "playing" | "guess-result";
 
 export interface HuntDailyProgress {
   date: string;
-  hiddenCountryId: string;
+  hiddenCountryId?: string;
   guesses: HuntGuess[];
   phase: HuntPhase;
 }
@@ -79,12 +79,9 @@ export function clearHuntDailyStorage(): void {
   window.localStorage.removeItem(STORAGE_KEY);
 }
 
-export function createInitialHuntProgress(
-  hiddenCountryId: string,
-): HuntDailyProgress {
+export function createInitialHuntProgress(): HuntDailyProgress {
   return {
     date: getDateSeed(),
-    hiddenCountryId,
     guesses: [],
     phase: "playing",
   };

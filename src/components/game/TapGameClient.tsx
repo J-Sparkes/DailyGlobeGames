@@ -35,7 +35,7 @@ export function TapGameClient() {
   };
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative h-full w-full pointer-events-none">
       {showWelcome && <TapWelcomeModal onClose={handleCloseWelcome} />}
       <TapGame />
     </div>

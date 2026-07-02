@@ -1,14 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CreateProfileForm } from "@/components/menu/CreateProfileForm";
+import { AuthPanel } from "@/components/menu/AuthPanel";
 import { FriendsPanel } from "@/components/menu/FriendsPanel";
 import { GuestHistoryPanel } from "@/components/menu/GuestHistoryPanel";
 import { ProfilePanel } from "@/components/menu/ProfilePanel";
 import { RankingsPanel } from "@/components/menu/RankingsPanel";
+import { useAuth } from "@/contexts/AuthContext";
+import { deleteAccountApi } from "@/lib/api/client";
+import { isUnlimitedPlaysEnabled } from "@/lib/daily-play";
 import { getProfile } from "@/lib/profile-storage";
-import type { MenuTab } from "@/types/profile";
-import type { UserProfile } from "@/types/profile";
+import type { MenuTab, UserProfile } from "@/types/profile";
 
 interface GameMenuProps {
   open: boolean;
@@ -23,13 +26,17 @@ const TABS: { id: MenuTab; label: string }[] = [
 
 export function GameMenu({ open, onClose }: GameMenuProps) {
   const [tab, setTab] = useState<MenuTab>("profile");
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [localProfile, setLocalProfile] = useState<UserProfile | null>(null);
+  const { profile: cloudProfile, refreshProfile } = useAuth();
 
-  const refreshProfile = () => setProfile(getProfile());
+  const refresh = () => {
+    setLocalProfile(getProfile());
+    void refreshProfile();
+  };
 
   useEffect(() => {
     if (open) {
-      refreshProfile();
+      refresh();
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -50,9 +57,12 @@ export function GameMenu({ open, onClose }: GameMenuProps) {
 
   if (!open) return null;
 
+  const hasProfile = Boolean(cloudProfile || localProfile);
+  const profileForPanel = localProfile;
+
   return (
     <div
-      className="welcome-backdrop fixed inset-0 z-50 flex justify-end"
+      className="welcome-backdrop pointer-events-auto fixed inset-0 z-50 flex justify-end"
       role="presentation"
       onClick={onClose}
     >
@@ -104,25 +114,100 @@ export function GameMenu({ open, onClose }: GameMenuProps) {
 
         <div className="overlay-safe-x min-h-0 flex-1 overflow-y-auto px-4 py-4">
           {tab === "profile" &&
-            (profile ? (
+            (cloudProfile ? (
+              <CloudProfileSummary onProfileChange={refresh} />
+            ) : profileForPanel ? (
               <ProfilePanel
-                profile={profile}
-                onProfileChange={refreshProfile}
+                profile={profileForPanel}
+                onProfileChange={refresh}
               />
             ) : (
               <div className="space-y-6">
-                <CreateProfileForm onCreated={refreshProfile} />
+                <AuthPanel onReady={refresh} />
                 <GuestHistoryPanel />
               </div>
             ))}
 
           {tab === "friends" && (
-            <FriendsPanel onFriendsChange={refreshProfile} />
+            <FriendsPanel onFriendsChange={refresh} />
           )}
 
           {tab === "rankings" && <RankingsPanel />}
         </div>
+
+        <div className="overlay-safe-x border-t border-white/10 px-4 py-3 text-xs text-slate-500">
+          <Link href="/privacy" className="hover:text-slate-300">
+            Privacy
+          </Link>
+          <span className="mx-2">·</span>
+          <Link href="/terms" className="hover:text-slate-300">
+            Terms
+          </Link>
+        </div>
+
+        {isUnlimitedPlaysEnabled() && (
+          <div className="overlay-safe-x border-t border-white/10 px-4 py-3">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-amber-200/80">
+              Test mode
+            </p>
+            <p className="mt-0.5 text-xs text-[var(--ui-text-muted)]">
+              Unlimited replays enabled for development.
+            </p>
+          </div>
+        )}
       </aside>
+    </div>
+  );
+}
+
+function CloudProfileSummary({ onProfileChange }: { onProfileChange: () => void }) {
+  const { profile, signOut } = useAuth();
+  const [deleting, setDeleting] = useState(false);
+
+  if (!profile) return null;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-sky-500/20 text-xl font-semibold text-sky-200">
+          {profile.displayName.charAt(0).toUpperCase()}
+        </div>
+        <div>
+          <p className="text-lg font-semibold text-white">{profile.displayName}</p>
+          <p className="text-sm text-slate-400">@{profile.username}</p>
+        </div>
+      </div>
+      <p className="text-sm text-slate-400">
+        Scores sync to your account and appear on global leaderboards.
+      </p>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => void signOut()}
+          className="flex-1 rounded-lg border border-white/15 py-2 text-sm text-slate-300"
+        >
+          Sign out
+        </button>
+        <button
+          type="button"
+          disabled={deleting}
+          onClick={async () => {
+            if (!confirm("Delete your account and all cloud data permanently?")) {
+              return;
+            }
+            setDeleting(true);
+            try {
+              await deleteAccountApi();
+              onProfileChange();
+            } finally {
+              setDeleting(false);
+            }
+          }}
+          className="flex-1 rounded-lg border border-red-500/30 py-2 text-sm text-red-400"
+        >
+          {deleting ? "Deleting…" : "Delete account"}
+        </button>
+      </div>
     </div>
   );
 }

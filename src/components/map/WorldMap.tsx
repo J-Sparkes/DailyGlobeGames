@@ -10,7 +10,7 @@ import { getMapName } from "@/lib/country-resolve";
 import { getFeatureCentroid } from "@/lib/geo-centroid";
 import { applyPolygonStyles } from "@/lib/styled-country-features";
 import { useContainerDims } from "@/lib/use-container-dims";
-import { useThrottledHover } from "@/lib/use-throttled-hover";
+import { GLOBE } from "@/lib/design-tokens";
 import {
   loadCountryFeatures,
   type CountryFeature,
@@ -46,44 +46,21 @@ function WorldMapComponent({
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
   const [features, setFeatures] = useState<CountryFeature[]>([]);
-  const [pulse, setPulse] = useState(false);
-  const [touch, setTouch] = useState(false);
   const [globeReady, setGlobeReady] = useState(false);
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);
   const dims = useContainerDims(containerRef);
-  const { hoverId, setHover } = useThrottledHover();
-  const { shouldSkipPov } = useGlobeUserControl(globeRef, globeReady);
-
-  const countryIds = useMemo(
-    () => features.map((feature) => feature.properties.countryId),
-    [features],
-  );
+  const { shouldSkipPov, povTick } = useGlobeUserControl(globeRef, globeReady);
 
   const polygonStyles = useMemo(
     () =>
       buildPolygonStyleMap(
-        countryIds,
         claimedIds,
         highlightId,
         clickableIds,
-        hoverId,
-        touch,
-        pulse && !reducedMotion,
         flashSuccessId,
         flashInvalidId,
       ),
-    [
-      countryIds,
-      claimedIds,
-      highlightId,
-      clickableIds,
-      hoverId,
-      touch,
-      pulse,
-      reducedMotion,
-      flashSuccessId,
-      flashInvalidId,
-    ],
+    [claimedIds, highlightId, clickableIds, flashSuccessId, flashInvalidId],
   );
 
   const styledFeatures = useMemo(
@@ -92,22 +69,8 @@ function WorldMapComponent({
   );
 
   useEffect(() => {
-    setTouch(isTouchDevice());
-  }, []);
-
-  useEffect(() => {
     loadCountryFeatures().then(setFeatures);
   }, []);
-
-  useEffect(() => {
-    if (!highlightId || reducedMotion) return;
-
-    const interval = window.setInterval(() => {
-      setPulse((value) => !value);
-    }, 900);
-
-    return () => window.clearInterval(interval);
-  }, [highlightId, reducedMotion]);
 
   useEffect(() => {
     const globe = globeRef.current;
@@ -174,6 +137,7 @@ function WorldMapComponent({
     globeReady,
     reducedMotion,
     shouldSkipPov,
+    povTick,
   ]);
 
   const handleGlobeReady = useCallback(() => {
@@ -219,17 +183,6 @@ function WorldMapComponent({
     ],
   );
 
-  const handlePolygonHover = useCallback(
-    (polygon: object | null) => {
-      if (!interactive || touch || !polygon) {
-        setHover(null);
-        return;
-      }
-      setHover((polygon as CountryFeature).properties.countryId);
-    },
-    [interactive, touch, setHover],
-  );
-
   const polygonSideColor = useCallback(() => "rgba(0, 0, 0, 0)", []);
 
   return (
@@ -241,20 +194,19 @@ function WorldMapComponent({
         ref={globeRef}
         width={dims.width}
         height={dims.height}
-        globeImageUrl="/earth-satellite.jpg"
+        globeImageUrl={GLOBE.imageUrl}
         backgroundColor="rgba(0,0,0,0)"
         showAtmosphere
-        atmosphereColor="lightskyblue"
-        atmosphereAltitude={0.12}
+        atmosphereColor={GLOBE.atmosphereColor}
+        atmosphereAltitude={GLOBE.atmosphereAltitude}
         polygonsData={styledFeatures}
         polygonCapColor="capColor"
         polygonSideColor={polygonSideColor}
         polygonStrokeColor="strokeColor"
         polygonAltitude="polygonAltitude"
-        polygonsTransitionDuration={reducedMotion ? 0 : 150}
+        polygonsTransitionDuration={0}
         onGlobeReady={handleGlobeReady}
         onPolygonClick={handlePolygonClick}
-        onPolygonHover={handlePolygonHover}
       />
 
       <div className="pointer-events-none absolute inset-0 space-vignette" />

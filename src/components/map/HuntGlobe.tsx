@@ -5,10 +5,10 @@ import Globe, { type GlobeMethods } from "react-globe.gl";
 import { buildHuntPolygonStyleMap } from "@/lib/globe-polygon-styles";
 import { useGlobeUserControl } from "@/lib/globe-user-control";
 import { isTouchDevice, prefersReducedMotion } from "@/lib/device";
+import { GLOBE } from "@/lib/design-tokens";
 import { getFeatureCentroid } from "@/lib/geo-centroid";
 import { applyPolygonStyles } from "@/lib/styled-country-features";
 import { useContainerDims } from "@/lib/use-container-dims";
-import { useThrottledHover } from "@/lib/use-throttled-hover";
 import {
   loadCountryFeatures,
   type CountryFeature,
@@ -46,12 +46,10 @@ function HuntGlobeComponent({
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
   const [features, setFeatures] = useState<CountryFeature[]>([]);
-  const [touch, setTouch] = useState(false);
   const [globeReady, setGlobeReady] = useState(false);
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);
   const dims = useContainerDims(containerRef);
-  const { hoverId, setHover } = useThrottledHover();
-  const { shouldSkipPov } = useGlobeUserControl(globeRef, globeReady);
+  const { shouldSkipPov, povTick } = useGlobeUserControl(globeRef, globeReady);
   const lastPovKeyRef = useRef("");
 
   const guessedIds = useMemo(
@@ -72,8 +70,6 @@ function HuntGlobeComponent({
         hiddenCountryId,
         revealHidden,
         won,
-        hoverId,
-        touch,
         interactive,
       ),
     [
@@ -82,8 +78,6 @@ function HuntGlobeComponent({
       hiddenCountryId,
       revealHidden,
       won,
-      hoverId,
-      touch,
       interactive,
     ],
   );
@@ -94,7 +88,6 @@ function HuntGlobeComponent({
   );
 
   useEffect(() => {
-    setTouch(isTouchDevice());
     loadCountryFeatures().then(setFeatures);
   }, []);
 
@@ -147,7 +140,7 @@ function HuntGlobeComponent({
           ? guesses[guesses.length - 1]!.id.replace(/^guess-/, "")
           : null;
 
-    const povKey = `${revealHidden}:${focusId ?? "default"}`;
+    const povKey = `${povTick}:${revealHidden}:${focusId ?? "default"}`;
     if (povKey === lastPovKeyRef.current) return;
     lastPovKeyRef.current = povKey;
 
@@ -173,6 +166,7 @@ function HuntGlobeComponent({
     revealHidden,
     reducedMotion,
     shouldSkipPov,
+    povTick,
   ]);
 
   const pointsData = useMemo(
@@ -194,17 +188,6 @@ function HuntGlobeComponent({
     [interactive, onCountryClick],
   );
 
-  const handlePolygonHover = useCallback(
-    (polygon: object | null) => {
-      if (!interactive || touch || !polygon) {
-        setHover(null);
-        return;
-      }
-      setHover((polygon as CountryFeature).properties.countryId);
-    },
-    [interactive, touch, setHover],
-  );
-
   const polygonSideColor = useCallback(() => "rgba(0, 0, 0, 0)", []);
 
   return (
@@ -216,20 +199,19 @@ function HuntGlobeComponent({
         ref={globeRef}
         width={dims.width}
         height={dims.height}
-        globeImageUrl="/earth-satellite.jpg"
+        globeImageUrl={GLOBE.imageUrl}
         backgroundColor="rgba(0,0,0,0)"
         showAtmosphere
-        atmosphereColor="lightskyblue"
-        atmosphereAltitude={0.12}
+        atmosphereColor={GLOBE.atmosphereColor}
+        atmosphereAltitude={GLOBE.atmosphereAltitude}
         polygonsData={styledFeatures}
         polygonCapColor="capColor"
         polygonSideColor={polygonSideColor}
         polygonStrokeColor="strokeColor"
         polygonAltitude="polygonAltitude"
-        polygonsTransitionDuration={reducedMotion ? 0 : 150}
+        polygonsTransitionDuration={0}
         onGlobeReady={handleGlobeReady}
         onPolygonClick={handlePolygonClick}
-        onPolygonHover={handlePolygonHover}
         pointsData={pointsData}
         pointLat="lat"
         pointLng="lng"

@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { deleteAccountApi } from "@/lib/api/client";
 import { getCountryDisplayName } from "@/lib/country-resolve";
 import { getAllGameHistory } from "@/lib/game-history";
 import {
@@ -10,19 +13,23 @@ import {
   updateProfile,
 } from "@/lib/profile-storage";
 import type { UserProfile } from "@/types/profile";
-import { useState } from "react";
 
 interface ProfilePanelProps {
-  profile: UserProfile | null;
+  profile: UserProfile;
+  cloudUsername?: string;
   onProfileChange: () => void;
 }
 
-export function ProfilePanel({ profile, onProfileChange }: ProfilePanelProps) {
+export function ProfilePanel({
+  profile,
+  cloudUsername,
+  onProfileChange,
+}: ProfilePanelProps) {
+  const { user, signOut, configured } = useAuth();
   const [editing, setEditing] = useState(false);
-  const [displayName, setDisplayName] = useState(profile?.displayName ?? "");
-  const [username, setUsername] = useState(profile?.username ?? "");
-
-  if (!profile) return null;
+  const [displayName, setDisplayName] = useState(profile.displayName);
+  const [username, setUsername] = useState(profile.username);
+  const [deleting, setDeleting] = useState(false);
 
   const bestSweep = getBestStreak(profile);
   const bestTap = getBestTapScore(profile);
@@ -61,7 +68,12 @@ export function ProfilePanel({ profile, onProfileChange }: ProfilePanelProps) {
               <p className="truncate text-lg font-semibold text-white">
                 {profile.displayName}
               </p>
-              <p className="text-sm text-slate-400">@{profile.username}</p>
+              <p className="text-sm text-slate-400">
+                @{cloudUsername ?? profile.username}
+                {cloudUsername && (
+                  <span className="ml-1 text-xs text-sky-400">cloud</span>
+                )}
+              </p>
             </>
           )}
         </div>
@@ -189,6 +201,37 @@ export function ProfilePanel({ profile, onProfileChange }: ProfilePanelProps) {
           </ul>
         )}
       </div>
+
+      {configured && user && (
+        <div className="flex gap-2 border-t border-white/10 pt-4">
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="flex-1 rounded-lg border border-white/15 py-2 text-sm text-slate-300"
+          >
+            Sign out
+          </button>
+          <button
+            type="button"
+            disabled={deleting}
+            onClick={async () => {
+              if (!confirm("Delete your account and all cloud data permanently?")) {
+                return;
+              }
+              setDeleting(true);
+              try {
+                await deleteAccountApi();
+                onProfileChange();
+              } finally {
+                setDeleting(false);
+              }
+            }}
+            className="flex-1 rounded-lg border border-red-500/30 py-2 text-sm text-red-400"
+          >
+            {deleting ? "Deleting…" : "Delete account"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

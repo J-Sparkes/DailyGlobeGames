@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   getFriendsLeaderboard,
   getGlobalLeaderboard,
@@ -68,14 +68,23 @@ function LeaderboardTable({
 export function RankingsPanel() {
   const [scope, setScope] = useState<"global" | "friends">("global");
   const [mode, setMode] = useState<LeaderboardMode>("sweep");
+  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const entries = useMemo(
-    () =>
-      scope === "global"
-        ? getGlobalLeaderboard(mode)
-        : getFriendsLeaderboard(mode),
-    [scope, mode],
-  );
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    const load = scope === "global" ? getGlobalLeaderboard : getFriendsLeaderboard;
+    void load(mode).then((data) => {
+      if (!cancelled) {
+        setEntries(data);
+        setLoading(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [scope, mode]);
 
   const scoreLabel = getLeaderboardScoreLabel(mode);
   const modeDescription =
@@ -89,8 +98,8 @@ export function RankingsPanel() {
     <div className="space-y-4">
       {!isCloudSyncEnabled() && (
         <p className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-200/90">
-          Sample players plus your best score on this device. Live worldwide
-          rankings will sync when cloud accounts are enabled.
+          Sign in to appear on live worldwide rankings. Local best scores show
+          when cloud sync is unavailable.
         </p>
       )}
 
@@ -138,7 +147,11 @@ export function RankingsPanel() {
 
       <p className="text-xs text-slate-500">Ranked by {modeDescription}</p>
 
-      <LeaderboardTable entries={entries} scoreLabel={scoreLabel} />
+      {loading ? (
+        <p className="text-sm text-slate-500">Loading rankings…</p>
+      ) : (
+        <LeaderboardTable entries={entries} scoreLabel={scoreLabel} />
+      )}
     </div>
   );
 }

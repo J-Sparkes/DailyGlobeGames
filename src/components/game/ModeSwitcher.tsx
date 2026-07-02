@@ -4,16 +4,41 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const MODES = [
-  { href: "/", label: "Sweep", match: (path: string) => path === "/" },
+  {
+    href: "/",
+    label: "Sweep",
+    shortLabel: "Sweep",
+    match: (path: string) => path === "/",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M4 12h4l2-5 4 10 2-5h4" />
+      </svg>
+    ),
+  },
   {
     href: "/tap",
     label: "Tap",
+    shortLabel: "Tap",
     match: (path: string) => path.startsWith("/tap"),
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M12 21s-6-4.35-6-10a6 6 0 1 1 12 0c0 5.65-6 10-6 10z" />
+        <circle cx="12" cy="11" r="2" />
+      </svg>
+    ),
   },
   {
     href: "/hunt",
     label: "Hunt",
+    shortLabel: "Hunt",
     match: (path: string) => path.startsWith("/hunt"),
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    ),
   },
 ] as const;
 
@@ -21,27 +46,33 @@ export function ModeSwitcher() {
   const pathname = usePathname();
 
   const linkClass = (active: boolean) =>
-    `touch-target shrink-0 min-h-8 rounded-md px-3 py-1 text-xs font-semibold tracking-wide uppercase transition ${
+    `touch-target flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold tracking-wide uppercase transition ${
       active
-        ? "bg-sky-500 text-white"
-        : "text-slate-400 hover:bg-white/10 hover:text-slate-200"
+        ? "bg-[var(--ui-accent-primary)] text-white"
+        : "text-[var(--ui-text-muted)] hover:bg-white/10 hover:text-[var(--ui-text-primary)]"
     }`;
 
   return (
     <nav
-      className="shrink-0 rounded-lg border border-white/10 bg-black/50 p-0.5"
+      className="shrink-0 rounded-lg border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-raised)] p-0.5"
       aria-label="Game mode"
     >
       <div className="flex items-center gap-0.5">
-        {MODES.map((mode) => (
-          <Link
-            key={mode.href}
-            href={mode.href}
-            className={linkClass(mode.match(pathname))}
-          >
-            {mode.label}
-          </Link>
-        ))}
+        {MODES.map((mode) => {
+          const active = mode.match(pathname);
+          return (
+            <Link
+              key={mode.href}
+              href={mode.href}
+              className={linkClass(active)}
+              aria-current={active ? "page" : undefined}
+              title={mode.label}
+            >
+              {mode.icon}
+              <span className="hidden sm:inline">{mode.shortLabel}</span>
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );

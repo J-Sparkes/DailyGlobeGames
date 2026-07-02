@@ -3,12 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DailyResult } from "@/components/game/DailyResult";
 import {
+  DailyDateStaleBanner,
+  GameLiveRegion,
   HudAnchor,
-  HudBadge,
   HudLayer,
-  HudMeta,
   HudPanel,
-  HudPrompt,
   HudScroll,
   HudSpacer,
   HudToolbar,
@@ -31,23 +30,24 @@ import {
 } from "@/lib/daily-play";
 import { isSweepDeadEnd, sanitizeSweepProgress } from "@/lib/sweep-progress";
 import { resolveCountry } from "@/lib/country-resolve";
-import { getDateSeed, pickDailyCountry } from "@/lib/daily-seed";
+import { fetchSweepDaily, submitSweepResult } from "@/lib/api/client";
+import { getDateSeed } from "@/lib/daily-seed";
 import {
   EMPTY_STRING_SET,
   setFromArrayStable,
 } from "@/lib/globe-constants";
 import { isTouchDevice } from "@/lib/device";
-import { getDailyPool } from "@/lib/game-data";
 import { appendGameHistory } from "@/lib/profile-storage";
 import { playCorrectGuessSound, playWrongGuessSound, primeAudio } from "@/lib/sounds";
 import { useVisualViewportInset } from "@/lib/use-visual-viewport-inset";
+import { shouldFinishSweepSuccess } from "@/lib/sweep-finish";
+import { canSelectFrontierCountry } from "@/lib/sweep-select";
+import { shouldAcceptSweepSubmit } from "@/lib/sweep-submit";
+import { useDailyDateRollover } from "@/lib/use-daily-date-rollover";
 import { loadCountryFeatures } from "@/lib/world-geographies";
 
 export function GeographyGame() {
-  const dailyCountry = useMemo(
-    () => pickDailyCountry(getDailyPool()),
-    [],
-  );
+  const [dailyStartId, setDailyStartId] = useState<string | null>(null);
   const dateSeed = useMemo(() => getDateSeed(), []);
   const unlimited = isUnlimitedPlaysEnabled();
   const isTouch = useMemo(
@@ -61,7 +61,7 @@ export function GeographyGame() {
   const [mapReady, setMapReady] = useState(false);
   const [claimedIds, setClaimedIds] = useState<string[]>([]);
   const [phase, setPhase] = useState<GamePhase>("naming");
-  const [targetId, setTargetId] = useState(dailyCountry.id);
+  const [targetId, setTargetId] = useState("");
   const [clickableIds, setClickableIds] = useState<Set<string>>(new Set());
   const [gameOver, setGameOver] = useState<CompletedDailyResult | null>(null);
   const [guess, setGuess] = useState("");
@@ -77,7 +77,18 @@ export function GeographyGame() {
   } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const gameOverTimerRef = useRef<number | null>(null);
+  const phaseRef = useRef<GamePhase>("naming");
+  const selectionLockRef = useRef(false);
+  const sweepCompletedRef = useRef(false);
   const keyboardInset = useVisualViewportInset();
+  const dateStale = useDailyDateRollover(dateSeed);
+
+  useEffect(() => {
+    phaseRef.current = phase;
+    if (phase === "selecting") {
+      selectionLockRef.current = false;
+    }
+  }, [phase]);
 
   const finishGame = useCallback(
     (path: string[], failedGuess: string, targetCountryId: string) => {
@@ -91,6 +102,12 @@ export function GeographyGame() {
       saveCompletedResult(result);
       appendGameHistory(result);
       setGameOver(result);
+      void submitSweepResult({
+        date: dateSeed,
+        path,
+        failedGuess,
+        targetCountryId,
+      });
       if (!unlimited) {
         setCompletedResult(result);
       }
@@ -100,20 +117,21 @@ export function GeographyGame() {
 
   const finishSweepSuccess = useCallback(
     (path: string[]) => {
+      if (!shouldFinishSweepSuccess(sweepCompletedRef.current)) return;
+      sweepCompletedRef.current = true;
+
       const result: CompletedDailyResult = {
         date: dateSeed,
         path,
         failedGuess: "",
-        targetCountryId: path.at(-1) ?? dailyCountry.id,
+        targetCountryId: path.at(-1) ?? dailyStartId ?? "",
         streak: path.length,
       };
       saveCompletedResult(result);
       appendGameHistory(result);
-      if (!unlimited) {
-        setCompletedResult(result);
-      }
+      setCompletedResult(result);
     },
-    [dateSeed, dailyCountry.id, unlimited],
+    [dateSeed, dailyStartId],
   );
 
   useEffect(() => {
@@ -149,6 +167,19 @@ export function GeographyGame() {
   }, [pendingGameOver, finishGame]);
 
   useEffect(() => {
+    fetchSweepDaily(dateSeed)
+      .then((daily) => {
+        setDailyStartId(daily.startCountryId);
+        if (!targetId) setTargetId(daily.startCountryId);
+      })
+      .catch(() => {
+        // Fallback if API unavailable during dev
+      });
+  }, [dateSeed, targetId]);
+
+  useEffect(() => {
+    if (!dailyStartId) return;
+
     const completed = getCompletedResultForToday();
     if (completed) {
       setCompletedResult(completed);
@@ -158,7 +189,7 @@ export function GeographyGame() {
 
     const progress = getProgressForToday();
     if (progress) {
-      const sanitized = sanitizeSweepProgress(progress, dailyCountry.id);
+      const sanitized = sanitizeSweepProgress(progress, dailyStartId);
       setClaimedIds(sanitized.claimedIds);
       setPhase(sanitized.phase);
       setTargetId(sanitized.targetId);
@@ -172,11 +203,12 @@ export function GeographyGame() {
         saveProgress(sanitized);
       }
     } else if (!unlimited) {
-      saveProgress(createInitialProgress(dailyCountry.id));
+      saveProgress(createInitialProgress(dailyStartId));
+      setTargetId(dailyStartId);
     }
 
     setInitialized(true);
-  }, [dailyCountry.id, unlimited]);
+  }, [dailyStartId, unlimited]);
 
   useEffect(() => {
     Promise.all([loadCountryFeatures(), loadBorderGraph()]).then(() =>
@@ -189,7 +221,7 @@ export function GeographyGame() {
 
     saveProgress({
       date: dateSeed,
-      dailyCountryId: dailyCountry.id,
+      dailyCountryId: dailyStartId ?? "",
       claimedIds,
       phase,
       targetId,
@@ -199,7 +231,7 @@ export function GeographyGame() {
     completedResult,
     gameOver,
     dateSeed,
-    dailyCountry.id,
+    dailyStartId,
     claimedIds,
     phase,
     targetId,
@@ -256,6 +288,17 @@ export function GeographyGame() {
     ? "Swipe to spin · pinch to zoom"
     : "Drag to spin · scroll to zoom";
 
+  const liveMessage = useMemo(() => {
+    if (gameOver) return "Game over.";
+    if (completedResult) return "Today's sweep complete.";
+    if (phase === "naming") {
+      return claimedIds.length === 0
+        ? "Name the highlighted country to begin today's sweep."
+        : "Name the country you selected.";
+    }
+    return "Tap a glowing neighbor on the globe, then name it.";
+  }, [gameOver, completedResult, phase, claimedIds.length]);
+
   const handlePlayAgain = useCallback(() => {
     clearDailyStorage();
     setGameOver(null);
@@ -263,16 +306,26 @@ export function GeographyGame() {
     setPendingGameOver(null);
     setClaimedIds([]);
     setPhase("naming");
-    setTargetId(dailyCountry.id);
+    phaseRef.current = "naming";
+    selectionLockRef.current = false;
+    sweepCompletedRef.current = false;
+    setTargetId(dailyStartId ?? "");
     setGuess("");
     setInputError(false);
     setClickableIds(new Set());
-  }, [dailyCountry.id]);
+  }, [dailyStartId]);
 
   const handleSubmit = useCallback(
     (event?: React.FormEvent) => {
       event?.preventDefault();
-      if (gameOver || completedResult || pendingGameOver || phase !== "naming" || !targetCountry) {
+      if (
+        gameOver ||
+        completedResult ||
+        pendingGameOver ||
+        phase !== "naming" ||
+        !targetCountry ||
+        !shouldAcceptSweepSubmit(guess, phase, Boolean(pendingGameOver))
+      ) {
         return;
       }
 
@@ -316,16 +369,21 @@ export function GeographyGame() {
 
   const handleCountryClick = useCallback(
     (countryId: string) => {
-      if (gameOver || completedResult || phase !== "selecting") return;
+      if (gameOver || completedResult || selectionLockRef.current) return;
+      if (!canSelectFrontierCountry(phaseRef.current, selectionLockRef.current)) {
+        return;
+      }
       if (!clickableIds.has(countryId)) return;
 
+      selectionLockRef.current = true;
+      phaseRef.current = "naming";
       setTargetId(countryId);
       setPhase("naming");
       setGuess("");
       setInputError(false);
       requestAnimationFrame(() => inputRef.current?.focus());
     },
-    [gameOver, completedResult, phase, clickableIds],
+    [gameOver, completedResult, clickableIds],
   );
 
   const showGlobe = mapReady && initialized;
@@ -366,7 +424,7 @@ export function GeographyGame() {
   );
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-transparent">
+    <div className="relative h-full w-full pointer-events-none">
       <SweepGlobeBridge props={sweepGlobeProps} />
       <GameMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
@@ -380,37 +438,41 @@ export function GeographyGame() {
         <div className="pointer-events-none absolute inset-0 z-[5] success-flash" />
       )}
 
+      {pendingGameOver && (
+        <div className="pointer-events-none absolute inset-0 z-[5] error-vignette" />
+      )}
+
+      <GameLiveRegion message={liveMessage} />
+
       <HudLayer>
         <HudAnchor position="top">
+          {dateStale && (
+            <DailyDateStaleBanner onRefresh={() => window.location.reload()} />
+          )}
           <HudPanel>
             <HudToolbar
               onMenuOpen={() => setMenuOpen(true)}
+              date={
+                initialized && !completedResult && !gameOver
+                  ? dateSeed
+                  : undefined
+              }
               stat={{
                 label: "Streak",
                 value: completedResult?.streak ?? claimedIds.length,
                 pop: streakPop,
               }}
-              badge={
-                initialized && !completedResult && !gameOver ? (
-                  <HudBadge>{dateSeed}</HudBadge>
-                ) : undefined
+              prompt={
+                initialized && !completedResult && !gameOver ? prompt : undefined
+              }
+              meta={
+                initialized && !completedResult && !gameOver
+                  ? controlHint
+                  : undefined
               }
             >
               <ModeSwitcher />
             </HudToolbar>
-
-            {initialized && !completedResult && !gameOver && (
-              <>
-                <HudPrompt>{prompt}</HudPrompt>
-                <HudMeta>{controlHint}</HudMeta>
-              </>
-            )}
-
-            {unlimited && (
-              <p className="mt-1 text-[10px] text-amber-200/90">
-                Test mode
-              </p>
-            )}
           </HudPanel>
         </HudAnchor>
 
@@ -422,6 +484,7 @@ export function GeographyGame() {
               <DailyResult
                 result={completedResult}
                 variant="already-played"
+                onPlayAgain={unlimited ? handlePlayAgain : undefined}
               />
             </HudScroll>
           )}
@@ -448,16 +511,16 @@ export function GeographyGame() {
                   spellCheck={false}
                   autoFocus={!isTouch}
                   aria-label="Country name"
-                  className={`min-h-10 flex-1 rounded-lg border bg-black/50 px-3 py-2 text-base text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/60 ${
+                  className={`min-h-10 flex-1 rounded-lg border bg-[var(--ui-surface-raised)] px-3 py-2 text-base text-[var(--ui-text-primary)] placeholder:text-[var(--ui-text-muted)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ui-accent-primary)_60%,transparent)] ${
                     inputError
-                      ? "border-red-500/60 shake"
-                      : "border-white/15"
+                      ? "border-[color-mix(in_srgb,var(--ui-error)_60%,transparent)] shake"
+                      : "border-[var(--ui-border-subtle)]"
                   }`}
                 />
                 <button
                   type="submit"
                   disabled={!guess.trim()}
-                  className="touch-target min-h-10 shrink-0 rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="touch-target btn-primary min-h-10 shrink-0 rounded-lg px-4 py-2 text-sm font-semibold"
                 >
                   Go
                 </button>
@@ -470,6 +533,7 @@ export function GeographyGame() {
               <DailyResult
                 result={gameOver}
                 variant="game-over"
+                animateReveal
                 onPlayAgain={unlimited ? handlePlayAgain : undefined}
               />
             </HudScroll>

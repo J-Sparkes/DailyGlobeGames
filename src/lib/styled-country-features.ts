@@ -1,4 +1,4 @@
-import type { PolygonStyle } from "@/lib/globe-polygon-styles";
+import { TRANSPARENT_POLYGON, type PolygonStyle } from "@/lib/globe-polygon-styles";
 import type { CountryFeature } from "@/lib/world-geographies";
 
 export type StyledCountryFeature = CountryFeature & {
@@ -7,23 +7,19 @@ export type StyledCountryFeature = CountryFeature & {
   polygonAltitude: number;
 };
 
-const DEFAULT_STYLE: PolygonStyle = {
-  capColor: "rgba(0, 0, 0, 0)",
-  strokeColor: "rgba(0, 0, 0, 0)",
-  altitude: 0.001,
-};
-
 export function applyPolygonStyles(
   features: CountryFeature[],
   styles: Map<string, PolygonStyle>,
 ): StyledCountryFeature[] {
-  return features.map((feature) => {
-    const style = styles.get(feature.properties.countryId) ?? DEFAULT_STYLE;
-    return {
-      ...feature,
-      capColor: style.capColor,
-      strokeColor: style.strokeColor,
-      polygonAltitude: style.altitude,
-    };
-  });
+  return features
+    .filter((feature) => styles.has(feature.properties.countryId))
+    .map((feature) => {
+      const style = styles.get(feature.properties.countryId) ?? TRANSPARENT_POLYGON;
+      return {
+        ...feature,
+        capColor: style.capColor,
+        strokeColor: style.strokeColor,
+        polygonAltitude: style.altitude,
+      };
+    });
 }

@@ -3,12 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TapGlobeBridge } from "@/components/game/GlobeBridge";
 import {
+  DailyDateStaleBanner,
+  GameLiveRegion,
   HudAnchor,
-  HudBadge,
   HudLayer,
-  HudMeta,
   HudPanel,
-  HudPrompt,
   HudScroll,
   HudSpacer,
   HudToolbar,
@@ -19,12 +18,14 @@ import { GameMenu } from "@/components/menu/GameMenu";
 import type { GlobeMarker } from "@/components/map/TapGlobe";
 import { getDateSeed } from "@/lib/daily-seed";
 import { isUnlimitedPlaysEnabled } from "@/lib/daily-play";
-import { pickDailyLocations } from "@/lib/daily-locations";
 import { isTouchDevice } from "@/lib/device";
-import { getLocationPool } from "@/lib/location-data";
+import { fetchTapDaily, submitTapGuess, submitTapResult } from "@/lib/api/client";
+import type { TapRoundPublic } from "@/lib/api/client";
 import { appendTapGameHistory } from "@/lib/profile-storage";
 import { playCorrectGuessSound, primeAudio } from "@/lib/sounds";
 import { useVisualViewportInset } from "@/lib/use-visual-viewport-inset";
+import { acquireGlobeInputLock, releaseGlobeInputLock } from "@/lib/globe-input-lock";
+import { useDailyDateRollover } from "@/lib/use-daily-date-rollover";
 import {
   clearTapDailyStorage,
   createInitialTapProgress,
@@ -38,18 +39,13 @@ import {
 import {
   formatDistance,
   getRoundMultiplier,
-  haversineKm,
   MAX_ROUNDS,
-  scoreRound,
   sumTapScore,
 } from "@/lib/tap-scoring";
-import type { DailyLocation, TapRoundResult } from "@/types/location";
+import type { TapRoundResult } from "@/types/location";
 
 export function TapGame() {
-  const dailyLocations = useMemo(
-    () => pickDailyLocations(getLocationPool(), MAX_ROUNDS),
-    [],
-  );
+  const [dailyRounds, setDailyRounds] = useState<TapRoundPublic[]>([]);
   const dateSeed = useMemo(() => getDateSeed(), []);
   const unlimited = isUnlimitedPlaysEnabled();
   const isTouch = useMemo(
@@ -71,15 +67,26 @@ export function TapGame() {
   const roundIndexRef = useRef(roundIndex);
   const phaseRef = useRef(phase);
   const completedResultRef = useRef(completedResult);
+  const processingTapRef = useRef(false);
+  const dateStale = useDailyDateRollover(dateSeed);
 
   useEffect(() => {
     resultsRef.current = results;
     roundIndexRef.current = roundIndex;
     phaseRef.current = phase;
     completedResultRef.current = completedResult;
+    if (phase === "aiming") {
+      releaseGlobeInputLock(processingTapRef);
+    }
   }, [results, roundIndex, phase, completedResult]);
 
-  const currentLocation: DailyLocation | undefined = dailyLocations[roundIndex];
+  useEffect(() => {
+    fetchTapDaily(dateSeed)
+      .then((data) => setDailyRounds(data.rounds))
+      .catch(() => setDailyRounds([]));
+  }, [dateSeed]);
+
+  const currentLocation: TapRoundPublic | undefined = dailyRounds[roundIndex];
   const runningScore = useMemo(() => sumTapScore(results), [results]);
 
   useEffect(() => {
@@ -152,6 +159,7 @@ export function TapGame() {
       setCompletedResult(result);
       setFreshComplete(true);
       setRoundIndex(MAX_ROUNDS);
+      void submitTapResult({ date: dateSeed, rounds: finalRounds });
     },
     [dateSeed],
   );
@@ -170,8 +178,8 @@ export function TapGame() {
   }, [unlimited]);
 
   const handleGlobeTap = useCallback(
-    (lat: number, lng: number) => {
-      const location = dailyLocations[roundIndexRef.current];
+    async (lat: number, lng: number) => {
+      const location = dailyRounds[roundIndexRef.current];
       if (
         !location ||
         phaseRef.current !== "aiming" ||
@@ -179,41 +187,34 @@ export function TapGame() {
       ) {
         return;
       }
+      if (!acquireGlobeInputLock(processingTapRef)) return;
 
+      phaseRef.current = "round-result";
       primeAudio();
 
-      const distanceKm = haversineKm(
-        lat,
-        lng,
-        location.lat,
-        location.lng,
-      );
-      const scoring = scoreRound(distanceKm, roundIndexRef.current);
+      try {
+        const { result: roundResult } = await submitTapGuess({
+          date: dateSeed,
+          roundIndex: roundIndexRef.current,
+          lat,
+          lng,
+        });
 
-      const roundResult: TapRoundResult = {
-        locationId: location.id,
-        prompt: location.prompt,
-        guessLat: lat,
-        guessLng: lng,
-        answerLat: location.lat,
-        answerLng: location.lng,
-        distanceKm,
-        basePoints: scoring.basePoints,
-        multiplier: scoring.multiplier,
-        totalPoints: scoring.totalPoints,
-        fact: location.fact,
-      };
+        if (roundResult.basePoints >= 70) {
+          playCorrectGuessSound();
+        }
 
-      if (scoring.basePoints >= 70) {
-        playCorrectGuessSound();
+        const nextResults = [...resultsRef.current, roundResult];
+        resultsRef.current = nextResults;
+        setResults(nextResults);
+        setCurrentRound(roundResult);
+        setPhase("round-result");
+      } catch {
+        releaseGlobeInputLock(processingTapRef);
+        phaseRef.current = "aiming";
       }
-
-      const nextResults = [...resultsRef.current, roundResult];
-      setResults(nextResults);
-      setCurrentRound(roundResult);
-      setPhase("round-result");
     },
-    [dailyLocations],
+    [dailyRounds, dateSeed],
   );
 
   const handleNextRound = useCallback(() => {
@@ -240,6 +241,18 @@ export function TapGame() {
   const isPlaying = initialized && !completedResult && roundIndex < MAX_ROUNDS;
   const showRoundResult = isPlaying && phase === "round-result" && currentRound;
 
+  const tapMeta =
+    isPlaying && phase === "aiming"
+      ? `Round ${roundIndex + 1}/${MAX_ROUNDS}${multiplier > 1 ? ` · ×${multiplier}` : ""} · ${controlHint}`
+      : undefined;
+
+  const tapLiveMessage = useMemo(() => {
+    if (completedResult) return "Tap game complete.";
+    if (phase === "round-result") return "Round result ready.";
+    if (currentLocation) return currentLocation.prompt;
+    return "Tap the globe to guess.";
+  }, [completedResult, phase, currentLocation]);
+
   const tapGlobeProps = useMemo(
     () =>
       initialized
@@ -253,7 +266,7 @@ export function TapGame() {
   );
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-transparent">
+    <div className="relative h-full w-full pointer-events-none">
       <TapGlobeBridge props={tapGlobeProps} />
       <GameMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
@@ -263,37 +276,30 @@ export function TapGame() {
         </div>
       )}
 
+      <GameLiveRegion message={tapLiveMessage} />
+
       <HudLayer>
         <HudAnchor position="top">
+          {dateStale && (
+            <DailyDateStaleBanner onRefresh={() => window.location.reload()} />
+          )}
           <HudPanel>
             <HudToolbar
               onMenuOpen={() => setMenuOpen(true)}
+              date={isPlaying ? dateSeed : undefined}
               stat={{
                 label: "Score",
                 value: completedResult?.totalScore ?? runningScore,
               }}
-              badge={
-                isPlaying && phase === "aiming" ? (
-                  <HudBadge>
-                    R{roundIndex + 1}/{MAX_ROUNDS}
-                    {multiplier > 1 ? ` ×${multiplier}` : ""}
-                  </HudBadge>
-                ) : undefined
+              prompt={
+                isPlaying && phase === "aiming" && currentLocation
+                  ? currentLocation.prompt
+                  : undefined
               }
+              meta={tapMeta}
             >
               <ModeSwitcher />
             </HudToolbar>
-
-            {isPlaying && phase === "aiming" && currentLocation && (
-              <>
-                <HudPrompt>{currentLocation.prompt}</HudPrompt>
-                <HudMeta>{controlHint}</HudMeta>
-              </>
-            )}
-
-            {unlimited && (
-              <p className="mt-1 text-[10px] text-amber-200/90">Test mode</p>
-            )}
           </HudPanel>
         </HudAnchor>
 
@@ -340,7 +346,7 @@ export function TapGame() {
               <button
                 type="button"
                 onClick={handleNextRound}
-                className="touch-target mt-2.5 w-full min-h-10 rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-400"
+                className="touch-target btn-primary mt-2.5 w-full min-h-10 rounded-lg px-4 py-2 text-sm font-semibold"
               >
                 {roundIndex + 1 >= MAX_ROUNDS
                   ? `Final score (${runningScore})`

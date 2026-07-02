@@ -35,7 +35,7 @@ export function GameClient() {
   };
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative h-full w-full pointer-events-none">
       {showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
       <GeographyGame />
     </div>

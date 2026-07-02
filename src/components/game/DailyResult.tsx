@@ -8,21 +8,27 @@ import {
   formatCountdown,
   getMsUntilNextPuzzle,
 } from "@/lib/daily-play";
+import { useCountUp } from "@/lib/use-count-up";
 
 interface DailyResultProps {
   result: CompletedDailyResult;
   variant?: "game-over" | "already-played";
   onPlayAgain?: () => void;
+  animateReveal?: boolean;
 }
 
 export function DailyResult({
   result,
   variant = "game-over",
   onPlayAgain,
+  animateReveal = false,
 }: DailyResultProps) {
   const [countdown, setCountdown] = useState(() =>
     formatCountdown(getMsUntilNextPuzzle()),
   );
+  const displayStreak = useCountUp(result.streak, {
+    enabled: animateReveal && variant === "game-over",
+  });
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -43,47 +49,51 @@ export function DailyResult({
 
   return (
     <div className="hud-panel">
-      <p className="text-[10px] font-medium tracking-[0.15em] text-sky-400/80 uppercase">
+      <p className="font-stat text-[10px] font-medium tracking-[0.15em] text-[var(--ui-accent-primary)] uppercase">
         {result.date}
       </p>
 
       <div className="mt-2 flex items-end gap-2.5">
-        <p className="text-4xl font-semibold tabular-nums leading-none text-white">
-          {result.streak}
+        <p className="font-stat text-4xl font-semibold leading-none text-[var(--ui-text-primary)]">
+          {displayStreak}
         </p>
         <div className="pb-0.5">
-          <h2 className="text-sm font-semibold text-white">Streak</h2>
-          <p className="text-xs text-slate-400">{streakLabel}</p>
+          <h2 className="text-sm font-semibold text-[var(--ui-text-primary)]">
+            Streak
+          </h2>
+          <p className="text-xs text-[var(--ui-text-muted)]">{streakLabel}</p>
         </div>
       </div>
 
       {isAlreadyPlayed ? (
-        <p className="mt-2 text-xs text-slate-400">
+        <p className="mt-2 text-xs text-[var(--ui-text-muted)]">
           Next puzzle in {countdown}
         </p>
       ) : result.streak === 0 ? (
-        <p className="mt-2 text-xs text-slate-400">
+        <p className="mt-2 text-xs text-[var(--ui-text-muted)]">
           Tough break — try again tomorrow.
         </p>
       ) : (
-        <p className="mt-2 text-xs text-slate-400">
+        <p className="mt-2 text-xs text-[var(--ui-text-muted)]">
           Nice run — see you tomorrow.
         </p>
       )}
 
       {showAnswerReveal && (
-        <div className="mt-2 rounded-lg border border-red-500/20 bg-red-500/5 px-2.5 py-2">
+        <div className="mt-2 rounded-lg border border-[color-mix(in_srgb,var(--ui-error)_30%,transparent)] bg-[color-mix(in_srgb,var(--ui-error)_8%,transparent)] px-2.5 py-2">
           {result.failedGuess.trim() && (
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-[var(--ui-text-primary)]">
               You guessed{" "}
-              <span className="font-medium text-red-200">
+              <span className="font-medium text-[var(--ui-error)]">
                 &ldquo;{result.failedGuess.trim()}&rdquo;
               </span>
             </p>
           )}
-          <p className={`text-xs text-slate-300 ${result.failedGuess.trim() ? "mt-1" : ""}`}>
+          <p
+            className={`text-xs text-[var(--ui-text-primary)] ${result.failedGuess.trim() ? "mt-1" : ""}`}
+          >
             Answer:{" "}
-            <span className="font-semibold text-white">{correctAnswer}</span>
+            <span className="font-semibold">{correctAnswer}</span>
           </p>
         </div>
       )}
@@ -92,19 +102,19 @@ export function DailyResult({
         <button
           type="button"
           onClick={onPlayAgain}
-          className="touch-target mt-2.5 min-h-10 rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-400"
+          className="touch-target btn-primary mt-2.5 min-h-10 rounded-lg px-4 py-2 text-sm font-semibold"
         >
           Play again
         </button>
       )}
 
       {result.path.length > 0 && (
-        <p className="mt-2 text-xs text-slate-400 line-clamp-2">
+        <p className="mt-2 text-xs text-[var(--ui-text-muted)] line-clamp-2">
           {result.path.map(getCountryDisplayName).join(" → ")}
         </p>
       )}
 
-      <ShareResult result={result} />
+      <ShareResult result={result} showCardPreview />
     </div>
   );
 }

@@ -15,6 +15,7 @@ import {
 
 interface ShareResultProps {
   result: CompletedDailyResult;
+  showCardPreview?: boolean;
 }
 
 function ShareButton({
@@ -27,7 +28,7 @@ function ShareButton({
   href?: string;
 }) {
   const className =
-    "touch-target inline-flex min-h-11 items-center justify-center rounded-lg border border-white/15 bg-white/[0.05] px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-sky-500/40 hover:bg-sky-500/10 active:bg-sky-500/15";
+    "touch-target inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--ui-text-primary)] transition hover:border-[color-mix(in_srgb,var(--ui-accent-primary)_40%,transparent)] hover:bg-[color-mix(in_srgb,var(--ui-accent-primary)_10%,transparent)]";
 
   if (href) {
     return (
@@ -49,7 +50,37 @@ function ShareButton({
   );
 }
 
-export function ShareResult({ result }: ShareResultProps) {
+function ShareCardPreview({ result }: { result: CompletedDailyResult }) {
+  const blocks = Math.min(result.streak, 12);
+  const grid = Array.from({ length: blocks }, (_, index) => (
+    <span
+      key={index}
+      className="inline-flex h-5 w-5 items-center justify-center rounded-sm bg-[color-mix(in_srgb,var(--ui-accent-primary)_25%,transparent)] text-[10px]"
+      aria-hidden
+    >
+      🌍
+    </span>
+  ));
+
+  return (
+    <div className="share-card-pulse mt-3 rounded-xl border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-raised)] p-3">
+      <p className="font-stat text-[10px] uppercase tracking-wider text-[var(--ui-text-muted)]">
+        Daily Geography · {result.date}
+      </p>
+      <p className="font-stat mt-1 text-3xl font-semibold text-[var(--ui-accent-warm)]">
+        {result.streak}
+      </p>
+      <p className="text-xs text-[var(--ui-text-muted)]">
+        {result.streak === 1 ? "country swept" : "countries swept"}
+      </p>
+      {grid.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1">{grid}</div>
+      )}
+    </div>
+  );
+}
+
+export function ShareResult({ result, showCardPreview = false }: ShareResultProps) {
   const [copied, setCopied] = useState(false);
   const shareText = buildShareText(result);
   const shareUrl = getShareUrl();
@@ -70,9 +101,14 @@ export function ShareResult({ result }: ShareResultProps) {
     typeof navigator !== "undefined" && typeof navigator.share === "function";
 
   return (
-    <div className="mt-4 border-t border-white/10 pt-4">
-      <p className="mb-3 text-sm font-medium text-slate-300">Share your sweep</p>
-      <div className="flex flex-wrap gap-2">
+    <div className="mt-4 border-t border-[var(--ui-border-subtle)] pt-4">
+      <p className="mb-3 text-sm font-medium text-[var(--ui-text-primary)]">
+        Share your sweep
+      </p>
+
+      {showCardPreview && <ShareCardPreview result={result} />}
+
+      <div className="mt-3 flex flex-wrap gap-2">
         {canNativeShare && (
           <ShareButton label="Share…" onClick={handleNativeShare} />
         )}

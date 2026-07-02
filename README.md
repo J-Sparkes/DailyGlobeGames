@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Daily Geography
 
-## Getting Started
+A daily geography game with three modes:
 
-First, run the development server:
+- **Sweep** (`/`) — Name countries and expand your sweep across neighboring borders.
+- **Tap** (`/tap`) — Read a clue and tap the globe to guess the location.
+- **Hunt** (`/hunt`) — Find a hidden country in three guesses using distance hints.
+
+## Development
 
 ```bash
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
+| `npm test` | Run Vitest unit tests |
+| `npm run lint` | ESLint |
+| `npm run validate-data` | Validate country/location JSON datasets |
 
-## Learn More
+### Environment variables
 
-To learn more about Next.js, take a look at the following resources:
+See [`.env.example`](.env.example). For local development, Supabase credentials are optional — the game falls back to device-local play without accounts.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Production checklist:**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Set `NEXT_PUBLIC_SITE_URL` to your domain
+- Configure Supabase keys and run migrations in `supabase/migrations/`
+- Do **not** set `NEXT_PUBLIC_UNLIMITED_PLAYS` in production
+
+## Supabase setup
+
+1. Create a Supabase project
+2. Run `supabase/migrations/001_initial.sql` in the SQL editor
+3. Enable Email (magic link) and/or Google auth in Supabase Auth settings
+4. Add redirect URL: `https://your-domain.com/api/auth/callback`
+5. Copy project URL and keys into `.env.local` / Vercel env vars
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Import the repository
+2. Add environment variables from `.env.example`
+3. Deploy — Next.js 16 App Router, no extra config required
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Data attribution
+
+- Country borders: [Natural Earth](https://www.naturalearthdata.com/) via [world-atlas](https://github.com/topojson/world-atlas) (TopoJSON 110m)
+- Globe texture: NASA Blue Marble / public satellite imagery (`public/earth-satellite.jpg`)
+- Game country graph and Tap locations: curated project datasets in `src/data/`
+
+## Project structure
+
+```
+src/
+  app/           Next.js routes and API handlers
+  components/    Game UI, globe, menu
+  lib/           Game logic, server validation, Supabase clients
+  data/          Country graph, locations, hunt tiers
+supabase/
+  migrations/    Database schema
+public/          Static assets (TopoJSON, textures)
+```

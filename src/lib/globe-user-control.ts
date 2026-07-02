@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, type RefObject } from "react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import type { GlobeMethods } from "react-globe.gl";
 
-const POV_COOLDOWN_MS = 500;
+import { POV_COOLDOWN_MS } from "@/lib/globe-pov";
 
 export function useGlobeUserControl(
   globeRef: RefObject<GlobeMethods | undefined>,
@@ -11,6 +11,8 @@ export function useGlobeUserControl(
 ) {
   const userInteractingRef = useRef(false);
   const lastInteractionRef = useRef(0);
+  const povTimerRef = useRef<number | null>(null);
+  const [povTick, setPovTick] = useState(0);
 
   useEffect(() => {
     if (!globeReady) return;
@@ -19,13 +21,28 @@ export function useGlobeUserControl(
     if (!globe) return;
 
     const controls = globe.controls();
+    const schedulePovRefocus = () => {
+      if (povTimerRef.current !== null) {
+        window.clearTimeout(povTimerRef.current);
+      }
+      povTimerRef.current = window.setTimeout(() => {
+        setPovTick((value) => value + 1);
+        povTimerRef.current = null;
+      }, POV_COOLDOWN_MS);
+    };
+
     const onStart = () => {
       userInteractingRef.current = true;
       lastInteractionRef.current = Date.now();
+      if (povTimerRef.current !== null) {
+        window.clearTimeout(povTimerRef.current);
+        povTimerRef.current = null;
+      }
     };
     const onEnd = () => {
       userInteractingRef.current = false;
       lastInteractionRef.current = Date.now();
+      schedulePovRefocus();
     };
 
     controls.addEventListener("start", onStart);
@@ -34,6 +51,10 @@ export function useGlobeUserControl(
     return () => {
       controls.removeEventListener("start", onStart);
       controls.removeEventListener("end", onEnd);
+      if (povTimerRef.current !== null) {
+        window.clearTimeout(povTimerRef.current);
+        povTimerRef.current = null;
+      }
     };
   }, [globeRef, globeReady]);
 
@@ -42,5 +63,5 @@ export function useGlobeUserControl(
     return Date.now() - lastInteractionRef.current < POV_COOLDOWN_MS;
   }, []);
 
-  return { shouldSkipPov };
+  return { shouldSkipPov, povTick };
 }

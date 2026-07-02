@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Globe, { type GlobeMethods } from "react-globe.gl";
 import { useGlobeUserControl } from "@/lib/globe-user-control";
 import { isTouchDevice, prefersReducedMotion } from "@/lib/device";
+import { GLOBE } from "@/lib/design-tokens";
 import { useContainerDims } from "@/lib/use-container-dims";
 
 const DEFAULT_POV = { lat: 20, lng: 0, altitude: 2.5 };
@@ -34,7 +35,7 @@ function TapGlobeComponent({
   const dims = useContainerDims(containerRef);
   const [globeReady, setGlobeReady] = useState(false);
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);
-  const { shouldSkipPov } = useGlobeUserControl(globeRef, globeReady);
+  const { shouldSkipPov, povTick } = useGlobeUserControl(globeRef, globeReady);
   const lastMarkerKeyRef = useRef("");
 
   const pointsData = useMemo(
@@ -85,9 +86,9 @@ function TapGlobeComponent({
   useEffect(() => {
     if (!globeReady || markers.length === 0 || shouldSkipPov()) return;
 
-    const markerKey = markers
+    const markerKey = `${povTick}:${markers
       .map((marker) => `${marker.id}:${marker.lat}:${marker.lng}`)
-      .join("|");
+      .join("|")}`;
     if (markerKey === lastMarkerKeyRef.current) return;
     lastMarkerKeyRef.current = markerKey;
 
@@ -102,7 +103,7 @@ function TapGlobeComponent({
       { lat: focus.lat, lng: focus.lng, altitude: 1.85 },
       duration,
     );
-  }, [markers, globeReady, reducedMotion, shouldSkipPov]);
+  }, [markers, globeReady, reducedMotion, shouldSkipPov, povTick]);
 
   const handleGlobeClick = useCallback(
     ({ lat, lng }: { lat: number; lng: number }) => {
@@ -121,11 +122,11 @@ function TapGlobeComponent({
         ref={globeRef}
         width={dims.width}
         height={dims.height}
-        globeImageUrl="/earth-satellite.jpg"
+        globeImageUrl={GLOBE.imageUrl}
         backgroundColor="rgba(0,0,0,0)"
         showAtmosphere
-        atmosphereColor="lightskyblue"
-        atmosphereAltitude={0.12}
+        atmosphereColor={GLOBE.atmosphereColor}
+        atmosphereAltitude={GLOBE.atmosphereAltitude}
         onGlobeReady={handleGlobeReady}
         onGlobeClick={handleGlobeClick}
         pointsData={pointsData}

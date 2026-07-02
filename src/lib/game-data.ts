@@ -1,5 +1,5 @@
 import type { Country } from "@/types/country";
-import countryData from "@/data/countries.mock.json";
+import countryData from "@/data/countries.json";
 import type { CountryDataset } from "@/types/country";
 
 const dataset = countryData as CountryDataset;

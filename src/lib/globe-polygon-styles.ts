@@ -1,8 +1,9 @@
+import { MAP } from "@/lib/design-tokens";
+
 export type GeographyRole =
   | "claimed"
   | "highlight"
   | "clickable"
-  | "neighbor"
   | "success"
   | "invalid"
   | "hidden";
@@ -13,43 +14,52 @@ export interface PolygonStyle {
   altitude: number;
 }
 
-const CAP_COLORS: Record<GeographyRole, string> = {
-  claimed: "rgba(56, 189, 248, 0.22)",
-  highlight: "rgba(250, 204, 21, 0.55)",
-  clickable: "rgba(255, 255, 255, 0.24)",
-  neighbor: "rgba(255, 255, 255, 0.12)",
-  success: "rgba(74, 222, 128, 0.55)",
-  invalid: "rgba(248, 113, 113, 0.45)",
-  hidden: "rgba(0, 0, 0, 0)",
+/** Invisible polygon kept only for click hit-testing */
+export const TRANSPARENT_POLYGON: PolygonStyle = {
+  capColor: "rgba(0, 0, 0, 0)",
+  strokeColor: "rgba(0, 0, 0, 0)",
+  altitude: 0.001,
 };
 
-const STROKE_COLORS: Record<GeographyRole, string> = {
-  claimed: "rgba(125, 211, 252, 0.95)",
-  highlight: "rgba(0, 0, 0, 0)",
-  clickable: "rgba(0, 0, 0, 0)",
-  neighbor: "rgba(0, 0, 0, 0)",
-  success: "rgba(34, 197, 94, 0.9)",
-  invalid: "rgba(239, 68, 68, 0.85)",
-  hidden: "rgba(0, 0, 0, 0)",
+const VISIBLE_STYLES: Record<
+  Exclude<GeographyRole, "hidden" | "clickable">,
+  PolygonStyle
+> = {
+  claimed: {
+    capColor: MAP.claimed.cap,
+    strokeColor: MAP.claimed.stroke,
+    altitude: 0.012,
+  },
+  highlight: {
+    capColor: MAP.highlight.cap,
+    strokeColor: MAP.highlight.stroke,
+    altitude: 0.02,
+  },
+  success: {
+    capColor: MAP.success.cap,
+    strokeColor: MAP.success.stroke,
+    altitude: 0.018,
+  },
+  invalid: {
+    capColor: MAP.invalid.cap,
+    strokeColor: MAP.invalid.stroke,
+    altitude: 0.014,
+  },
 };
 
-function baseAltitude(role: GeographyRole, touch: boolean): number {
-  switch (role) {
-    case "highlight":
-      return 0.02;
-    case "claimed":
-      return 0.012;
-    case "clickable":
-      return touch ? 0.012 : 0.008;
-    case "neighbor":
-      return touch ? 0.01 : 0.006;
-    case "success":
-      return 0.018;
-    case "invalid":
-      return 0.014;
-    default:
-      return 0.001;
-  }
+export function getSweepOverlayCountryIds(
+  claimedIds: Set<string>,
+  highlightId: string | null,
+  clickableIds: Set<string>,
+  flashSuccessId?: string | null,
+  flashInvalidId?: string | null,
+): Set<string> {
+  const ids = new Set<string>(claimedIds);
+  if (highlightId) ids.add(highlightId);
+  for (const id of clickableIds) ids.add(id);
+  if (flashSuccessId) ids.add(flashSuccessId);
+  if (flashInvalidId) ids.add(flashInvalidId);
+  return ids;
 }
 
 export function getGeographyRole(
@@ -57,8 +67,6 @@ export function getGeographyRole(
   claimedIds: Set<string>,
   highlightId: string | null,
   clickableIds: Set<string>,
-  hoverId: string | null,
-  touch: boolean,
   flashSuccessId?: string | null,
   flashInvalidId?: string | null,
 ): GeographyRole {
@@ -66,60 +74,63 @@ export function getGeographyRole(
   if (flashInvalidId === countryId) return "invalid";
   if (claimedIds.has(countryId)) return "claimed";
   if (highlightId === countryId) return "highlight";
-  if (clickableIds.has(countryId)) {
-    if (!touch && hoverId === countryId) return "clickable";
-    return "neighbor";
-  }
+  if (clickableIds.has(countryId)) return "clickable";
   return "hidden";
 }
 
-export function buildPolygonStyle(
-  role: GeographyRole,
-  touch: boolean,
-  pulseHighlight: boolean,
-): PolygonStyle {
-  const altitude =
-    baseAltitude(role, touch) +
-    (role === "highlight" && pulseHighlight ? 0.006 : 0);
-
-  return {
-    capColor: CAP_COLORS[role],
-    strokeColor: STROKE_COLORS[role],
-    altitude,
-  };
+export function buildPolygonStyle(role: GeographyRole): PolygonStyle {
+  if (role === "hidden") return TRANSPARENT_POLYGON;
+  if (role === "clickable") return TRANSPARENT_POLYGON;
+  return VISIBLE_STYLES[role];
 }
 
+/** Only countries with overlays or click targets — not the full world mesh */
 export function buildPolygonStyleMap(
-  countryIds: string[],
   claimedIds: Set<string>,
   highlightId: string | null,
   clickableIds: Set<string>,
-  hoverId: string | null,
-  touch: boolean,
-  pulseHighlight: boolean,
   flashSuccessId?: string | null,
   flashInvalidId?: string | null,
 ): Map<string, PolygonStyle> {
   const styles = new Map<string, PolygonStyle>();
+  const overlayIds = getSweepOverlayCountryIds(
+    claimedIds,
+    highlightId,
+    clickableIds,
+    flashSuccessId,
+    flashInvalidId,
+  );
 
-  for (const countryId of countryIds) {
+  for (const countryId of overlayIds) {
     const role = getGeographyRole(
       countryId,
       claimedIds,
       highlightId,
       clickableIds,
-      hoverId,
-      touch,
       flashSuccessId,
       flashInvalidId,
     );
-    styles.set(
-      countryId,
-      buildPolygonStyle(role, touch, pulseHighlight),
-    );
+    if (role === "hidden") continue;
+    styles.set(countryId, buildPolygonStyle(role));
   }
 
   return styles;
+}
+
+export function getHuntOverlayCountryIds(
+  countryIds: string[],
+  guessedIds: Set<string>,
+  hiddenCountryId: string | null,
+  revealHidden: boolean,
+  interactive: boolean,
+): Set<string> {
+  if (interactive) {
+    return new Set(countryIds);
+  }
+
+  const ids = new Set(guessedIds);
+  if (revealHidden && hiddenCountryId) ids.add(hiddenCountryId);
+  return ids;
 }
 
 export function buildHuntPolygonStyleMap(
@@ -128,17 +139,22 @@ export function buildHuntPolygonStyleMap(
   hiddenCountryId: string | null,
   revealHidden: boolean,
   won: boolean,
-  hoverId: string | null,
-  touch: boolean,
   interactive: boolean,
 ): Map<string, PolygonStyle> {
   const styles = new Map<string, PolygonStyle>();
+  const overlayIds = getHuntOverlayCountryIds(
+    countryIds,
+    guessedIds,
+    hiddenCountryId,
+    revealHidden,
+    interactive,
+  );
 
-  for (const countryId of countryIds) {
+  for (const countryId of overlayIds) {
     if (revealHidden && hiddenCountryId === countryId) {
       styles.set(countryId, {
-        capColor: won ? "rgba(74, 222, 128, 0.45)" : "rgba(251, 191, 36, 0.45)",
-        strokeColor: won ? "rgba(74, 222, 128, 0.95)" : "rgba(251, 191, 36, 0.95)",
+        capColor: won ? MAP.success.cap : MAP.highlight.cap,
+        strokeColor: won ? MAP.success.stroke : MAP.highlight.stroke,
         altitude: 0.02,
       });
       continue;
@@ -146,27 +162,14 @@ export function buildHuntPolygonStyleMap(
 
     if (guessedIds.has(countryId)) {
       styles.set(countryId, {
-        capColor: "rgba(248, 113, 113, 0.2)",
-        strokeColor: "rgba(0, 0, 0, 0)",
-        altitude: 0.008,
+        capColor: MAP.invalid.cap,
+        strokeColor: MAP.invalid.stroke,
+        altitude: 0.01,
       });
       continue;
     }
 
-    if (!touch && hoverId === countryId && interactive) {
-      styles.set(countryId, {
-        capColor: "rgba(255, 255, 255, 0.18)",
-        strokeColor: "rgba(0, 0, 0, 0)",
-        altitude: 0.006,
-      });
-      continue;
-    }
-
-    styles.set(countryId, {
-      capColor: "rgba(0, 0, 0, 0)",
-      strokeColor: "rgba(0, 0, 0, 0)",
-      altitude: 0.001,
-    });
+    styles.set(countryId, TRANSPARENT_POLYGON);
   }
 
   return styles;

@@ -53,7 +53,7 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
 
   return (
     <div
-      className="welcome-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+      className="welcome-backdrop pointer-events-auto fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
       role="presentation"
       onClick={onClose}
     >
@@ -113,7 +113,7 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
               primeAudio();
               onClose();
             }}
-            className="touch-target mt-6 w-full min-h-11 rounded-xl bg-sky-500 px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/60 focus:ring-offset-2 focus:ring-offset-[#0b0f14]"
+            className="touch-target mt-6 w-full min-h-11 rounded-xl btn-primary px-4 py-3.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ui-accent-primary)_60%,transparent)] focus:ring-offset-2 focus:ring-offset-[#0b0f14]"
           >
             Start playing
           </button>

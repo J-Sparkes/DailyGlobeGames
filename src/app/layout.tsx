@@ -1,21 +1,44 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
+import { AuthProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://dailygeography.app";
+
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "Daily Geography",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Daily Geography",
+    template: "%s · Daily Geography",
+  },
   description:
-    "A daily node-by-node geography game sweeping across Europe and beyond.",
+    "Three daily geography games on a 3D globe — Sweep borders, Tap landmarks, and Hunt hidden countries.",
+  openGraph: {
+    title: "Daily Geography",
+    description:
+      "Three daily geography games on a 3D globe — Sweep, Tap, and Hunt.",
+    url: siteUrl,
+    siteName: "Daily Geography",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Daily Geography",
+    description:
+      "Three daily geography games on a 3D globe — Sweep, Tap, and Hunt.",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -41,9 +64,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${instrumentSans.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
-      <body className="flex h-dvh flex-col overflow-hidden bg-black">{children}</body>
+      <body className="flex h-dvh flex-col overflow-hidden bg-[var(--ui-bg-deep)] text-[var(--ui-text-primary)]">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

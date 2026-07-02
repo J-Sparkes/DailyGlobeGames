@@ -57,29 +57,66 @@ export function HudPanel({
   );
 }
 
+export function HudBrand({ date }: { date?: string }) {
+  return (
+    <div className="flex min-w-0 shrink-0 flex-col">
+      <span className="text-[11px] font-semibold tracking-[0.12em] text-[var(--ui-text-primary)] uppercase">
+        Daily Geography
+      </span>
+      {date && (
+        <span className="font-stat mt-0.5 rounded bg-[var(--ui-surface-raised)] px-1.5 py-px text-[10px] text-[var(--ui-text-muted)]">
+          {date}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function HudToolbar({
   children,
   stat,
-  badge,
+  date,
+  prompt,
+  meta,
   onMenuOpen,
 }: {
   children?: ReactNode;
   stat?: { label: string; value: string | number; pop?: boolean };
-  badge?: ReactNode;
+  date?: string;
+  prompt?: ReactNode;
+  meta?: ReactNode;
   onMenuOpen: () => void;
 }) {
   return (
-    <div className="flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-2">
-      <div className="shrink-0">{children}</div>
-      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-        {badge}
+    <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-x-3">
+      <div className="flex min-w-0 items-center gap-2.5 justify-self-start sm:gap-3">
+        <HudBrand date={date} />
+        {(prompt || meta) && (
+          <div className="min-w-0 border-l border-[var(--ui-border-subtle)] pl-2.5 sm:pl-3">
+            {prompt && (
+              <p className="line-clamp-2 text-xs leading-snug text-[var(--ui-text-primary)] sm:text-sm">
+                {prompt}
+              </p>
+            )}
+            {meta && (
+              <p className="mt-0.5 line-clamp-1 text-[10px] leading-snug text-[var(--ui-text-muted)] sm:text-xs">
+                {meta}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="justify-self-center shrink-0">{children}</div>
+
+      <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
         {stat && (
           <div className="text-right">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--ui-text-muted)]">
               {stat.label}
             </p>
             <p
-              className={`text-lg font-semibold tabular-nums leading-none text-white ${
+              className={`font-stat text-lg font-semibold leading-none text-[var(--ui-text-primary)] ${
                 stat.pop ? "streak-pop" : ""
               }`}
             >
@@ -93,25 +130,9 @@ export function HudToolbar({
   );
 }
 
-export function HudPrompt({ children }: { children: ReactNode }) {
-  return (
-    <p className="mt-2 w-full border-t border-white/8 pt-2 text-sm leading-relaxed text-slate-200">
-      {children}
-    </p>
-  );
-}
-
-export function HudMeta({ children }: { children: ReactNode }) {
-  return (
-    <p className="mt-1 w-full text-xs leading-snug text-slate-500">
-      {children}
-    </p>
-  );
-}
-
 export function HudBadge({ children }: { children: ReactNode }) {
   return (
-    <span className="shrink-0 rounded-md bg-white/5 px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-slate-400">
+    <span className="font-stat shrink-0 rounded-md bg-[var(--ui-surface-raised)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--ui-text-muted)]">
       {children}
     </span>
   );
@@ -121,6 +142,30 @@ export function HudScroll({ children }: { children: ReactNode }) {
   return (
     <div className="pointer-events-auto max-h-[min(38dvh,18rem)] overflow-y-auto overscroll-contain">
       {children}
+    </div>
+  );
+}
+
+export function DailyDateStaleBanner({ onRefresh }: { onRefresh: () => void }) {
+  return (
+    <div className="pointer-events-auto mb-2 w-full rounded-lg border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+      <p>A new daily puzzle is available.</p>
+      <button
+        type="button"
+        onClick={onRefresh}
+        className="mt-1 font-semibold text-amber-200 underline"
+      >
+        Refresh to play today&apos;s puzzle
+      </button>
+    </div>
+  );
+}
+
+/** Screen-reader announcements for phase changes */
+export function GameLiveRegion({ message }: { message: string }) {
+  return (
+    <div className="sr-only" aria-live="polite" aria-atomic="true">
+      {message}
     </div>
   );
 }

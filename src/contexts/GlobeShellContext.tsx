@@ -140,7 +140,7 @@ export function GlobeShellProvider({ children }: { children: ReactNode }) {
             </div>
           )}
         </div>
-        <div className="relative z-10 h-full w-full">{children}</div>
+        <div className="relative z-10 h-full w-full pointer-events-none">{children}</div>
       </div>
     </GlobeShellContext.Provider>
   );
