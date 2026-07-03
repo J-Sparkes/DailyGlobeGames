@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { ActivityHeatmap } from "@/components/retention/ActivityHeatmap";
+import { EmailReminderToggle } from "@/components/retention/EmailReminderToggle";
+import { StreakFreezeButton } from "@/components/retention/StreakFreezeButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { deleteAccountApi } from "@/lib/api/client";
 import { getCountryDisplayName } from "@/lib/country-resolve";
@@ -9,9 +12,10 @@ import {
   getBestHuntScore,
   getBestStreak,
   getBestTapScore,
-  getHuntWinStreak,
   updateProfile,
 } from "@/lib/profile-storage";
+import { getLocalCalendarStreak } from "@/lib/calendar-streak";
+import { getStreakFreezeMonth } from "@/lib/retention-storage";
 import type { UserProfile } from "@/types/profile";
 
 interface ProfilePanelProps {
@@ -34,8 +38,9 @@ export function ProfilePanel({
   const bestSweep = getBestStreak(profile);
   const bestTap = getBestTapScore(profile);
   const bestHunt = getBestHuntScore(profile);
-  const huntStreak = getHuntWinStreak(profile);
+  const calendarStreak = getLocalCalendarStreak(getStreakFreezeMonth());
   const history = getAllGameHistory();
+  const [heatmapKey, setHeatmapKey] = useState(0);
 
   const handleSave = () => {
     updateProfile({ displayName, username });
@@ -106,13 +111,18 @@ export function ProfilePanel({
         </div>
         <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-center">
           <p className="text-xs uppercase tracking-wide text-slate-500">
-            Hunt streak
+            Day streak
           </p>
-          <p className="mt-1 text-2xl font-semibold tabular-nums text-white">
-            {huntStreak}
+          <p className="mt-1 text-2xl font-semibold tabular-nums text-amber-300">
+            {calendarStreak.current}
           </p>
         </div>
       </div>
+
+      <ActivityHeatmap key={heatmapKey} />
+      <StreakFreezeButton onUsed={() => setHeatmapKey((k) => k + 1)} />
+
+      {configured && user && <EmailReminderToggle />}
 
       {editing ? (
         <div className="flex gap-2">

@@ -5,9 +5,9 @@ export default function TermsPage() {
       <p className="mb-4 text-slate-400">Last updated: June 30, 2026</p>
 
       <section className="mb-6 space-y-3">
-        <h2 className="text-lg font-medium text-white">Using Daily Geography</h2>
+        <h2 className="text-lg font-medium text-white">Using Daily Globe Games</h2>
         <p>
-          Daily Geography is a free daily puzzle game. One official play per mode
+          Daily Globe Games is a free daily puzzle game. One official play per mode
           per UTC day unless test mode is enabled by the operator.
         </p>
       </section>

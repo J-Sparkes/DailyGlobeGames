@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { addFriendApi, fetchFriends, removeFriendApi } from "@/lib/api/client";
+import { trackEvent } from "@/lib/analytics";
 import {
   addFriend,
   getFriends,
@@ -51,6 +52,7 @@ export function FriendsPanel({ onFriendsChange }: FriendsPanelProps) {
         if (!added) throw new Error("Could not add friend");
       }
       setUsername("");
+      trackEvent("friend_added");
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not add friend");

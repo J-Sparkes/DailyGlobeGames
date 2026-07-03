@@ -61,7 +61,7 @@ export function HudBrand({ date }: { date?: string }) {
   return (
     <div className="flex min-w-0 shrink-0 flex-col">
       <span className="text-[11px] font-semibold tracking-[0.12em] text-[var(--ui-text-primary)] uppercase">
-        Daily Geography
+        Daily Globe
       </span>
       {date && (
         <span className="font-stat mt-0.5 rounded bg-[var(--ui-surface-raised)] px-1.5 py-px text-[10px] text-[var(--ui-text-muted)]">
@@ -75,6 +75,7 @@ export function HudBrand({ date }: { date?: string }) {
 export function HudToolbar({
   children,
   stat,
+  secondaryStat,
   date,
   prompt,
   meta,
@@ -82,6 +83,7 @@ export function HudToolbar({
 }: {
   children?: ReactNode;
   stat?: { label: string; value: string | number; pop?: boolean };
+  secondaryStat?: { label: string; value: string | number; pop?: boolean };
   date?: string;
   prompt?: ReactNode;
   meta?: ReactNode;
@@ -110,6 +112,20 @@ export function HudToolbar({
       <div className="justify-self-center shrink-0">{children}</div>
 
       <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
+        {secondaryStat && (
+          <div className="text-right">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--ui-text-muted)]">
+              {secondaryStat.label}
+            </p>
+            <p
+              className={`font-stat text-lg font-semibold leading-none text-[var(--ui-accent-warm)] ${
+                secondaryStat.pop ? "streak-pop" : ""
+              }`}
+            >
+              {secondaryStat.value}
+            </p>
+          </div>
+        )}
         {stat && (
           <div className="text-right">
             <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--ui-text-muted)]">

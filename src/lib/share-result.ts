@@ -1,11 +1,14 @@
 import { getCountryDisplayName } from "@/lib/country-resolve";
 import type { CompletedDailyResult } from "@/lib/daily-play";
+import { trifectaShareSuffix } from "@/lib/retention-events";
+import { sweepChallengeLine } from "@/lib/share-challenge";
+import { getModeDeepLink } from "@/lib/share-deep-link";
 
 function getSiteUrl(): string {
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://dailygeography.app";
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://dailyglobegames.com";
 }
 
 export function buildShareText(result: CompletedDailyResult): string {
@@ -15,13 +18,17 @@ export function buildShareText(result: CompletedDailyResult): string {
       : "No countries claimed";
 
   return [
-    `Daily Geography ${result.date}`,
+    sweepChallengeLine(result.streak),
+    `Daily Globe Games ${result.date}`,
     `🌍 ${result.streak} ${result.streak === 1 ? "country" : "countries"} swept`,
     "",
     pathLine,
+    trifectaShareSuffix(),
     "",
-    `Play at ${getSiteUrl()}`,
-  ].join("\n");
+    `Play at ${getModeDeepLink("sweep", result.date)}`,
+  ]
+    .filter((line, index, arr) => !(line === "" && arr[index - 1] === ""))
+    .join("\n");
 }
 
 export function getTwitterShareUrl(text: string): string {
@@ -40,7 +47,8 @@ export function getWhatsAppShareUrl(text: string): string {
   return `https://wa.me/?text=${encodeURIComponent(text)}`;
 }
 
-export function getShareUrl(): string {
+export function getShareUrl(date?: string): string {
+  if (date) return getModeDeepLink("sweep", date);
   return getSiteUrl();
 }
 
@@ -65,11 +73,11 @@ export async function nativeShare(
   }
 
   const text = buildShareText(result);
-  const url = getShareUrl();
+  const url = getShareUrl(result.date);
 
   try {
     await navigator.share({
-      title: "Daily Geography",
+      title: "Daily Globe Games",
       text,
       url,
     });

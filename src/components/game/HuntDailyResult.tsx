@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { FriendResultContext } from "@/components/game/FriendResultContext";
+import { ShareCompareLink } from "@/components/growth/ShareCompareLink";
 import { HuntShareResult } from "@/components/game/HuntShareResult";
+import { TrifectaNudge } from "@/components/game/TrifectaNudge";
+import { CalendarStreakStat } from "@/components/retention/CalendarStreakStat";
 import { getCountryDisplayName } from "@/lib/country-resolve";
 import {
   formatCountdown,
@@ -11,9 +15,9 @@ import { getHuntCountryFact } from "@/lib/daily-hunt";
 import {
   buildShareGrid,
   formatMiles,
-  MAX_HUNT_GUESSES,
   MAX_HUNT_SCORE,
 } from "@/lib/hunt-scoring";
+import { useRetention } from "@/lib/use-retention";
 import type { CompletedHuntResult } from "@/types/hunt";
 
 interface HuntDailyResultProps {
@@ -27,6 +31,7 @@ export function HuntDailyResult({
   variant = "complete",
   onPlayAgain,
 }: HuntDailyResultProps) {
+  const { trifecta } = useRetention();
   const [countdown, setCountdown] = useState(() =>
     formatCountdown(getMsUntilNextPuzzle()),
   );
@@ -60,6 +65,8 @@ export function HuntDailyResult({
         </div>
       </div>
 
+      <CalendarStreakStat animate={variant === "complete"} />
+
       <p className="mt-2 text-xs tracking-wide text-slate-300">
         {buildShareGrid(result.won, result.solvedOnGuess)}
       </p>
@@ -84,6 +91,16 @@ export function HuntDailyResult({
           Tough one today. Try again tomorrow.
         </p>
       )}
+
+      <TrifectaNudge status={trifecta} />
+
+      <FriendResultContext
+        mode="hunt"
+        yourScore={result.score}
+        date={result.date}
+      />
+
+      <ShareCompareLink mode="hunt" date={result.date} />
 
       {onPlayAgain && (
         <button

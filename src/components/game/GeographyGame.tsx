@@ -31,7 +31,9 @@ import {
 import { isSweepDeadEnd, sanitizeSweepProgress } from "@/lib/sweep-progress";
 import { resolveCountry } from "@/lib/country-resolve";
 import { fetchSweepDaily, submitSweepResult } from "@/lib/api/client";
-import { getDateSeed } from "@/lib/daily-seed";
+import { recordDailyComplete } from "@/lib/retention-events";
+import { useDailyDate } from "@/lib/use-daily-date";
+import { useRetention } from "@/lib/use-retention";
 import {
   EMPTY_STRING_SET,
   setFromArrayStable,
@@ -48,7 +50,8 @@ import { loadCountryFeatures } from "@/lib/world-geographies";
 
 export function GeographyGame() {
   const [dailyStartId, setDailyStartId] = useState<string | null>(null);
-  const dateSeed = useMemo(() => getDateSeed(), []);
+  const dateSeed = useDailyDate();
+  const { calendarStreak } = useRetention();
   const unlimited = isUnlimitedPlaysEnabled();
   const isTouch = useMemo(
     () => (typeof window !== "undefined" ? isTouchDevice() : false),
@@ -101,6 +104,7 @@ export function GeographyGame() {
       };
       saveCompletedResult(result);
       appendGameHistory(result);
+      recordDailyComplete("sweep", result.streak);
       setGameOver(result);
       void submitSweepResult({
         date: dateSeed,
@@ -129,7 +133,14 @@ export function GeographyGame() {
       };
       saveCompletedResult(result);
       appendGameHistory(result);
+      recordDailyComplete("sweep", result.streak);
       setCompletedResult(result);
+      void submitSweepResult({
+        date: dateSeed,
+        path,
+        failedGuess: "",
+        targetCountryId: path.at(-1) ?? dailyStartId ?? "",
+      });
     },
     [dateSeed, dailyStartId],
   );
@@ -461,6 +472,10 @@ export function GeographyGame() {
                 label: "Streak",
                 value: completedResult?.streak ?? claimedIds.length,
                 pop: streakPop,
+              }}
+              secondaryStat={{
+                label: "Day streak",
+                value: calendarStreak.current,
               }}
               prompt={
                 initialized && !completedResult && !gameOver ? prompt : undefined

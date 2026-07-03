@@ -1,4 +1,4 @@
--- Daily Geography initial schema
+-- Daily Globe Games initial schema
 -- Run in Supabase SQL editor or via supabase db push
 
 -- Profiles (extends auth.users)

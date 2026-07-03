@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import type { CompletedDailyResult } from "@/lib/daily-play";
+import { trackEvent } from "@/lib/analytics";
 import {
   buildShareText,
   copyShareText,
@@ -12,6 +13,7 @@ import {
   getWhatsAppShareUrl,
   nativeShare,
 } from "@/lib/share-result";
+import { getShareCardUrl } from "@/lib/share-deep-link";
 
 interface ShareResultProps {
   result: CompletedDailyResult;
@@ -36,6 +38,7 @@ function ShareButton({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={onClick}
         className={className}
       >
         {label}
@@ -65,7 +68,7 @@ function ShareCardPreview({ result }: { result: CompletedDailyResult }) {
   return (
     <div className="share-card-pulse mt-3 rounded-xl border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-raised)] p-3">
       <p className="font-stat text-[10px] uppercase tracking-wider text-[var(--ui-text-muted)]">
-        Daily Geography · {result.date}
+        Daily Globe Games · {result.date}
       </p>
       <p className="font-stat mt-1 text-3xl font-semibold text-[var(--ui-accent-warm)]">
         {result.streak}
@@ -82,18 +85,37 @@ function ShareCardPreview({ result }: { result: CompletedDailyResult }) {
 
 export function ShareResult({ result, showCardPreview = false }: ShareResultProps) {
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const shareText = buildShareText(result);
-  const shareUrl = getShareUrl();
+  const shareUrl = getShareUrl(result.date);
+  const cardUrl = getShareCardUrl("sweep", result.date, result.streak);
+
+  const trackShare = (channel: string) => {
+    trackEvent("share_clicked", { mode: "sweep", channel });
+  };
 
   const handleCopy = useCallback(async () => {
     const ok = await copyShareText(shareText);
     if (ok) {
+      trackShare("copy");
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     }
   }, [shareText]);
 
+  const handleCopyLink = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      trackShare("copy_link");
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+  }, [shareUrl]);
+
   const handleNativeShare = useCallback(async () => {
+    trackShare("native");
     await nativeShare(result);
   }, [result]);
 
@@ -108,6 +130,18 @@ export function ShareResult({ result, showCardPreview = false }: ShareResultProp
 
       {showCardPreview && <ShareCardPreview result={result} />}
 
+      <div className="mt-3">
+        <a
+          href={cardUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackShare("card_image")}
+          className="text-xs font-medium text-[var(--ui-accent-primary)] underline-offset-2 hover:underline"
+        >
+          Open share card image
+        </a>
+      </div>
+
       <div className="mt-3 flex flex-wrap gap-2">
         {canNativeShare && (
           <ShareButton label="Share…" onClick={handleNativeShare} />
@@ -117,20 +151,28 @@ export function ShareResult({ result, showCardPreview = false }: ShareResultProp
           onClick={handleCopy}
         />
         <ShareButton
+          label={linkCopied ? "Link copied!" : "Copy link"}
+          onClick={handleCopyLink}
+        />
+        <ShareButton
           label="X / Twitter"
           href={getTwitterShareUrl(shareText)}
+          onClick={() => trackShare("twitter")}
         />
         <ShareButton
           label="WhatsApp"
           href={getWhatsAppShareUrl(shareText)}
+          onClick={() => trackShare("whatsapp")}
         />
         <ShareButton
           label="Facebook"
           href={getFacebookShareUrl(shareUrl)}
+          onClick={() => trackShare("facebook")}
         />
         <ShareButton
           label="LinkedIn"
           href={getLinkedInShareUrl(shareUrl)}
+          onClick={() => trackShare("linkedin")}
         />
       </div>
     </div>

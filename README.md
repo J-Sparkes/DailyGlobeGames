@@ -1,4 +1,4 @@
-# Daily Geography
+# Daily Globe Games
 
 A daily geography game with three modes:
 
@@ -35,6 +35,8 @@ See [`.env.example`](.env.example). For local development, Supabase credentials 
 - Set `NEXT_PUBLIC_SITE_URL` to your domain
 - Configure Supabase keys and run migrations in `supabase/migrations/`
 - Do **not** set `NEXT_PUBLIC_UNLIMITED_PLAYS` in production
+- Optional: `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`, `RESEND_*` + `CRON_SECRET`, `NEXT_PUBLIC_SUPPORT_URL`, Stripe keys for archive premium
+- See [docs/marketing/LAUNCH.md](docs/marketing/LAUNCH.md) for launch playbook
 
 ## Supabase setup
 

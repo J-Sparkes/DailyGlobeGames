@@ -17,12 +17,14 @@ import { ModeSwitcher } from "@/components/game/ModeSwitcher";
 import { GameMenu } from "@/components/menu/GameMenu";
 import type { HuntGuessMarker } from "@/components/map/HuntGlobe";
 import { getCountryDisplayName } from "@/lib/country-resolve";
-import { getDateSeed } from "@/lib/daily-seed";
 import { fetchHuntDaily, submitHuntGuess, submitHuntResult } from "@/lib/api/client";
 import { isUnlimitedPlaysEnabled } from "@/lib/daily-play";
 import { isTouchDevice } from "@/lib/device";
 import { getFeatureCentroid } from "@/lib/geo-centroid";
 import { appendHuntGameHistory } from "@/lib/profile-storage";
+import { recordDailyComplete } from "@/lib/retention-events";
+import { useDailyDate } from "@/lib/use-daily-date";
+import { useRetention } from "@/lib/use-retention";
 import { playCorrectGuessSound, primeAudio } from "@/lib/sounds";
 import { useVisualViewportInset } from "@/lib/use-visual-viewport-inset";
 import { useDailyDateRollover } from "@/lib/use-daily-date-rollover";
@@ -49,7 +51,8 @@ import {
 import type { CompletedHuntResult, HuntGuess } from "@/types/hunt";
 
 export function HuntGame() {
-  const dateSeed = useMemo(() => getDateSeed(), []);
+  const dateSeed = useDailyDate();
+  const { calendarStreak } = useRetention();
   const unlimited = isUnlimitedPlaysEnabled();
   const isTouch = useMemo(
     () => (typeof window !== "undefined" ? isTouchDevice() : false),
@@ -186,6 +189,7 @@ export function HuntGame() {
 
       saveHuntCompletedResult(result);
       appendHuntGameHistory(result);
+      recordDailyComplete("hunt", result.score);
       setCompletedResult(result);
       setFreshComplete(true);
       setHiddenCountryId(revealedHiddenId);
@@ -359,6 +363,10 @@ export function HuntGame() {
                   ? { label: "Left", value: guessesRemaining }
                   : undefined
               }
+              secondaryStat={{
+                label: "Day streak",
+                value: calendarStreak.current,
+              }}
               prompt={huntPrompt}
               meta={isPlaying && phase === "playing" ? controlHint : undefined}
             >

@@ -1,4 +1,7 @@
 import type { CompletedHuntResult } from "@/types/hunt";
+import { trifectaShareSuffix } from "@/lib/retention-events";
+import { huntChallengeLine } from "@/lib/share-challenge";
+import { getModeDeepLink } from "@/lib/share-deep-link";
 import { buildShareGrid, MAX_HUNT_SCORE } from "@/lib/hunt-scoring";
 import { getHuntWinStreak } from "@/lib/profile-storage";
 
@@ -6,7 +9,7 @@ function getSiteUrl(): string {
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://dailygeography.app";
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://dailyglobegames.com";
 }
 
 export function buildHuntShareText(result: CompletedHuntResult): string {
@@ -18,6 +21,7 @@ export function buildHuntShareText(result: CompletedHuntResult): string {
       : null;
 
   const lines = [
+    huntChallengeLine(result.score, result.won),
     `Daily Hunt ${result.date}`,
     grid,
     `Score: ${result.score}/${MAX_HUNT_SCORE}`,
@@ -31,7 +35,8 @@ export function buildHuntShareText(result: CompletedHuntResult): string {
     lines.push(`Closest: ${Math.round(closest).toLocaleString()} mi`);
   }
 
-  lines.push("", `Play at ${getSiteUrl()}/hunt`);
+  lines.push(trifectaShareSuffix());
+  lines.push("", `Play at ${getModeDeepLink("hunt", result.date)}`);
 
   return lines.join("\n");
 }
@@ -82,6 +87,7 @@ export function getHuntWhatsAppShareUrl(text: string): string {
   return `https://wa.me/?text=${encodeURIComponent(text)}`;
 }
 
-export function getHuntShareUrl(): string {
+export function getHuntShareUrl(date?: string): string {
+  if (date) return getModeDeepLink("hunt", date);
   return `${getSiteUrl()}/hunt`;
 }

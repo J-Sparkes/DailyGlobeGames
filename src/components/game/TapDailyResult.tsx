@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { FriendResultContext } from "@/components/game/FriendResultContext";
+import { ShareCompareLink } from "@/components/growth/ShareCompareLink";
 import { TapShareResult } from "@/components/game/TapShareResult";
+import { TrifectaNudge } from "@/components/game/TrifectaNudge";
+import { CalendarStreakStat } from "@/components/retention/CalendarStreakStat";
 import type { CompletedTapResult } from "@/lib/tap-daily-play";
 import {
   formatCountdown,
   getMsUntilNextPuzzle,
 } from "@/lib/daily-play";
+import { useRetention } from "@/lib/use-retention";
 import { getScoreEmoji, MAX_TAP_SCORE } from "@/lib/tap-scoring";
 
 interface TapDailyResultProps {
@@ -20,6 +25,7 @@ export function TapDailyResult({
   variant = "complete",
   onPlayAgain,
 }: TapDailyResultProps) {
+  const { trifecta } = useRetention();
   const [countdown, setCountdown] = useState(() =>
     formatCountdown(getMsUntilNextPuzzle()),
   );
@@ -49,6 +55,8 @@ export function TapDailyResult({
         </div>
       </div>
 
+      <CalendarStreakStat animate={variant === "complete"} />
+
       <p className="mt-2 text-xs tracking-wide text-slate-300">
         {result.rounds
           .map((round) => `${round.basePoints}${getScoreEmoji(round.basePoints)}`)
@@ -64,6 +72,16 @@ export function TapDailyResult({
           See you tomorrow for five new locations.
         </p>
       )}
+
+      <TrifectaNudge status={trifecta} />
+
+      <FriendResultContext
+        mode="tap"
+        yourScore={result.totalScore}
+        date={result.date}
+      />
+
+      <ShareCompareLink mode="tap" date={result.date} />
 
       {onPlayAgain && (
         <button

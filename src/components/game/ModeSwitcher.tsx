@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { TrifectaDots } from "@/components/game/TrifectaNudge";
+import { useRetention } from "@/lib/use-retention";
 
 const MODES = [
   {
@@ -44,6 +46,7 @@ const MODES = [
 
 export function ModeSwitcher() {
   const pathname = usePathname();
+  const { trifecta } = useRetention();
 
   const linkClass = (active: boolean) =>
     `touch-target flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold tracking-wide uppercase transition ${
@@ -53,27 +56,30 @@ export function ModeSwitcher() {
     }`;
 
   return (
-    <nav
-      className="shrink-0 rounded-lg border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-raised)] p-0.5"
-      aria-label="Game mode"
-    >
-      <div className="flex items-center gap-0.5">
-        {MODES.map((mode) => {
-          const active = mode.match(pathname);
-          return (
-            <Link
-              key={mode.href}
-              href={mode.href}
-              className={linkClass(active)}
-              aria-current={active ? "page" : undefined}
-              title={mode.label}
-            >
-              {mode.icon}
-              <span className="hidden sm:inline">{mode.shortLabel}</span>
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
+    <div className="flex flex-col items-center gap-0.5">
+      <nav
+        className="shrink-0 rounded-lg border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-raised)] p-0.5"
+        aria-label="Game mode"
+      >
+        <div className="flex items-center gap-0.5">
+          {MODES.map((mode) => {
+            const active = mode.match(pathname);
+            return (
+              <Link
+                key={mode.href}
+                href={mode.href}
+                className={linkClass(active)}
+                aria-current={active ? "page" : undefined}
+                title={mode.label}
+              >
+                {mode.icon}
+                <span className="inline sm:inline">{mode.shortLabel}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+      <TrifectaDots status={trifecta} />
+    </div>
   );
 }

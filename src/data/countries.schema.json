@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://geography-game.dev/schemas/countries.json",
+  "$id": "https://dailyglobegames.com/schemas/countries.json",
   "title": "Country Graph Dataset",
   "description": "Node-by-node geography game country graph. Each country is a node with searchable aliases and neighbor edges (including maritime links).",
   "type": "object",

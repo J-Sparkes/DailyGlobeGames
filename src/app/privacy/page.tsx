@@ -7,9 +7,11 @@ export default function PrivacyPage() {
       <section className="mb-6 space-y-3">
         <h2 className="text-lg font-medium text-white">What we collect</h2>
         <p>
-          Daily Geography stores game progress locally in your browser. If you
+          Daily Globe Games stores game progress locally in your browser. If you
           create an account, we store your email (via Supabase Auth), display
-          name, username, daily scores, and friends list in our database.
+          name, username, daily scores, and friends list in our database. If you
+          opt in, we send one daily reminder email with links to today&apos;s
+          puzzles; you can turn this off anytime in your profile.
         </p>
       </section>
 
@@ -26,6 +28,7 @@ export default function PrivacyPage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>Supabase — authentication and database hosting</li>
           <li>Vercel — website hosting</li>
+          <li>Resend — optional daily reminder emails (opt-in only)</li>
         </ul>
       </section>
 
@@ -42,8 +45,8 @@ export default function PrivacyPage() {
         <h2 className="text-lg font-medium text-white">Contact</h2>
         <p>
           Questions:{" "}
-          <a href="mailto:hello@dailygeography.app" className="text-sky-400">
-            hello@dailygeography.app
+          <a href="mailto:hello@dailyglobegames.com" className="text-sky-400">
+            hello@dailyglobegames.com
           </a>
         </p>
       </section>

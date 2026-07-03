@@ -16,12 +16,14 @@ import { ModeSwitcher } from "@/components/game/ModeSwitcher";
 import { TapDailyResult } from "@/components/game/TapDailyResult";
 import { GameMenu } from "@/components/menu/GameMenu";
 import type { GlobeMarker } from "@/components/map/TapGlobe";
-import { getDateSeed } from "@/lib/daily-seed";
 import { isUnlimitedPlaysEnabled } from "@/lib/daily-play";
 import { isTouchDevice } from "@/lib/device";
 import { fetchTapDaily, submitTapGuess, submitTapResult } from "@/lib/api/client";
 import type { TapRoundPublic } from "@/lib/api/client";
 import { appendTapGameHistory } from "@/lib/profile-storage";
+import { recordDailyComplete } from "@/lib/retention-events";
+import { useDailyDate } from "@/lib/use-daily-date";
+import { useRetention } from "@/lib/use-retention";
 import { playCorrectGuessSound, primeAudio } from "@/lib/sounds";
 import { useVisualViewportInset } from "@/lib/use-visual-viewport-inset";
 import { acquireGlobeInputLock, releaseGlobeInputLock } from "@/lib/globe-input-lock";
@@ -46,7 +48,8 @@ import type { TapRoundResult } from "@/types/location";
 
 export function TapGame() {
   const [dailyRounds, setDailyRounds] = useState<TapRoundPublic[]>([]);
-  const dateSeed = useMemo(() => getDateSeed(), []);
+  const dateSeed = useDailyDate();
+  const { calendarStreak } = useRetention();
   const unlimited = isUnlimitedPlaysEnabled();
   const isTouch = useMemo(
     () => (typeof window !== "undefined" ? isTouchDevice() : false),
@@ -156,6 +159,7 @@ export function TapGame() {
       };
       saveTapCompletedResult(result);
       appendTapGameHistory(result);
+      recordDailyComplete("tap", result.totalScore);
       setCompletedResult(result);
       setFreshComplete(true);
       setRoundIndex(MAX_ROUNDS);
@@ -290,6 +294,10 @@ export function TapGame() {
               stat={{
                 label: "Score",
                 value: completedResult?.totalScore ?? runningScore,
+              }}
+              secondaryStat={{
+                label: "Day streak",
+                value: calendarStreak.current,
               }}
               prompt={
                 isPlaying && phase === "aiming" && currentLocation

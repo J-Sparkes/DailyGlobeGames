@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { jsonError, requireAuthUser } from "@/lib/server/api-utils";
+import { shouldSkipLeaderboardSubmit } from "@/lib/server/premium";
+import { updateProfileCalendarStreak } from "@/lib/server/profile-streak";
 import { scoreForGuess } from "@/lib/hunt-scoring";
 import { getDateSeed } from "@/lib/daily-seed";
 
@@ -18,7 +20,7 @@ export async function POST(request: Request) {
   const score = won && solvedOnGuess ? scoreForGuess(solvedOnGuess) : 0;
   const { user, supabase } = await requireAuthUser();
 
-  if (user && supabase) {
+  if (user && supabase && !shouldSkipLeaderboardSubmit(date)) {
     await supabase.from("daily_results").upsert(
       {
         user_id: user.id,
@@ -29,6 +31,7 @@ export async function POST(request: Request) {
       },
       { onConflict: "user_id,mode,date" },
     );
+    await updateProfileCalendarStreak(supabase, user.id, date);
   }
 
   if (!won && body.guessCount === undefined) {

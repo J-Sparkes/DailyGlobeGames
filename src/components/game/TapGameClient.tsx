@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { TapWelcomeModal } from "@/components/game/TapWelcomeModal";
 import { hasSeenWelcome, markWelcomeSeen } from "@/lib/welcome-storage";
 
@@ -37,7 +37,15 @@ export function TapGameClient() {
   return (
     <div className="relative h-full w-full pointer-events-none">
       {showWelcome && <TapWelcomeModal onClose={handleCloseWelcome} />}
-      <TapGame />
+      <Suspense
+        fallback={
+          <div className="absolute inset-0 flex items-center justify-center bg-black text-sm text-slate-400">
+            Loading map…
+          </div>
+        }
+      >
+        <TapGame />
+      </Suspense>
     </div>
   );
 }

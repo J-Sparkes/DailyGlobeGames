@@ -1,4 +1,7 @@
 import type { CompletedTapResult } from "@/lib/tap-daily-play";
+import { trifectaShareSuffix } from "@/lib/retention-events";
+import { tapChallengeLine } from "@/lib/share-challenge";
+import { getModeDeepLink } from "@/lib/share-deep-link";
 import { getScoreEmoji } from "@/lib/tap-scoring";
 import { MAX_TAP_SCORE } from "@/lib/tap-scoring";
 
@@ -6,7 +9,7 @@ function getSiteUrl(): string {
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://dailygeography.app";
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://dailyglobegames.com";
 }
 
 export function buildTapShareText(result: CompletedTapResult): string {
@@ -15,12 +18,16 @@ export function buildTapShareText(result: CompletedTapResult): string {
     .join(" ");
 
   return [
+    tapChallengeLine(result.totalScore, MAX_TAP_SCORE),
     `Daily Tap ${result.date}`,
     scoreLine,
     `Score: ${result.totalScore}/${MAX_TAP_SCORE}`,
+    trifectaShareSuffix(),
     "",
-    `Play at ${getSiteUrl()}/tap`,
-  ].join("\n");
+    `Play at ${getModeDeepLink("tap", result.date)}`,
+  ]
+    .filter((line, index, arr) => !(line === "" && arr[index - 1] === ""))
+    .join("\n");
 }
 
 export async function copyTapShareText(text: string): Promise<boolean> {
@@ -69,6 +76,7 @@ export function getTapWhatsAppShareUrl(text: string): string {
   return `https://wa.me/?text=${encodeURIComponent(text)}`;
 }
 
-export function getTapShareUrl(): string {
+export function getTapShareUrl(date?: string): string {
+  if (date) return getModeDeepLink("tap", date);
   return `${getSiteUrl()}/tap`;
 }

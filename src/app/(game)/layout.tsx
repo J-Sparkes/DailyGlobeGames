@@ -1,4 +1,5 @@
 import { GlobeShellProvider } from "@/contexts/GlobeShellContext";
+import { ArchiveGate } from "@/components/growth/ArchiveGate";
 
 export default function GameLayout({
   children,
@@ -7,7 +8,9 @@ export default function GameLayout({
 }>) {
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-black text-slate-100">
-      <GlobeShellProvider>{children}</GlobeShellProvider>
+      <GlobeShellProvider>
+        <ArchiveGate>{children}</ArchiveGate>
+      </GlobeShellProvider>
     </main>
   );
 }

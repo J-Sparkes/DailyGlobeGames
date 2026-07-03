@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import type { CompletedHuntResult } from "@/types/hunt";
+import { trackEvent } from "@/lib/analytics";
 import {
   buildHuntShareText,
   copyHuntShareText,
@@ -14,6 +15,7 @@ import {
   getFacebookShareUrl,
   getLinkedInShareUrl,
 } from "@/lib/share-result";
+import { getShareCardUrl } from "@/lib/share-deep-link";
 
 interface HuntShareResultProps {
   result: CompletedHuntResult;
@@ -37,6 +39,7 @@ function ShareButton({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={onClick}
         className={className}
       >
         {label}
@@ -53,18 +56,37 @@ function ShareButton({
 
 export function HuntShareResult({ result }: HuntShareResultProps) {
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const shareText = buildHuntShareText(result);
-  const shareUrl = getHuntShareUrl();
+  const shareUrl = getHuntShareUrl(result.date);
+  const cardUrl = getShareCardUrl("hunt", result.date, result.score);
+
+  const trackShare = (channel: string) => {
+    trackEvent("share_clicked", { mode: "hunt", channel });
+  };
 
   const handleCopy = useCallback(async () => {
     const ok = await copyHuntShareText(shareText);
     if (ok) {
+      trackShare("copy");
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     }
   }, [shareText]);
 
+  const handleCopyLink = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      trackShare("copy_link");
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+  }, [shareUrl]);
+
   const handleNativeShare = useCallback(async () => {
+    trackShare("native");
     await nativeHuntShare(result);
   }, [result]);
 
@@ -74,6 +96,15 @@ export function HuntShareResult({ result }: HuntShareResultProps) {
   return (
     <div className="mt-4 border-t border-white/10 pt-4">
       <p className="mb-3 text-sm font-medium text-slate-300">Share your hunt</p>
+      <a
+        href={cardUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => trackShare("card_image")}
+        className="mb-3 inline-block text-xs font-medium text-sky-400 underline-offset-2 hover:underline"
+      >
+        Open share card image
+      </a>
       <div className="flex flex-wrap gap-2">
         {canNativeShare && (
           <ShareButton label="Share…" onClick={handleNativeShare} />
@@ -83,20 +114,28 @@ export function HuntShareResult({ result }: HuntShareResultProps) {
           onClick={handleCopy}
         />
         <ShareButton
+          label={linkCopied ? "Link copied!" : "Copy link"}
+          onClick={handleCopyLink}
+        />
+        <ShareButton
           label="X / Twitter"
           href={getHuntTwitterShareUrl(shareText)}
+          onClick={() => trackShare("twitter")}
         />
         <ShareButton
           label="WhatsApp"
           href={getHuntWhatsAppShareUrl(shareText)}
+          onClick={() => trackShare("whatsapp")}
         />
         <ShareButton
           label="Facebook"
           href={getFacebookShareUrl(shareUrl)}
+          onClick={() => trackShare("facebook")}
         />
         <ShareButton
           label="LinkedIn"
           href={getLinkedInShareUrl(shareUrl)}
+          onClick={() => trackShare("linkedin")}
         />
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { HuntWelcomeModal } from "@/components/game/HuntWelcomeModal";
 import { hasSeenWelcome, markWelcomeSeen } from "@/lib/welcome-storage";
 
@@ -37,7 +37,15 @@ export function HuntGameClient() {
   return (
     <div className="relative h-full w-full pointer-events-none">
       {showWelcome && <HuntWelcomeModal onClose={handleCloseWelcome} />}
-      <HuntGame />
+      <Suspense
+        fallback={
+          <div className="absolute inset-0 flex items-center justify-center bg-black text-sm text-slate-400">
+            Loading map…
+          </div>
+        }
+      >
+        <HuntGame />
+      </Suspense>
     </div>
   );
 }

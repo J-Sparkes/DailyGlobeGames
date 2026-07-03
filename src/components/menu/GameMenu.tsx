@@ -136,6 +136,18 @@ export function GameMenu({ open, onClose }: GameMenuProps) {
         </div>
 
         <div className="overlay-safe-x border-t border-white/10 px-4 py-3 text-xs text-slate-500">
+          <Link href="/about" className="hover:text-slate-300">
+            About
+          </Link>
+          <span className="mx-2">·</span>
+          <Link href="/classroom" className="hover:text-slate-300">
+            Classroom
+          </Link>
+          <span className="mx-2">·</span>
+          <Link href="/archive" className="hover:text-slate-300">
+            Archive
+          </Link>
+          <span className="mx-2">·</span>
           <Link href="/privacy" className="hover:text-slate-300">
             Privacy
           </Link>
@@ -143,6 +155,19 @@ export function GameMenu({ open, onClose }: GameMenuProps) {
           <Link href="/terms" className="hover:text-slate-300">
             Terms
           </Link>
+          {process.env.NEXT_PUBLIC_SUPPORT_URL && (
+            <>
+              <span className="mx-2">·</span>
+              <a
+                href={process.env.NEXT_PUBLIC_SUPPORT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-slate-300"
+              >
+                Support
+              </a>
+            </>
+          )}
         </div>
 
         {isUnlimitedPlaysEnabled() && (

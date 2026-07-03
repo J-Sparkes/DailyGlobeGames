@@ -1,13 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { FriendResultContext } from "@/components/game/FriendResultContext";
+import { ShareCompareLink } from "@/components/growth/ShareCompareLink";
 import { ShareResult } from "@/components/game/ShareResult";
+import { TrifectaNudge } from "@/components/game/TrifectaNudge";
+import { CalendarStreakStat } from "@/components/retention/CalendarStreakStat";
 import { getCountryDisplayName } from "@/lib/country-resolve";
 import type { CompletedDailyResult } from "@/lib/daily-play";
 import {
   formatCountdown,
   getMsUntilNextPuzzle,
 } from "@/lib/daily-play";
+import { useRetention } from "@/lib/use-retention";
 import { useCountUp } from "@/lib/use-count-up";
 
 interface DailyResultProps {
@@ -23,6 +28,7 @@ export function DailyResult({
   onPlayAgain,
   animateReveal = false,
 }: DailyResultProps) {
+  const { trifecta } = useRetention();
   const [countdown, setCountdown] = useState(() =>
     formatCountdown(getMsUntilNextPuzzle()),
   );
@@ -65,6 +71,8 @@ export function DailyResult({
         </div>
       </div>
 
+      <CalendarStreakStat animate={animateReveal && variant === "game-over"} />
+
       {isAlreadyPlayed ? (
         <p className="mt-2 text-xs text-[var(--ui-text-muted)]">
           Next puzzle in {countdown}
@@ -97,6 +105,16 @@ export function DailyResult({
           </p>
         </div>
       )}
+
+      <TrifectaNudge status={trifecta} />
+
+      <FriendResultContext
+        mode="sweep"
+        yourScore={result.streak}
+        date={result.date}
+      />
+
+      <ShareCompareLink mode="sweep" date={result.date} />
 
       {onPlayAgain && (
         <button
