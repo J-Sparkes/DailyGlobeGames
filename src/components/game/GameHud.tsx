@@ -91,63 +91,126 @@ export function HudToolbar({
   onMenuOpen: () => void;
 }) {
   return (
-    <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-x-3">
-      <div className="flex min-w-0 items-center gap-2.5 justify-self-start sm:gap-3">
-        <HudBrand date={date} />
-        {(prompt || meta) && (
-          <div className="min-w-0 border-l border-[var(--ui-border-subtle)] pl-2.5 sm:pl-3">
-            {prompt && (
-              <p className="line-clamp-2 text-xs leading-snug text-[var(--ui-text-primary)] sm:text-sm">
-                {prompt}
-              </p>
-            )}
-            {meta && (
-              <p className="mt-0.5 line-clamp-1 text-[10px] leading-snug text-[var(--ui-text-muted)] sm:text-xs">
-                {meta}
-              </p>
-            )}
-          </div>
-        )}
-      </div>
+    <div className="hud-toolbar">
+      <div className="hud-toolbar__row">
+        <div className="hud-toolbar__leading">
+          <HudBrand date={date} />
+          {(prompt || meta) && (
+            <div className="hud-toolbar__prompt hidden min-w-0 border-l border-[var(--ui-border-subtle)] pl-2.5 sm:block sm:pl-3">
+              {prompt && (
+                <p className="line-clamp-2 text-xs leading-snug text-[var(--ui-text-primary)] sm:text-sm">
+                  {prompt}
+                </p>
+              )}
+              {meta && (
+                <p className="mt-0.5 line-clamp-1 text-[10px] leading-snug text-[var(--ui-text-muted)] sm:text-xs">
+                  {meta}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
 
-      <div className="justify-self-center shrink-0">{children}</div>
+        {children && (
+          <div className="hud-toolbar__modes-desktop hidden shrink-0 sm:flex">
+            {children}
+          </div>
+        )}
 
-      <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
-        {secondaryStat && (
-          <div className="text-right">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--ui-text-muted)]">
-              {secondaryStat.label}
-            </p>
-            <p
-              className={`font-stat text-lg font-semibold leading-none text-[var(--ui-accent-warm)] ${
-                secondaryStat.burst
-                  ? "milestone-burst"
-                  : secondaryStat.pop
-                    ? "streak-pop"
-                    : ""
-              }`}
-            >
-              {secondaryStat.value}
-            </p>
-          </div>
-        )}
-        {stat && (
-          <div className="text-right">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--ui-text-muted)]">
-              {stat.label}
-            </p>
-            <p
-              className={`font-stat text-lg font-semibold leading-none text-[var(--ui-text-primary)] ${
-                stat.burst ? "milestone-burst" : stat.pop ? "streak-pop" : ""
-              }`}
-            >
-              {stat.value}
-            </p>
-          </div>
-        )}
-        <MenuButton onClick={onMenuOpen} />
+        <div className="hud-toolbar__trailing">
+          {secondaryStat && (
+            <div className="text-right">
+              <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--ui-text-muted)]">
+                {secondaryStat.label}
+              </p>
+              <p
+                className={`font-stat text-lg font-semibold leading-none text-[var(--ui-accent-warm)] ${
+                  secondaryStat.burst
+                    ? "milestone-burst"
+                    : secondaryStat.pop
+                      ? "streak-pop"
+                      : ""
+                }`}
+              >
+                {secondaryStat.value}
+              </p>
+            </div>
+          )}
+          {stat && (
+            <div className="text-right">
+              <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--ui-text-muted)]">
+                {stat.label}
+              </p>
+              <p
+                className={`font-stat text-lg font-semibold leading-none text-[var(--ui-text-primary)] ${
+                  stat.burst ? "milestone-burst" : stat.pop ? "streak-pop" : ""
+                }`}
+              >
+                {stat.value}
+              </p>
+            </div>
+          )}
+          <MenuButton onClick={onMenuOpen} />
+        </div>
       </div>
     </div>
+  );
+}
+
+/** Centered mode switcher row below the top bar on mobile */
+export function HudModeRail({ children }: { children: ReactNode }) {
+  return (
+    <div className="pointer-events-auto flex justify-center px-3 pt-1.5 pb-2.5 sm:hidden">
+      {children}
+    </div>
+  );
+}
+
+export interface HudTopChromeProps {
+  onMenuOpen: () => void;
+  date?: string;
+  stat?: { label: string; value: string | number; pop?: boolean; burst?: boolean };
+  secondaryStat?: { label: string; value: string | number; pop?: boolean; burst?: boolean };
+  prompt?: ReactNode;
+  meta?: ReactNode;
+  dateStale?: boolean;
+  onDateRefresh?: () => void;
+  modeSwitcher: ReactNode;
+  topExtra?: ReactNode;
+}
+
+export function HudTopChrome({
+  onMenuOpen,
+  date,
+  stat,
+  secondaryStat,
+  prompt,
+  meta,
+  dateStale = false,
+  onDateRefresh,
+  modeSwitcher,
+  topExtra,
+}: HudTopChromeProps) {
+  return (
+    <>
+      {dateStale && onDateRefresh && (
+        <DailyDateStaleBanner onRefresh={onDateRefresh} />
+      )}
+      <HudPanel>
+        <HudToolbar
+          onMenuOpen={onMenuOpen}
+          date={date}
+          stat={stat}
+          secondaryStat={secondaryStat}
+          prompt={prompt}
+          meta={meta}
+        >
+          {modeSwitcher}
+        </HudToolbar>
+        {topExtra}
+      </HudPanel>
+      <HudModeRail>{modeSwitcher}</HudModeRail>
+    </>
   );
 }
 

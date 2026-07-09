@@ -5,13 +5,12 @@ import { HuntGuessTracker } from "@/components/game/HuntGuessTracker";
 import { HuntGlobeBridge } from "@/components/game/GlobeBridge";
 import { HuntDailyResult } from "@/components/game/HuntDailyResult";
 import {
-  DailyDateStaleBanner,
   GameLiveRegion,
   HudAnchor,
   HudLayer,
   HudPanel,
   HudSpacer,
-  HudToolbar,
+  HudTopChrome,
   GameResultOverlay,
 } from "@/components/game/GameHud";
 import { ModeSwitcher } from "@/components/game/ModeSwitcher";
@@ -390,29 +389,27 @@ export function HuntGame() {
 
       <HudLayer>
         <HudAnchor position="top">
-          {dateStale && (
-            <DailyDateStaleBanner onRefresh={() => window.location.reload()} />
-          )}
-          <HudPanel>
-            <HudToolbar
-              onMenuOpen={() => setMenuOpen(true)}
-              date={isPlaying ? dateSeed : undefined}
-              stat={
-                isPlaying ? { label: "Left", value: guessesRemaining } : undefined
-              }
-              secondaryStat={{
-                label: "Day streak",
-                value: calendarStreak.current,
-              }}
-              prompt={huntPrompt}
-              meta={isPlaying && phase === "playing" ? controlHint : undefined}
-            >
-              <ModeSwitcher />
-            </HudToolbar>
-            {isPlaying && (
-              <HuntGuessTracker used={guesses.length} className="mt-2" />
-            )}
-          </HudPanel>
+          <HudTopChrome
+            onMenuOpen={() => setMenuOpen(true)}
+            date={isPlaying ? dateSeed : undefined}
+            stat={
+              isPlaying ? { label: "Left", value: guessesRemaining } : undefined
+            }
+            secondaryStat={{
+              label: "Day streak",
+              value: calendarStreak.current,
+            }}
+            prompt={huntPrompt}
+            meta={isPlaying && phase === "playing" ? controlHint : undefined}
+            dateStale={dateStale}
+            onDateRefresh={() => window.location.reload()}
+            modeSwitcher={<ModeSwitcher />}
+            topExtra={
+              isPlaying ? (
+                <HuntGuessTracker used={guesses.length} className="mt-2" />
+              ) : undefined
+            }
+          />
         </HudAnchor>
 
         <HudSpacer />

@@ -3,13 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DailyResult } from "@/components/game/DailyResult";
 import {
-  DailyDateStaleBanner,
   GameLiveRegion,
   HudAnchor,
   HudLayer,
   HudPanel,
   HudSpacer,
-  HudToolbar,
+  HudTopChrome,
   GameResultOverlay,
 } from "@/components/game/GameHud";
 import { SweepGlobeBridge } from "@/components/game/GlobeBridge";
@@ -504,37 +503,33 @@ export function GeographyGame() {
 
       <HudLayer>
         <HudAnchor position="top">
-          {dateStale && (
-            <DailyDateStaleBanner onRefresh={() => window.location.reload()} />
-          )}
-          <HudPanel>
-            <HudToolbar
-              onMenuOpen={() => setMenuOpen(true)}
-              date={
-                initialized && !completedResult && !gameOver ? dateSeed : undefined
-              }
-              stat={{
-                label: "Streak",
-                value: completedResult?.streak ?? claimedIds.length,
-                pop: streakPop,
-                burst: milestoneBurst,
-              }}
-              secondaryStat={{
-                label: "Day streak",
-                value: calendarStreak.current,
-              }}
-              prompt={
-                initialized && !completedResult && !gameOver ? prompt : undefined
-              }
-              meta={
-                initialized && !completedResult && !gameOver
-                  ? controlHint
-                  : undefined
-              }
-            >
-              <ModeSwitcher />
-            </HudToolbar>
-          </HudPanel>
+          <HudTopChrome
+            onMenuOpen={() => setMenuOpen(true)}
+            date={
+              initialized && !completedResult && !gameOver ? dateSeed : undefined
+            }
+            stat={{
+              label: "Streak",
+              value: completedResult?.streak ?? claimedIds.length,
+              pop: streakPop,
+              burst: milestoneBurst,
+            }}
+            secondaryStat={{
+              label: "Day streak",
+              value: calendarStreak.current,
+            }}
+            prompt={
+              initialized && !completedResult && !gameOver ? prompt : undefined
+            }
+            meta={
+              initialized && !completedResult && !gameOver
+                ? controlHint
+                : undefined
+            }
+            dateStale={dateStale}
+            onDateRefresh={() => window.location.reload()}
+            modeSwitcher={<ModeSwitcher />}
+          />
         </HudAnchor>
 
         <HudSpacer />

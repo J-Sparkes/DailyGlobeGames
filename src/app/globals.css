@@ -125,6 +125,52 @@ textarea {
   padding: 0.5rem 0.75rem;
 }
 
+.hud-toolbar__row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.hud-toolbar__leading {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.hud-toolbar__trailing {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .hud-toolbar__row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    column-gap: 0.75rem;
+  }
+
+  .hud-toolbar__leading {
+    justify-self: start;
+  }
+
+  .hud-toolbar__modes-desktop {
+    justify-self: center;
+  }
+
+  .hud-toolbar__trailing {
+    justify-self: end;
+    gap: 0.75rem;
+  }
+}
+
 .hud-slot--bottom {
   width: 100%;
   max-width: min(26rem, calc(100% - 1.5rem));

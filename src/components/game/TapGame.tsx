@@ -3,13 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TapGlobeBridge } from "@/components/game/GlobeBridge";
 import {
-  DailyDateStaleBanner,
   GameLiveRegion,
   HudAnchor,
   HudLayer,
   HudPanel,
   HudSpacer,
-  HudToolbar,
+  HudTopChrome,
   GameResultOverlay,
 } from "@/components/game/GameHud";
 import { ModeSwitcher } from "@/components/game/ModeSwitcher";
@@ -340,33 +339,29 @@ export function TapGame() {
 
       <HudLayer>
         <HudAnchor position="top">
-          {dateStale && (
-            <DailyDateStaleBanner onRefresh={() => window.location.reload()} />
-          )}
-          <HudPanel>
-            <HudToolbar
-              onMenuOpen={() => setMenuOpen(true)}
-              date={isPlaying ? dateSeed : undefined}
-              stat={{
-                label: "Score",
-                value: completedResult?.totalScore ?? runningScore,
-                pop: scorePop,
-                burst: scoreBurst,
-              }}
-              secondaryStat={{
-                label: "Day streak",
-                value: calendarStreak.current,
-              }}
-              prompt={
-                isPlaying && phase === "aiming" && currentLocation
-                  ? currentLocation.prompt
-                  : undefined
-              }
-              meta={tapMeta}
-            >
-              <ModeSwitcher />
-            </HudToolbar>
-          </HudPanel>
+          <HudTopChrome
+            onMenuOpen={() => setMenuOpen(true)}
+            date={isPlaying ? dateSeed : undefined}
+            stat={{
+              label: "Score",
+              value: completedResult?.totalScore ?? runningScore,
+              pop: scorePop,
+              burst: scoreBurst,
+            }}
+            secondaryStat={{
+              label: "Day streak",
+              value: calendarStreak.current,
+            }}
+            prompt={
+              isPlaying && phase === "aiming" && currentLocation
+                ? currentLocation.prompt
+                : undefined
+            }
+            meta={tapMeta}
+            dateStale={dateStale}
+            onDateRefresh={() => window.location.reload()}
+            modeSwitcher={<ModeSwitcher />}
+          />
         </HudAnchor>
 
         <HudSpacer />
