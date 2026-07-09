@@ -3,13 +3,14 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { trackEvent } from "@/lib/analytics";
-import { trackSignupAfterFirstWin } from "@/lib/cohort-analytics";
+import { trackSignupAfterFirstWin, hasRecordedFirstWin } from "@/lib/cohort-analytics";
 import {
   captureReferralCode,
   getStoredReferralCode,
   hasCompletedReferral,
   markReferralComplete,
 } from "@/lib/referral";
+import { completeReferralApi } from "@/lib/api/client";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function AnalyticsBootstrap() {
@@ -30,19 +31,11 @@ export function AnalyticsBootstrap() {
 
     if (hasCompletedReferral()) return;
     const code = getStoredReferralCode();
-    if (!code) return;
-    const hadFirstWin =
-      typeof window !== "undefined" &&
-      window.localStorage.getItem("geography-game-first-win-v1");
-    if (!hadFirstWin) return;
+    if (!code || !hasRecordedFirstWin()) return;
 
-    void fetch("/api/referral/complete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ referrerUsername: code }),
-    })
-      .then((res) => {
-        if (res.ok) {
+    void completeReferralApi(code)
+      .then((ok) => {
+        if (ok) {
           markReferralComplete();
           trackEvent("referral_complete", { ref: code });
         }

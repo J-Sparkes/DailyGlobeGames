@@ -61,7 +61,7 @@ export function HuntWelcomeModal({ onClose }: HuntWelcomeModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="hunt-welcome-title"
-        className="welcome-panel relative w-full max-w-lg rounded-2xl border border-white/10 bg-[#0b0f14] shadow-2xl shadow-black/60"
+        className="welcome-panel relative w-full max-w-lg rounded-2xl border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-hud)] shadow-2xl shadow-black/60"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(56,189,248,0.12),_transparent_55%)]" />
@@ -113,7 +113,7 @@ export function HuntWelcomeModal({ onClose }: HuntWelcomeModalProps) {
               primeAudio();
               onClose();
             }}
-            className="touch-target mt-6 w-full min-h-11 rounded-xl bg-sky-500 px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/60 focus:ring-offset-2 focus:ring-offset-[#0b0f14]"
+            className="touch-target mt-6 w-full min-h-11 rounded-xl btn-primary px-4 py-3.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ui-accent-primary)_60%,transparent)] focus:ring-offset-2 focus:ring-offset-[var(--ui-surface-hud)]"
           >
             Start hunting
           </button>

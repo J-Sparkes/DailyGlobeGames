@@ -115,6 +115,97 @@ export async function submitHuntResult(payload: {
   return res.json();
 }
 
+export async function revealHuntAnswer(date: string) {
+  const res = await fetch("/api/daily/hunt/reveal", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ date }),
+  });
+  if (!res.ok) throw new Error("Reveal failed");
+  return res.json() as Promise<{ hiddenCountryId: string }>;
+}
+
+export async function fetchSubscriptionStatus() {
+  const res = await fetch("/api/subscription/status");
+  if (!res.ok) return { premium: false };
+  return res.json() as Promise<{ premium: boolean }>;
+}
+
+export async function startStripeCheckout() {
+  const res = await fetch("/api/stripe/checkout", { method: "POST" });
+  return res.json() as Promise<{ url?: string; error?: string }>;
+}
+
+export interface CompareData {
+  date: string;
+  mode: "sweep" | "tap" | "hunt";
+  target: {
+    username: string;
+    displayName: string;
+    score: number | null;
+    played: boolean;
+  };
+  viewer: {
+    played: boolean;
+    score: number | null;
+  };
+}
+
+export async function fetchCompare(user: string, mode: string, date: string) {
+  const res = await fetch(
+    `/api/compare?user=${encodeURIComponent(user)}&mode=${mode}&date=${date}`,
+  );
+  if (!res.ok) {
+    const body = (await res.json()) as { error?: string };
+    throw new Error(body.error ?? "Compare failed");
+  }
+  return res.json() as Promise<CompareData>;
+}
+
+export async function fetchFriendsToday(mode: string, date: string) {
+  const res = await fetch(
+    `/api/retention/friends-today?mode=${mode}&date=${date}`,
+  );
+  if (!res.ok) return { friends: [] };
+  return res.json() as Promise<{
+    friends: Array<{
+      username: string;
+      displayName: string;
+      score: number;
+      isYou?: boolean;
+    }>;
+  }>;
+}
+
+export async function fetchEmailPreference() {
+  const res = await fetch("/api/retention/email-preference");
+  if (!res.ok) return { enabled: false };
+  return res.json() as Promise<{ enabled: boolean }>;
+}
+
+export async function updateEmailPreference(enabled: boolean, timezone: string) {
+  const res = await fetch("/api/retention/email-preference", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ enabled, timezone }),
+  });
+  return res.ok;
+}
+
+export async function useStreakFreezeApi() {
+  const res = await fetch("/api/retention/streak-freeze", { method: "POST" });
+  return res.ok;
+}
+
+export async function completeReferralApi(referrerUsername: string) {
+  const res = await fetch("/api/referral/complete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ referrerUsername }),
+  });
+  return res.ok;
+}
+
 export async function fetchLeaderboard(
   mode: "sweep" | "tap" | "hunt",
   scope: "global" | "friends" = "global",

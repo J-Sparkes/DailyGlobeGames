@@ -17,7 +17,7 @@ import { ModeSwitcher } from "@/components/game/ModeSwitcher";
 import { GameMenu } from "@/components/menu/GameMenu";
 import type { HuntGuessMarker } from "@/components/map/HuntGlobe";
 import { getCountryDisplayName } from "@/lib/country-resolve";
-import { fetchHuntDaily, submitHuntGuess, submitHuntResult } from "@/lib/api/client";
+import { fetchHuntDaily, revealHuntAnswer, submitHuntGuess, submitHuntResult } from "@/lib/api/client";
 import { isUnlimitedPlaysEnabled } from "@/lib/daily-play";
 import { isTouchDevice } from "@/lib/device";
 import { getFeatureCentroid } from "@/lib/geo-centroid";
@@ -33,8 +33,8 @@ import { appendHuntGuess, buildWinningHuntGuess } from "@/lib/hunt-guess";
 import {
   clearHuntDailyStorage,
   createInitialHuntProgress,
-  getHuntCompletedResultForToday,
-  getHuntProgressForToday,
+  getHuntCompletedResultForDate,
+  getHuntProgressForDate,
   saveHuntCompletedResult,
   saveHuntProgress,
   type HuntPhase,
@@ -48,6 +48,7 @@ import {
   loadCountryFeatures,
   type CountryFeature,
 } from "@/lib/world-geographies";
+import { UI } from "@/lib/design-tokens";
 import type { CompletedHuntResult, HuntGuess } from "@/types/hunt";
 
 export function HuntGame() {
@@ -106,7 +107,14 @@ export function HuntGame() {
   useEffect(() => {
     if (!mapReady || features.length === 0) return;
 
-    const completed = getHuntCompletedResultForToday();
+    setCompletedResult(null);
+    setHiddenCountryId(null);
+    setGuesses([]);
+    setPhase("playing");
+    setLastGuess(null);
+    setFreshComplete(false);
+
+    const completed = getHuntCompletedResultForDate(dateSeed);
     if (completed) {
       setCompletedResult(completed);
       setHiddenCountryId(completed.hiddenCountryId);
@@ -115,7 +123,7 @@ export function HuntGame() {
       return;
     }
 
-    const progress = getHuntProgressForToday();
+    const progress = getHuntProgressForDate(dateSeed);
     if (progress) {
       setHiddenCountryId(progress.hiddenCountryId ?? null);
       setGuesses(progress.guesses);
@@ -126,12 +134,12 @@ export function HuntGame() {
     } else {
       void fetchHuntDaily(dateSeed);
       if (!unlimited) {
-        saveHuntProgress(createInitialHuntProgress());
+        saveHuntProgress(createInitialHuntProgress(dateSeed));
       }
     }
 
     setInitialized(true);
-  }, [mapReady, features, unlimited]);
+  }, [mapReady, features, unlimited, dateSeed]);
 
   useEffect(() => {
     if (!initialized || completedResult || unlimited) return;
@@ -157,7 +165,7 @@ export function HuntGame() {
           lat: 0,
           lng: 0,
           label: `${index + 1}`,
-          color: "#f87171",
+          color: UI.error,
         };
       }
       const { lat, lng } = getFeatureCentroid(feature);
@@ -166,7 +174,7 @@ export function HuntGame() {
         lat,
         lng,
         label: `${index + 1}: ${formatMiles(guess.distanceMiles)}`,
-        color: "#f87171",
+        color: UI.error,
       };
     });
   }, [guesses, featureById]);
@@ -216,7 +224,7 @@ export function HuntGame() {
     setFreshComplete(false);
     void fetchHuntDaily(dateSeed);
     if (!unlimited) {
-      saveHuntProgress(createInitialHuntProgress());
+      saveHuntProgress(createInitialHuntProgress(dateSeed));
     }
   }, [mapReady, features, unlimited, dateSeed]);
 
@@ -275,12 +283,7 @@ export function HuntGame() {
 
   const handleContinue = useCallback(async () => {
     if (guesses.length >= MAX_HUNT_GUESSES) {
-      const res = await fetch("/api/daily/hunt/reveal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: dateSeed, guessCount: guesses.length }),
-      });
-      const data = (await res.json()) as { hiddenCountryId?: string };
+      const data = await revealHuntAnswer(dateSeed);
       finishGame(guesses, false, null, data.hiddenCountryId ?? "unknown");
       return;
     }
@@ -419,7 +422,7 @@ export function HuntGame() {
               <button
                 type="button"
                 onClick={handleContinue}
-                className="touch-target btn-primary mt-2.5 w-full min-h-10 rounded-lg px-4 py-2 text-sm font-semibold"
+                className="touch-target btn-primary mt-2.5 w-full min-h-11 rounded-lg px-4 py-2 text-sm font-semibold"
               >
                 {guesses.length >= MAX_HUNT_GUESSES
                   ? "Reveal answer"

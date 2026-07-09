@@ -31,6 +31,11 @@ export function recordFirstWin(mode: "sweep" | "tap" | "hunt"): void {
   window.localStorage.setItem(FIRST_WIN_KEY, mode);
 }
 
+export function hasRecordedFirstWin(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(FIRST_WIN_KEY) !== null;
+}
+
 export function trackSignupAfterFirstWin(): void {
   if (typeof window === "undefined") return;
   if (window.localStorage.getItem(SIGNUP_TRACKED_KEY)) return;

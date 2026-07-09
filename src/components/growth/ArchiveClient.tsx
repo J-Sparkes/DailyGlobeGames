@@ -6,6 +6,7 @@ import { Suspense, useEffect, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { getArchiveDateOptions } from "@/lib/archive-play";
 import { getModeDeepLink } from "@/lib/share-deep-link";
+import { fetchSubscriptionStatus, startStripeCheckout } from "@/lib/api/client";
 import { useAuth } from "@/contexts/AuthContext";
 
 function ArchiveContent() {
@@ -27,9 +28,8 @@ function ArchiveContent() {
       setLoading(false);
       return;
     }
-    void fetch("/api/subscription/status")
-      .then((res) => (res.ok ? res.json() : { premium: false }))
-      .then((data: { premium: boolean }) => {
+    void fetchSubscriptionStatus()
+      .then((data) => {
         setPremium(Boolean(data.premium));
         setLoading(false);
       })
@@ -39,8 +39,7 @@ function ArchiveContent() {
   const startCheckout = async () => {
     setCheckoutLoading(true);
     try {
-      const res = await fetch("/api/stripe/checkout", { method: "POST" });
-      const data = (await res.json()) as { url?: string; error?: string };
+      const data = await startStripeCheckout();
       if (data.url) {
         trackEvent("premium_convert", { stage: "checkout_redirect" });
         window.location.href = data.url;
@@ -70,7 +69,7 @@ function ArchiveContent() {
         </p>
         {!configured || !user ? (
           <p className="text-sm text-slate-300">
-            Sign in from the game menu to subscribe and unlock the archive.
+            Sign in from the game menu to subscribe and open the archive.
           </p>
         ) : (
           <button
@@ -79,7 +78,7 @@ function ArchiveContent() {
             onClick={() => void startCheckout()}
             className="rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
           >
-            {checkoutLoading ? "Loading…" : "Subscribe — unlock archive"}
+            {checkoutLoading ? "Loading…" : "Subscribe — open the archive"}
           </button>
         )}
         <p className="text-xs text-slate-500">

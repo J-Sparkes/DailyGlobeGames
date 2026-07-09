@@ -7,7 +7,7 @@ export default function GameLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="relative h-dvh w-full overflow-hidden bg-black text-slate-100">
+    <main className="relative h-dvh w-full overflow-hidden bg-[var(--ui-bg-deep)] text-[var(--ui-text-primary)]">
       <GlobeShellProvider>
         <ArchiveGate>{children}</ArchiveGate>
       </GlobeShellProvider>

@@ -87,7 +87,7 @@ export function TapDailyResult({
         <button
           type="button"
           onClick={onPlayAgain}
-          className="touch-target mt-2.5 min-h-10 rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-400"
+          className="touch-target btn-primary mt-2.5 min-h-11 rounded-lg px-4 py-2 text-sm font-semibold"
         >
           Play again
         </button>

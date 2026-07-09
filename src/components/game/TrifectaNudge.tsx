@@ -15,7 +15,7 @@ export function TrifectaNudge({ status }: { status: TrifectaStatus }) {
     return (
       <div className="mt-3 rounded-lg border border-[color-mix(in_srgb,var(--ui-success)_35%,transparent)] bg-[color-mix(in_srgb,var(--ui-success)_10%,transparent)] px-3 py-2">
         <p className="text-xs font-semibold text-[var(--ui-success)]">
-          Trifecta complete — all three modes done today!
+          Trifecta complete — all three modes done today.
         </p>
       </div>
     );

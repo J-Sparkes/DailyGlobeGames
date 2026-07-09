@@ -1,6 +1,9 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import maritimeLinks from "@/data/maritime-links.json";
+import { countryById } from "@/lib/game-data";
+import { getMapName } from "@/lib/country-resolve";
+import { toCountryId } from "@/lib/country-id";
 import { neighbors } from "topojson-client";
 import type {
   GeometryCollection,
@@ -58,4 +61,34 @@ export function loadServerBorderGraph(): Map<string, Set<string>> {
 
   neighborByMapName = graph;
   return graph;
+}
+
+function getBorderingCountryIds(
+  graph: Map<string, Set<string>>,
+  mapName: string,
+): string[] {
+  const neighborSet = graph.get(mapName);
+  if (!neighborSet) return [];
+  return [...neighborSet].map(toCountryId);
+}
+
+export function getServerFrontierCountryIds(claimedIds: string[]): string[] {
+  const graph = loadServerBorderGraph();
+  if (claimedIds.length === 0) return [];
+
+  const claimedSet = new Set(claimedIds);
+  const frontier = new Set<string>();
+
+  for (const claimedId of claimedIds) {
+    const mapName = getMapName(claimedId);
+    if (!mapName) continue;
+
+    for (const neighborId of getBorderingCountryIds(graph, mapName)) {
+      if (!claimedSet.has(neighborId) && countryById.has(neighborId)) {
+        frontier.add(neighborId);
+      }
+    }
+  }
+
+  return [...frontier];
 }

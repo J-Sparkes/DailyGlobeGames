@@ -35,22 +35,32 @@ function writeStorage(data: HuntStorage): void {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-export function getHuntCompletedResultForToday(): CompletedHuntResult | null {
+export function getHuntCompletedResultForDate(
+  date: string = getDateSeed(),
+): CompletedHuntResult | null {
   if (isUnlimitedPlaysEnabled()) return null;
 
-  const today = getDateSeed();
   const { completed } = readStorage();
-  if (completed?.date === today) return completed;
+  if (completed?.date === date) return completed;
+  return null;
+}
+
+export function getHuntCompletedResultForToday(): CompletedHuntResult | null {
+  return getHuntCompletedResultForDate(getDateSeed());
+}
+
+export function getHuntProgressForDate(
+  date: string = getDateSeed(),
+): HuntDailyProgress | null {
+  if (isUnlimitedPlaysEnabled()) return null;
+
+  const { progress } = readStorage();
+  if (progress?.date === date) return progress;
   return null;
 }
 
 export function getHuntProgressForToday(): HuntDailyProgress | null {
-  if (isUnlimitedPlaysEnabled()) return null;
-
-  const today = getDateSeed();
-  const { progress } = readStorage();
-  if (progress?.date === today) return progress;
-  return null;
+  return getHuntProgressForDate(getDateSeed());
 }
 
 export function saveHuntProgress(progress: HuntDailyProgress): void {
@@ -79,9 +89,11 @@ export function clearHuntDailyStorage(): void {
   window.localStorage.removeItem(STORAGE_KEY);
 }
 
-export function createInitialHuntProgress(): HuntDailyProgress {
+export function createInitialHuntProgress(
+  date: string = getDateSeed(),
+): HuntDailyProgress {
   return {
-    date: getDateSeed(),
+    date,
     guesses: [],
     phase: "playing",
   };

@@ -1,0 +1,164 @@
+---
+description: Engineering handbook for Daily Globe Games — UI, game state, architecture, and copy standards
+alwaysApply: true
+---
+
+# Daily Globe Games — Development Guidelines
+
+Engineering standards for a modern, mobile-first daily geography puzzle. Read `docs/MVP.md` for product scope and `node_modules/next/dist/docs/` before changing Next.js APIs.
+
+---
+
+## 1. FRONT-END STYLE & STANDARDS
+
+Daily Globe Games is played on phones during morning commutes and on desktop at lunch. Every screen must work in both contexts.
+
+### Mobile-first layout
+
+- Design for **320px+** widths first; enhance for desktop with `sm:` / `md:` breakpoints.
+- Use existing viewport helpers (`use-visual-viewport-inset`, `use-container-dims`) — do not invent parallel layout systems.
+- Keep the globe playable: touch targets **≥ 44px**; avoid UI that blocks pinch-zoom or drag on the map.
+- Respect safe areas and notches; game HUD lives in `GameHud.tsx` and `(game)/layout.tsx` — extend those patterns, do not duplicate chrome.
+
+### Visual language
+
+- Use design tokens from `src/lib/design-tokens.ts` and CSS variables in `src/app/globals.css` (`--ui-*`).
+- Globe styling goes through `globe-polygon-styles.ts` and mode-specific globe components (`WorldMap`, `TapGlobe`, `HuntGlobe`).
+- Prefer **subtle motion**: short opacity/transform transitions (150–250ms). No gratuitous animations that delay play.
+- Dark, low-glare palette — players use this before sunrise. Avoid pure white backgrounds or harsh contrast flashes.
+
+### Accessibility
+
+- All interactive controls need visible **focus states** and meaningful `aria-label` / `aria-live` where state changes (score updates, guess feedback, countdown).
+- Modals (`WelcomeModal`, result screens) must trap focus and restore on close — match existing modal behavior.
+- Do not rely on color alone for game feedback; pair with text or icons (correct / wrong / warmer-colder).
+- Respect `prefers-reduced-motion` when adding new animations.
+
+### Performance
+
+- Game shells use dynamic imports (`GameClient`, `TapGameClient`, `HuntGameClient`) — keep heavy globe code client-side and lazy-loaded.
+- Avoid re-rendering the full globe on unrelated state changes; follow existing hook and context patterns (`GlobeShellContext`).
+
+---
+
+## 2. GAME STATE & CACHING
+
+### Daily reset rules (non-negotiable)
+
+- The official puzzle date is **UTC** `YYYY-MM-DD` from `getDateSeed()` in `src/lib/daily-seed.ts`.
+- A new daily begins at **00:00 UTC**. UI countdowns and rollover use `daily-play.ts`, `use-daily-date.ts`, and `use-daily-date-rollover.ts`.
+- **One official play per mode per UTC day** unless `NEXT_PUBLIC_UNLIMITED_PLAYS=true` (dev only) or `NODE_ENV=development`.
+- Deep links use `?d=` or `?date=` — always validate via `src/lib/server/api-utils.ts` and `use-daily-date.ts`.
+
+### localStorage conventions
+
+- **Never rename** existing storage keys (`geography-game-daily-v1`, `geography-game-tap-daily-v1`, `geography-game-hunt-daily-v1`, `geography-game-profile-v1`, etc.). Renaming breaks returning players.
+- Mode-specific persistence lives in `daily-play.ts`, `tap-daily-play.ts`, `hunt-daily-play.ts`. Read/write through those modules — do not scatter raw `localStorage` calls in components.
+- Streaks and retention: local state in `calendar-streak.ts` / `retention-storage.ts`; cloud sync via `profile-streak.ts` on authenticated submit only.
+
+### Server authority
+
+- Puzzle generation and answer validation belong in **`src/lib/server/daily-engine.ts`** and `/api/daily/*` routes — not in client bundles.
+- **Hunt:** The hidden country must **never** be sent to the client before a win or authorized reveal (`/api/daily/hunt/reveal` after 3 misses). Client only receives distance/hint metadata from `/api/daily/hunt/guess`.
+- **Sweep:** Starting country comes from `/api/daily/sweep`; full path validation runs on `/api/daily/sweep/submit`.
+- **Tap:** Round prompts from `/api/daily/tap`; per-tap scoring via `/api/daily/tap/guess`; final score on submit.
+- Do not embed daily answers, solution lists, or unrevealed hunt targets in client-side JSON, React state snapshots, or `NEXT_PUBLIC_*` env vars.
+
+### Caching & fetches
+
+- Fetch today's puzzle **once per session per mode**; cache in component state or existing hooks. Do not poll daily endpoints on an interval.
+- After submit, persist locally first, then call the API. On API failure, local result still stands for the guest experience.
+- Leaderboard and profile data: use `src/lib/api/client.ts` and existing panel components — no ad-hoc `fetch` to Supabase from UI components.
+
+### Anti-spoilers
+
+- Assume players will open DevTools. Treat the client as **untrusted** for anything that would spoil today's puzzle.
+- Never log solutions, hidden country IDs, or full answer keys to the browser console — even in development builds shipped to production.
+
+---
+
+## 3. ARCHITECTURAL SAFETY
+
+### Do not rewrite working game logic
+
+**Unless the user explicitly asks**, do not refactor, rename, or "clean up":
+
+- Core game components: `GeographyGame.tsx`, `TapGame.tsx`, `HuntGame.tsx`
+- Globe/map stack: `WorldMap.tsx`, `TapGlobe.tsx`, `HuntGlobe.tsx`, `globe-polygon-styles.ts`
+- Daily engine: `daily-engine.ts`, `daily-hunt.ts`, `daily-locations.ts`, border graph modules
+- Scoring/progress: `sweep-progress.ts`, `tap-scoring.ts`, `hunt-scoring.ts`, `hunt-guess.ts`
+
+Bug fixes and **minimal, targeted diffs** are fine. Drive-by abstraction, file splits, or logic rewrites are not.
+
+### Match existing structure
+
+```
+src/
+  app/(game)/     Sweep, Tap, Hunt routes + shared game layout
+  app/api/        Route handlers only — delegate to src/lib/server/
+  components/game/   In-round UI (HUD, results, modals, mode clients)
+  components/map/    Globe rendering
+  components/menu/   Profile, friends, rankings, settings
+  components/retention/  Streaks, heatmap (post-MVP)
+  components/growth/     Archive, compare (monetization)
+  lib/            Client-safe game logic, hooks, storage
+  lib/server/     Server-only validation, Supabase admin, daily engine
+  contexts/       Auth, globe shell
+  data/           Static JSON datasets (countries, locations, hunt tiers)
+```
+
+- New API routes → `src/app/api/<area>/route.ts`, logic in `src/lib/server/`.
+- New client hooks → `src/lib/use-*.ts`.
+- New game UI → `src/components/game/` (or `menu/` / `retention/` if appropriate).
+- Types → `src/types/`.
+
+### Dependencies & data
+
+- Do not replace `countries.json`, TopoJSON assets, or the border graph without explicit approval — they are tuned for gameplay.
+- Supabase schema changes require a new file in `supabase/migrations/`; never edit old migrations in place.
+- Run `npm test` and `npm run validate-data` when touching game logic or datasets.
+
+### Scope discipline
+
+- One concern per change. No bundling unrelated features, drive-by formatting, or speculative "improvements."
+- Prefer extending existing functions over parallel implementations.
+
+---
+
+## 4. HUMAN COPY WRITING
+
+All user-facing text — HUD labels, modals, toasts, errors, emails, share lines, empty states, button labels — must sound like a **real person** talking to a friend who likes maps. Not a press release. Not an AI blog post.
+
+### Voice
+
+- **Short sentences.** Get to the point.
+- **Second person** ("you") when instructing; **first person plural** ("we") sparingly for the brand.
+- **Concrete verbs:** name, tap, sweep, guess, share — not "engage with" or "leverage."
+- Light humor is welcome; smugness and jargon are not.
+- Match the tone of existing copy in `WelcomeModal.tsx`, `ShareResult.tsx`, and result screens.
+
+### Good vs bad
+
+| ✅ Do | ❌ Don't |
+|-------|--------|
+| "One wrong answer ends the run." | "An incorrect response will terminate your session." |
+| "Today's puzzles are ready." | "We're excited to unveil today's challenges!" |
+| "Nice sweep — Tap's waiting." | "Congratulations on completing the Sweep mode experience." |
+| "Couldn't save your score. Try again." | "We encountered an issue processing your submission." |
+
+### Banned words and patterns
+
+Never use these (and close cousins): **delve**, **testament**, **foster**, **revolutionize**, **landscape** (metaphorical), **tapestry**, **journey** (metaphorical), **robust**, **seamless**, **cutting-edge**, **game-changer**, **dive in**, **unlock**, **elevate**, **empower**, **harness**, **navigate** (metaphorical), **in today's fast-paced world**.
+
+Also avoid:
+
+- Exclamation marks in error messages
+- "Oops!" / "Uh oh!" unless the moment is genuinely light
+- Emoji in core game UI (share text may use sparingly if already established)
+- Title Case Every Word In Sentences
+
+### Copy locations checklist
+
+When adding features, update copy in the same PR for: modal title + body, button labels, `aria-label`s, share strings (`share-result.ts`, `tap-share-result.ts`, `hunt-share-result.ts`), API email HTML (`cron/daily-email`), and static pages (`about`, `classroom`, legal pages).
+
+Brand name: **Daily Globe Games** (compact HUD may use **Daily Globe**). Domain: `dailyglobegames.com`.

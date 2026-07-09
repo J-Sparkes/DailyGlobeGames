@@ -41,22 +41,32 @@ function writeStorage(data: TapStorage): void {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-export function getTapCompletedResultForToday(): CompletedTapResult | null {
+export function getTapCompletedResultForDate(
+  date: string = getDateSeed(),
+): CompletedTapResult | null {
   if (isUnlimitedPlaysEnabled()) return null;
 
-  const today = getDateSeed();
   const { completed } = readStorage();
-  if (completed?.date === today) return completed;
+  if (completed?.date === date) return completed;
+  return null;
+}
+
+export function getTapCompletedResultForToday(): CompletedTapResult | null {
+  return getTapCompletedResultForDate(getDateSeed());
+}
+
+export function getTapProgressForDate(
+  date: string = getDateSeed(),
+): TapDailyProgress | null {
+  if (isUnlimitedPlaysEnabled()) return null;
+
+  const { progress } = readStorage();
+  if (progress?.date === date) return progress;
   return null;
 }
 
 export function getTapProgressForToday(): TapDailyProgress | null {
-  if (isUnlimitedPlaysEnabled()) return null;
-
-  const today = getDateSeed();
-  const { progress } = readStorage();
-  if (progress?.date === today) return progress;
-  return null;
+  return getTapProgressForDate(getDateSeed());
 }
 
 export function saveTapProgress(progress: TapDailyProgress): void {
@@ -85,9 +95,11 @@ export function clearTapDailyStorage(): void {
   window.localStorage.removeItem(STORAGE_KEY);
 }
 
-export function createInitialTapProgress(): TapDailyProgress {
+export function createInitialTapProgress(
+  date: string = getDateSeed(),
+): TapDailyProgress {
   return {
-    date: getDateSeed(),
+    date,
     roundIndex: 0,
     results: [],
     phase: "aiming",

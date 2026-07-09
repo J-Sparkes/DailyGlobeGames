@@ -31,8 +31,8 @@ import { useDailyDateRollover } from "@/lib/use-daily-date-rollover";
 import {
   clearTapDailyStorage,
   createInitialTapProgress,
-  getTapCompletedResultForToday,
-  getTapProgressForToday,
+  getTapCompletedResultForDate,
+  getTapProgressForDate,
   saveTapCompletedResult,
   saveTapProgress,
   type CompletedTapResult,
@@ -44,6 +44,7 @@ import {
   MAX_ROUNDS,
   sumTapScore,
 } from "@/lib/tap-scoring";
+import { UI } from "@/lib/design-tokens";
 import type { TapRoundResult } from "@/types/location";
 
 export function TapGame() {
@@ -93,7 +94,14 @@ export function TapGame() {
   const runningScore = useMemo(() => sumTapScore(results), [results]);
 
   useEffect(() => {
-    const completed = getTapCompletedResultForToday();
+    setCompletedResult(null);
+    setRoundIndex(0);
+    setResults([]);
+    setPhase("aiming");
+    setCurrentRound(null);
+    setFreshComplete(false);
+
+    const completed = getTapCompletedResultForDate(dateSeed);
     if (completed) {
       setCompletedResult(completed);
       setRoundIndex(completed.rounds.length);
@@ -102,7 +110,7 @@ export function TapGame() {
       return;
     }
 
-    const progress = getTapProgressForToday();
+    const progress = getTapProgressForDate(dateSeed);
     if (progress) {
       setRoundIndex(progress.roundIndex);
       setResults(progress.results);
@@ -111,11 +119,11 @@ export function TapGame() {
         setCurrentRound(progress.results[progress.results.length - 1] ?? null);
       }
     } else if (!unlimited) {
-      saveTapProgress(createInitialTapProgress());
+      saveTapProgress(createInitialTapProgress(dateSeed));
     }
 
     setInitialized(true);
-  }, [unlimited]);
+  }, [unlimited, dateSeed]);
 
   useEffect(() => {
     if (!initialized || completedResult || unlimited) return;
@@ -137,14 +145,14 @@ export function TapGame() {
         id: "guess",
         lat: currentRound.guessLat,
         lng: currentRound.guessLng,
-        color: "#f87171",
+        color: UI.error,
         size: 0.35,
       },
       {
         id: "answer",
         lat: currentRound.answerLat,
         lng: currentRound.answerLng,
-        color: "#4ade80",
+        color: UI.success,
         size: 0.35,
       },
     ];
@@ -177,9 +185,9 @@ export function TapGame() {
     setPhase("aiming");
     setCurrentRound(null);
     if (!unlimited) {
-      saveTapProgress(createInitialTapProgress());
+      saveTapProgress(createInitialTapProgress(dateSeed));
     }
-  }, [unlimited]);
+  }, [unlimited, dateSeed]);
 
   const handleGlobeTap = useCallback(
     async (lat: number, lng: number) => {
@@ -354,7 +362,7 @@ export function TapGame() {
               <button
                 type="button"
                 onClick={handleNextRound}
-                className="touch-target btn-primary mt-2.5 w-full min-h-10 rounded-lg px-4 py-2 text-sm font-semibold"
+                className="touch-target btn-primary mt-2.5 w-full min-h-11 rounded-lg px-4 py-2 text-sm font-semibold"
               >
                 {roundIndex + 1 >= MAX_ROUNDS
                   ? `Final score (${runningScore})`

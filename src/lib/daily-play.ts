@@ -47,22 +47,32 @@ function writeStorage(data: DailyStorage): void {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-export function getCompletedResultForToday(): CompletedDailyResult | null {
+export function getCompletedResultForDate(
+  date: string = getDateSeed(),
+): CompletedDailyResult | null {
   if (isUnlimitedPlaysEnabled()) return null;
 
-  const today = getDateSeed();
   const { completed } = readStorage();
-  if (completed?.date === today) return completed;
+  if (completed?.date === date) return completed;
+  return null;
+}
+
+export function getCompletedResultForToday(): CompletedDailyResult | null {
+  return getCompletedResultForDate(getDateSeed());
+}
+
+export function getProgressForDate(
+  date: string = getDateSeed(),
+): DailyProgress | null {
+  if (isUnlimitedPlaysEnabled()) return null;
+
+  const { progress } = readStorage();
+  if (progress?.date === date) return progress;
   return null;
 }
 
 export function getProgressForToday(): DailyProgress | null {
-  if (isUnlimitedPlaysEnabled()) return null;
-
-  const today = getDateSeed();
-  const { progress } = readStorage();
-  if (progress?.date === today) return progress;
-  return null;
+  return getProgressForDate(getDateSeed());
 }
 
 export function saveProgress(progress: DailyProgress): void {
@@ -80,7 +90,6 @@ export function saveProgress(progress: DailyProgress): void {
 export function saveCompletedResult(result: CompletedDailyResult): void {
   if (isUnlimitedPlaysEnabled()) return;
 
-  const storage = readStorage();
   writeStorage({
     completed: result,
     progress: undefined,
@@ -92,9 +101,12 @@ export function clearDailyStorage(): void {
   window.localStorage.removeItem(STORAGE_KEY);
 }
 
-export function createInitialProgress(dailyCountryId: string): DailyProgress {
+export function createInitialProgress(
+  dailyCountryId: string,
+  date: string = getDateSeed(),
+): DailyProgress {
   return {
-    date: getDateSeed(),
+    date,
     dailyCountryId,
     claimedIds: [],
     phase: "naming",

@@ -56,7 +56,7 @@ export default function ClassroomPage() {
       <section className="mb-8 space-y-3">
         <h2 className="text-lg font-medium text-white">Accounts (optional)</h2>
         <p>
-          Students can play without signing in. Accounts unlock friends,
+          Students can play without signing in. Accounts add friends,
           leaderboards, and cross-device streaks — useful for semester-long
           challenges.
         </p>

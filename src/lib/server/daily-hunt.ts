@@ -88,8 +88,3 @@ export function pickDailyHuntCountry(
 
   return weighted[weighted.length - 1]!.feature.properties.countryId;
 }
-
-export function getHuntCountryFact(countryId: string, displayName: string): string {
-  void countryId;
-  return `Today's hidden country was ${displayName}. Every guess measures how far you were from its geographic center.`;
-}

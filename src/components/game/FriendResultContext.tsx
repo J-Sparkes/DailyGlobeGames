@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { LeaderboardMode } from "@/types/profile";
+import { fetchFriendsToday } from "@/lib/api/client";
 
 export interface FriendTodayActivity {
   username: string;
@@ -26,9 +27,8 @@ export function FriendResultContext({
 
   useEffect(() => {
     let cancelled = false;
-    void fetch(`/api/retention/friends-today?mode=${mode}&date=${date}`)
-      .then((res) => (res.ok ? res.json() : { friends: [] }))
-      .then((data: { friends: FriendTodayActivity[] }) => {
+    void fetchFriendsToday(mode, date)
+      .then((data) => {
         if (!cancelled) {
           setFriends(data.friends ?? []);
           setLoading(false);

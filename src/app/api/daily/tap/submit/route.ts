@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { jsonError, requireAuthUser } from "@/lib/server/api-utils";
 import { shouldSkipLeaderboardSubmit } from "@/lib/server/premium";
 import { updateProfileCalendarStreak } from "@/lib/server/profile-streak";
-import { sumTapScore } from "@/lib/tap-scoring";
+import { validateTapSubmission } from "@/lib/server/daily-engine";
 import { getDateSeed } from "@/lib/daily-seed";
 import type { TapRoundResult } from "@/types/location";
 
@@ -19,7 +19,12 @@ export async function POST(request: Request) {
     return jsonError("Invalid rounds");
   }
 
-  const score = sumTapScore(rounds);
+  const validation = validateTapSubmission(date, rounds);
+  if (!validation.valid) {
+    return jsonError("Invalid tap submission", 422);
+  }
+
+  const score = validation.score;
   const { user, supabase } = await requireAuthUser();
 
   if (user && supabase && !shouldSkipLeaderboardSubmit(date)) {

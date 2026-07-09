@@ -3,11 +3,11 @@ import countryData from "@/data/countries.json";
 import locationsData from "@/data/locations.json";
 import type { CountryDataset } from "@/types/country";
 import type { DailyLocation } from "@/types/location";
-import { getDateSeed, pickDailyCountry } from "@/lib/daily-seed";
+import { getDateSeed } from "@/lib/daily-seed";
+import { pickDailyCountry } from "@/lib/server/daily-seed-pick";
 import { pickDailyLocations } from "@/lib/daily-locations";
-import { pickDailyHuntCountry, buildHuntPool } from "@/lib/daily-hunt";
-import { getFrontierCountryIds, loadBorderGraph } from "@/lib/border-graph";
-import { loadServerBorderGraph } from "@/lib/server/border-graph";
+import { pickDailyHuntCountry, buildHuntPool } from "@/lib/server/daily-hunt";
+import { loadServerBorderGraph, getServerFrontierCountryIds } from "@/lib/server/border-graph";
 import { loadServerCountryFeatures } from "@/lib/server/world-geographies";
 import { isCorrectAnswer } from "@/lib/answer-check";
 import { countryById, getDailyPool } from "@/lib/game-data";
@@ -16,6 +16,7 @@ import { haversineKm } from "@/lib/geo-distance";
 import { getFeatureCentroid } from "@/lib/geo-centroid";
 import { getWarmerHint } from "@/lib/hunt-scoring";
 import type { CountryFeature } from "@/lib/world-geographies";
+import type { TapRoundResult } from "@/types/location";
 
 const dataset = countryData as CountryDataset;
 
@@ -129,7 +130,6 @@ export async function validateSweepPath(
   }
 
   loadServerBorderGraph();
-  await loadBorderGraph();
 
   for (let i = 0; i < path.length; i++) {
     const countryId = path[i]!;
@@ -138,7 +138,7 @@ export async function validateSweepPath(
     }
 
     if (i < path.length - 1) {
-      const frontier = new Set(getFrontierCountryIds(path.slice(0, i + 1)));
+      const frontier = new Set(getServerFrontierCountryIds(path.slice(0, i + 1)));
       const next = path[i + 1]!;
       if (!frontier.has(next)) {
         return { valid: false, streak: i + 1 };
@@ -155,6 +155,42 @@ export async function validateSweepPath(
   }
 
   return { valid: true, streak: path.length };
+}
+
+export function validateTapSubmission(
+  date: string,
+  rounds: TapRoundResult[],
+): { valid: boolean; score: number } {
+  const dateObj = new Date(`${date}T00:00:00Z`);
+  const expected = pickDailyLocations(getServerLocations(), MAX_ROUNDS, dateObj);
+
+  if (rounds.length === 0 || rounds.length !== expected.length) {
+    return { valid: false, score: 0 };
+  }
+
+  let score = 0;
+  for (let i = 0; i < rounds.length; i++) {
+    const client = rounds[i]!;
+    const server = scoreServerTapGuess(date, i, client.guessLat, client.guessLng);
+
+    if (client.locationId !== server.locationId) {
+      return { valid: false, score: 0 };
+    }
+    if (Math.abs(client.distanceKm - server.distanceKm) > 0.05) {
+      return { valid: false, score: 0 };
+    }
+    if (
+      client.basePoints !== server.basePoints ||
+      client.multiplier !== server.multiplier ||
+      client.totalPoints !== server.totalPoints
+    ) {
+      return { valid: false, score: 0 };
+    }
+
+    score += server.totalPoints;
+  }
+
+  return { valid: true, score };
 }
 
 export { buildHuntPool };

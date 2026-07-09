@@ -3,23 +3,9 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import type { LeaderboardMode } from "@/types/profile";
+import { fetchCompare, type CompareData } from "@/lib/api/client";
 import { getModeDeepLink } from "@/lib/share-deep-link";
-
-interface CompareData {
-  date: string;
-  mode: LeaderboardMode;
-  target: {
-    username: string;
-    displayName: string;
-    score: number | null;
-    played: boolean;
-  };
-  viewer: {
-    played: boolean;
-    score: number | null;
-  };
-}
+import type { LeaderboardMode } from "@/types/profile";
 
 function CompareContent() {
   const params = useSearchParams();
@@ -35,16 +21,7 @@ function CompareContent() {
       return;
     }
 
-    void fetch(
-      `/api/compare?user=${encodeURIComponent(user)}&mode=${mode}&date=${date}`,
-    )
-      .then(async (res) => {
-        if (!res.ok) {
-          const body = (await res.json()) as { error?: string };
-          throw new Error(body.error ?? "Compare failed");
-        }
-        return res.json() as Promise<CompareData>;
-      })
+    void fetchCompare(user, mode, date)
       .then(setData)
       .catch((err: Error) => setError(err.message));
   }, [user, mode, date]);

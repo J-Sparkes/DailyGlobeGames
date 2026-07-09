@@ -1,8 +1,12 @@
 "use client";
 
-import { canUseStreakFreezeThisMonth, useStreakFreeze } from "@/lib/retention-storage";
+import { useStreakFreezeApi } from "@/lib/api/client";
 import { trackEvent } from "@/lib/analytics";
 import { notifyRetentionUpdate } from "@/lib/retention-events";
+import {
+  canUseStreakFreezeThisMonth,
+  useStreakFreeze,
+} from "@/lib/retention-storage";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function StreakFreezeButton({ onUsed }: { onUsed?: () => void }) {
@@ -16,10 +20,8 @@ export function StreakFreezeButton({ onUsed }: { onUsed?: () => void }) {
       onClick={() => {
         void (async () => {
           if (configured && user) {
-            const res = await fetch("/api/retention/streak-freeze", {
-              method: "POST",
-            });
-            if (!res.ok) return;
+            const ok = await useStreakFreezeApi();
+            if (!ok) return;
             useStreakFreeze();
           } else if (!useStreakFreeze()) {
             return;
@@ -30,7 +32,7 @@ export function StreakFreezeButton({ onUsed }: { onUsed?: () => void }) {
           onUsed?.();
         })();
       }}
-      className="mt-2 text-xs text-sky-400 underline-offset-2 hover:underline"
+      className="mt-2 text-xs text-[var(--ui-accent-primary)] underline-offset-2 hover:underline"
     >
       Use streak freeze (1× this month)
     </button>

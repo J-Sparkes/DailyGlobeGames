@@ -31,7 +31,7 @@ function ShareButton({
   href?: string;
 }) {
   const className =
-    "touch-target inline-flex min-h-11 items-center justify-center rounded-lg border border-white/15 bg-white/[0.05] px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-sky-500/40 hover:bg-sky-500/10 active:bg-sky-500/15";
+    "touch-target inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--ui-text-primary)] transition hover:border-[color-mix(in_srgb,var(--ui-accent-primary)_40%,transparent)] hover:bg-[color-mix(in_srgb,var(--ui-accent-primary)_10%,transparent)]";
 
   if (href) {
     return (

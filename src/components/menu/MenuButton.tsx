@@ -10,7 +10,7 @@ export function MenuButton({ onClick }: MenuButtonProps) {
       type="button"
       onClick={onClick}
       aria-label="Open menu"
-      className="touch-target flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/12 bg-black/50 text-slate-200 transition hover:border-sky-500/40 hover:bg-sky-500/10 hover:text-white md:h-8 md:w-8"
+      className="touch-target flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg border border-[var(--ui-border-subtle)] bg-[color-mix(in_srgb,var(--ui-bg-deep)_50%,transparent)] text-[var(--ui-text-primary)] transition hover:border-[color-mix(in_srgb,var(--ui-accent-primary)_40%,transparent)] hover:bg-[color-mix(in_srgb,var(--ui-accent-primary)_10%,transparent)]"
     >
       <svg
         width="20"

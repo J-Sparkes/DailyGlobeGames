@@ -11,7 +11,7 @@ import {
   formatCountdown,
   getMsUntilNextPuzzle,
 } from "@/lib/daily-play";
-import { getHuntCountryFact } from "@/lib/daily-hunt";
+import { getHuntCountryFact } from "@/lib/daily-hunt-facts";
 import {
   buildShareGrid,
   formatMiles,
@@ -49,45 +49,45 @@ export function HuntDailyResult({
 
   return (
     <div className="hud-panel">
-      <p className="text-[10px] font-medium tracking-[0.15em] text-sky-400/80 uppercase">
+      <p className="font-stat text-[10px] font-medium tracking-[0.15em] text-[var(--ui-accent-primary)] uppercase">
         {result.date}
       </p>
 
       <div className="mt-2 flex items-end gap-2.5">
-        <p className="text-4xl font-semibold tabular-nums leading-none text-white">
+        <p className="font-stat text-4xl font-semibold tabular-nums leading-none text-[var(--ui-text-primary)]">
           {result.score}
         </p>
         <div className="pb-0.5">
-          <h2 className="text-sm font-semibold text-white">
+          <h2 className="text-sm font-semibold text-[var(--ui-text-primary)]">
             {result.won ? "Found!" : "Missed"}
           </h2>
-          <p className="text-xs text-slate-400">/ {MAX_HUNT_SCORE}</p>
+          <p className="text-xs text-[var(--ui-text-muted)]">/ {MAX_HUNT_SCORE}</p>
         </div>
       </div>
 
       <CalendarStreakStat animate={variant === "complete"} />
 
-      <p className="mt-2 text-xs tracking-wide text-slate-300">
+      <p className="mt-2 text-xs tracking-wide text-[var(--ui-text-muted)]">
         {buildShareGrid(result.won, result.solvedOnGuess)}
       </p>
 
-      <p className="mt-2 text-sm font-medium text-white">{hiddenName}</p>
-      <p className="mt-0.5 text-xs leading-relaxed text-slate-400 line-clamp-3">
+      <p className="mt-2 text-sm font-medium text-[var(--ui-text-primary)]">{hiddenName}</p>
+      <p className="mt-0.5 text-xs leading-relaxed text-[var(--ui-text-muted)] line-clamp-3">
         {fact}
       </p>
 
       {isAlreadyPlayed ? (
-        <p className="mt-2 text-xs text-slate-400">
+        <p className="mt-2 text-xs text-[var(--ui-text-muted)]">
           Next hunt in {countdown}
         </p>
       ) : result.won ? (
-        <p className="mt-2 text-xs text-slate-400">
+        <p className="mt-2 text-xs text-[var(--ui-text-muted)]">
           {result.solvedOnGuess === 1
             ? "First guess — incredible."
             : `Found on guess ${result.solvedOnGuess}.`}
         </p>
       ) : (
-        <p className="mt-2 text-xs text-slate-400">
+        <p className="mt-2 text-xs text-[var(--ui-text-muted)]">
           Tough one today. Try again tomorrow.
         </p>
       )}
@@ -106,7 +106,7 @@ export function HuntDailyResult({
         <button
           type="button"
           onClick={onPlayAgain}
-          className="touch-target mt-2.5 min-h-10 rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-400"
+          className="touch-target btn-primary mt-2.5 min-h-11 rounded-lg px-4 py-2 text-sm font-semibold"
         >
           Play again
         </button>

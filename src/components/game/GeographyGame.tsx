@@ -20,8 +20,8 @@ import { getFrontierCountryIds, loadBorderGraph } from "@/lib/border-graph";
 import {
   clearDailyStorage,
   createInitialProgress,
-  getCompletedResultForToday,
-  getProgressForToday,
+  getCompletedResultForDate,
+  getProgressForDate,
   isUnlimitedPlaysEnabled,
   saveCompletedResult,
   saveProgress,
@@ -46,7 +46,6 @@ import { shouldFinishSweepSuccess } from "@/lib/sweep-finish";
 import { canSelectFrontierCountry } from "@/lib/sweep-select";
 import { shouldAcceptSweepSubmit } from "@/lib/sweep-submit";
 import { useDailyDateRollover } from "@/lib/use-daily-date-rollover";
-import { loadCountryFeatures } from "@/lib/world-geographies";
 
 export function GeographyGame() {
   const [dailyStartId, setDailyStartId] = useState<string | null>(null);
@@ -178,27 +177,41 @@ export function GeographyGame() {
   }, [pendingGameOver, finishGame]);
 
   useEffect(() => {
-    fetchSweepDaily(dateSeed)
+    let cancelled = false;
+    void fetchSweepDaily(dateSeed)
       .then((daily) => {
+        if (cancelled) return;
         setDailyStartId(daily.startCountryId);
-        if (!targetId) setTargetId(daily.startCountryId);
+        setTargetId((current) => current || daily.startCountryId);
       })
       .catch(() => {
         // Fallback if API unavailable during dev
       });
-  }, [dateSeed, targetId]);
+    return () => {
+      cancelled = true;
+    };
+  }, [dateSeed]);
 
   useEffect(() => {
     if (!dailyStartId) return;
 
-    const completed = getCompletedResultForToday();
+    setCompletedResult(null);
+    setGameOver(null);
+    setPendingGameOver(null);
+    setClaimedIds([]);
+    setPhase("naming");
+    setGuess("");
+    setInputError(false);
+    sweepCompletedRef.current = false;
+
+    const completed = getCompletedResultForDate(dateSeed);
     if (completed) {
       setCompletedResult(completed);
       setInitialized(true);
       return;
     }
 
-    const progress = getProgressForToday();
+    const progress = getProgressForDate(dateSeed);
     if (progress) {
       const sanitized = sanitizeSweepProgress(progress, dailyStartId);
       setClaimedIds(sanitized.claimedIds);
@@ -214,17 +227,15 @@ export function GeographyGame() {
         saveProgress(sanitized);
       }
     } else if (!unlimited) {
-      saveProgress(createInitialProgress(dailyStartId));
+      saveProgress(createInitialProgress(dailyStartId, dateSeed));
       setTargetId(dailyStartId);
     }
 
     setInitialized(true);
-  }, [dailyStartId, unlimited]);
+  }, [dailyStartId, unlimited, dateSeed]);
 
   useEffect(() => {
-    Promise.all([loadCountryFeatures(), loadBorderGraph()]).then(() =>
-      setMapReady(true),
-    );
+    loadBorderGraph().then(() => setMapReady(true));
   }, []);
 
   useEffect(() => {
@@ -526,7 +537,7 @@ export function GeographyGame() {
                   spellCheck={false}
                   autoFocus={!isTouch}
                   aria-label="Country name"
-                  className={`min-h-10 flex-1 rounded-lg border bg-[var(--ui-surface-raised)] px-3 py-2 text-base text-[var(--ui-text-primary)] placeholder:text-[var(--ui-text-muted)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ui-accent-primary)_60%,transparent)] ${
+                  className={`min-h-11 flex-1 rounded-lg border bg-[var(--ui-surface-raised)] px-3 py-2 text-base text-[var(--ui-text-primary)] placeholder:text-[var(--ui-text-muted)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ui-accent-primary)_60%,transparent)] ${
                     inputError
                       ? "border-[color-mix(in_srgb,var(--ui-error)_60%,transparent)] shake"
                       : "border-[var(--ui-border-subtle)]"
@@ -535,7 +546,7 @@ export function GeographyGame() {
                 <button
                   type="submit"
                   disabled={!guess.trim()}
-                  className="touch-target btn-primary min-h-10 shrink-0 rounded-lg px-4 py-2 text-sm font-semibold"
+                  className="touch-target btn-primary min-h-11 shrink-0 rounded-lg px-4 py-2 text-sm font-semibold"
                 >
                   Go
                 </button>

@@ -120,7 +120,7 @@ export function DailyResult({
         <button
           type="button"
           onClick={onPlayAgain}
-          className="touch-target btn-primary mt-2.5 min-h-10 rounded-lg px-4 py-2 text-sm font-semibold"
+          className="touch-target btn-primary mt-2.5 min-h-11 rounded-lg px-4 py-2 text-sm font-semibold"
         >
           Play again
         </button>
