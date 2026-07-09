@@ -3,7 +3,7 @@ import { MAP } from "@/lib/design-tokens";
 export type GeographyRole =
   | "claimed"
   | "highlight"
-  | "clickable"
+  | "connecting"
   | "success"
   | "invalid"
   | "hidden";
@@ -21,14 +21,16 @@ export const TRANSPARENT_POLYGON: PolygonStyle = {
   altitude: 0.001,
 };
 
-const VISIBLE_STYLES: Record<
-  Exclude<GeographyRole, "hidden" | "clickable">,
-  PolygonStyle
-> = {
+const VISIBLE_STYLES: Record<Exclude<GeographyRole, "hidden">, PolygonStyle> = {
   claimed: {
     capColor: MAP.claimed.cap,
     strokeColor: MAP.claimed.stroke,
     altitude: 0.012,
+  },
+  connecting: {
+    capColor: MAP.connecting.cap,
+    strokeColor: MAP.connecting.stroke,
+    altitude: 0.008,
   },
   highlight: {
     capColor: MAP.highlight.cap,
@@ -50,13 +52,13 @@ const VISIBLE_STYLES: Record<
 export function getSweepOverlayCountryIds(
   claimedIds: Set<string>,
   highlightId: string | null,
-  clickableIds: Set<string>,
+  connectingIds: Set<string>,
   flashSuccessId?: string | null,
   flashInvalidId?: string | null,
 ): Set<string> {
   const ids = new Set<string>(claimedIds);
   if (highlightId) ids.add(highlightId);
-  for (const id of clickableIds) ids.add(id);
+  for (const id of connectingIds) ids.add(id);
   if (flashSuccessId) ids.add(flashSuccessId);
   if (flashInvalidId) ids.add(flashInvalidId);
   return ids;
@@ -66,7 +68,7 @@ export function getGeographyRole(
   countryId: string,
   claimedIds: Set<string>,
   highlightId: string | null,
-  clickableIds: Set<string>,
+  connectingIds: Set<string>,
   flashSuccessId?: string | null,
   flashInvalidId?: string | null,
 ): GeographyRole {
@@ -74,13 +76,12 @@ export function getGeographyRole(
   if (flashInvalidId === countryId) return "invalid";
   if (claimedIds.has(countryId)) return "claimed";
   if (highlightId === countryId) return "highlight";
-  if (clickableIds.has(countryId)) return "clickable";
+  if (connectingIds.has(countryId)) return "connecting";
   return "hidden";
 }
 
 export function buildPolygonStyle(role: GeographyRole): PolygonStyle {
   if (role === "hidden") return TRANSPARENT_POLYGON;
-  if (role === "clickable") return TRANSPARENT_POLYGON;
   return VISIBLE_STYLES[role];
 }
 
@@ -88,7 +89,7 @@ export function buildPolygonStyle(role: GeographyRole): PolygonStyle {
 export function buildPolygonStyleMap(
   claimedIds: Set<string>,
   highlightId: string | null,
-  clickableIds: Set<string>,
+  connectingIds: Set<string>,
   flashSuccessId?: string | null,
   flashInvalidId?: string | null,
 ): Map<string, PolygonStyle> {
@@ -96,7 +97,7 @@ export function buildPolygonStyleMap(
   const overlayIds = getSweepOverlayCountryIds(
     claimedIds,
     highlightId,
-    clickableIds,
+    connectingIds,
     flashSuccessId,
     flashInvalidId,
   );
@@ -106,7 +107,7 @@ export function buildPolygonStyleMap(
       countryId,
       claimedIds,
       highlightId,
-      clickableIds,
+      connectingIds,
       flashSuccessId,
       flashInvalidId,
     );

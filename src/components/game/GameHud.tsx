@@ -1,6 +1,8 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
+import { useEffect } from "react";
+import { ModeSwitcher } from "@/components/game/ModeSwitcher";
 import { MenuButton } from "@/components/menu/MenuButton";
 
 export function HudLayer({ children }: { children: ReactNode }) {
@@ -19,23 +21,27 @@ export function HudAnchor({
   children,
   position,
   keyboardInset = 0,
+  className = "",
 }: {
   children: ReactNode;
   position: "top" | "bottom";
   keyboardInset?: number;
+  className?: string;
 }) {
   const style: CSSProperties | undefined =
     position === "bottom" && keyboardInset > 0
-      ? { paddingBottom: `calc(0.5rem + ${keyboardInset}px)` }
+      ? {
+          paddingBottom: `calc(var(--hud-mobile-dock-offset, 0px) + ${keyboardInset}px)`,
+        }
       : undefined;
 
   return (
     <div
-      className={
+      className={`${
         position === "top"
           ? "hud-slot hud-slot--top shrink-0"
-          : "hud-slot hud-slot--bottom shrink-0"
-      }
+          : "hud-slot hud-slot--bottom hud-slot--bottom-with-dock shrink-0"
+      } ${className}`.trim()}
       style={style}
     >
       {children}
@@ -82,8 +88,8 @@ export function HudToolbar({
   onMenuOpen,
 }: {
   children?: ReactNode;
-  stat?: { label: string; value: string | number; pop?: boolean };
-  secondaryStat?: { label: string; value: string | number; pop?: boolean };
+  stat?: { label: string; value: string | number; pop?: boolean; burst?: boolean };
+  secondaryStat?: { label: string; value: string | number; pop?: boolean; burst?: boolean };
   date?: string;
   prompt?: ReactNode;
   meta?: ReactNode;
@@ -119,7 +125,11 @@ export function HudToolbar({
             </p>
             <p
               className={`font-stat text-lg font-semibold leading-none text-[var(--ui-accent-warm)] ${
-                secondaryStat.pop ? "streak-pop" : ""
+                secondaryStat.burst
+                  ? "milestone-burst"
+                  : secondaryStat.pop
+                    ? "streak-pop"
+                    : ""
               }`}
             >
               {secondaryStat.value}
@@ -133,7 +143,7 @@ export function HudToolbar({
             </p>
             <p
               className={`font-stat text-lg font-semibold leading-none text-[var(--ui-text-primary)] ${
-                stat.pop ? "streak-pop" : ""
+                stat.burst ? "milestone-burst" : stat.pop ? "streak-pop" : ""
               }`}
             >
               {stat.value}
@@ -143,6 +153,174 @@ export function HudToolbar({
         <MenuButton onClick={onMenuOpen} />
       </div>
     </div>
+  );
+}
+
+type HudStat = {
+  label: string;
+  value: string | number;
+  pop?: boolean;
+  burst?: boolean;
+};
+
+function HudDockStat({
+  stat,
+  accent = "primary",
+}: {
+  stat: HudStat;
+  accent?: "primary" | "warm";
+}) {
+  const valueClass =
+    accent === "warm"
+      ? "text-[var(--ui-accent-warm)]"
+      : "text-[var(--ui-text-primary)]";
+
+  return (
+    <div className="flex min-w-0 flex-col items-center px-1">
+      <p className="max-w-[4.5rem] truncate text-[9px] font-medium uppercase tracking-wide text-[var(--ui-text-muted)]">
+        {stat.label}
+      </p>
+      <p
+        className={`font-stat text-sm font-semibold leading-none tabular-nums ${valueClass} ${
+          stat.burst ? "milestone-burst" : stat.pop ? "streak-pop" : ""
+        }`}
+      >
+        {stat.value}
+      </p>
+    </div>
+  );
+}
+
+/** Compact game prompt shown above bottom panels on mobile only */
+export function HudMobilePrompt({
+  prompt,
+  meta,
+}: {
+  prompt?: ReactNode;
+  meta?: ReactNode;
+}) {
+  if (!prompt && !meta) return null;
+
+  return (
+    <div className="pointer-events-none mb-2 w-full sm:hidden">
+      <div className="hud-mobile-prompt rounded-lg border border-[var(--ui-border-subtle)] bg-[color-mix(in_srgb,var(--ui-surface-hud)_88%,transparent)] px-3 py-2 backdrop-blur-sm">
+        {prompt && (
+          <p className="line-clamp-2 text-xs leading-snug text-[var(--ui-text-primary)]">
+            {prompt}
+          </p>
+        )}
+        {meta && (
+          <p className="mt-0.5 line-clamp-1 text-[10px] leading-snug text-[var(--ui-text-muted)]">
+            {meta}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Bottom navigation dock — mobile only; desktop uses HudToolbar */
+export function HudMobileDock({
+  onMenuOpen,
+  stat,
+  secondaryStat,
+  keyboardInset = 0,
+}: {
+  onMenuOpen: () => void;
+  stat?: HudStat;
+  secondaryStat?: HudStat;
+  keyboardInset?: number;
+}) {
+  return (
+    <div
+      className="hud-mobile-dock pointer-events-auto sm:hidden"
+      style={
+        keyboardInset > 0
+          ? { transform: `translateY(-${keyboardInset}px)` }
+          : undefined
+      }
+    >
+      <div className="hud-mobile-dock__inner">
+        <MenuButton onClick={onMenuOpen} />
+        <ModeSwitcher variant="dock" />
+        <div className="flex shrink-0 items-center gap-0.5">
+          {secondaryStat && (
+            <HudDockStat stat={secondaryStat} accent="warm" />
+          )}
+          {stat && <HudDockStat stat={stat} accent="primary" />}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export interface HudChromeProps {
+  onMenuOpen: () => void;
+  date?: string;
+  stat?: HudStat;
+  secondaryStat?: HudStat;
+  prompt?: ReactNode;
+  meta?: ReactNode;
+  dateStale?: boolean;
+  onDateRefresh?: () => void;
+  topExtra?: ReactNode;
+  keyboardInset?: number;
+  children?: ReactNode;
+}
+
+/** Desktop top bar + mobile bottom dock — keeps the globe clear on small screens */
+export function HudChrome({
+  onMenuOpen,
+  date,
+  stat,
+  secondaryStat,
+  prompt,
+  meta,
+  dateStale = false,
+  onDateRefresh,
+  topExtra,
+  keyboardInset = 0,
+  children,
+}: HudChromeProps) {
+  return (
+    <>
+      <HudAnchor position="top" className="max-sm:hidden">
+        {dateStale && onDateRefresh && (
+          <DailyDateStaleBanner onRefresh={onDateRefresh} />
+        )}
+        <HudPanel>
+          <HudToolbar
+            onMenuOpen={onMenuOpen}
+            date={date}
+            stat={stat}
+            secondaryStat={secondaryStat}
+            prompt={prompt}
+            meta={meta}
+          >
+            <ModeSwitcher />
+          </HudToolbar>
+          {topExtra}
+        </HudPanel>
+      </HudAnchor>
+
+      <HudSpacer />
+
+      <HudAnchor position="bottom" keyboardInset={keyboardInset}>
+        {dateStale && onDateRefresh && (
+          <div className="pointer-events-auto mb-2 w-full sm:hidden">
+            <DailyDateStaleBanner onRefresh={onDateRefresh} />
+          </div>
+        )}
+        <HudMobilePrompt prompt={prompt} meta={meta} />
+        {children}
+        <HudMobileDock
+          onMenuOpen={onMenuOpen}
+          stat={stat}
+          secondaryStat={secondaryStat}
+          keyboardInset={keyboardInset}
+        />
+      </HudAnchor>
+    </>
   );
 }
 
@@ -182,6 +360,45 @@ export function GameLiveRegion({ message }: { message: string }) {
   return (
     <div className="sr-only" aria-live="polite" aria-atomic="true">
       {message}
+    </div>
+  );
+}
+
+/** Full-viewport centered overlay for end-of-game results */
+export function GameResultOverlay({
+  children,
+  label = "Game results",
+  onClose,
+}: {
+  children: ReactNode;
+  label?: string;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className="game-result-overlay pointer-events-auto"
+      role="presentation"
+      onClick={onClose}
+    >
+      <div className="game-result-backdrop" aria-hidden />
+      <div
+        className="game-result-center"
+        role="dialog"
+        aria-modal="true"
+        aria-label={label}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="game-result-card">{children}</div>
+      </div>
     </div>
   );
 }

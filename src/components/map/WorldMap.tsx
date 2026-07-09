@@ -3,11 +3,8 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Globe, { type GlobeMethods } from "react-globe.gl";
 import { buildPolygonStyleMap } from "@/lib/globe-polygon-styles";
-import { useGlobeUserControl } from "@/lib/globe-user-control";
-import { isTouchDevice, prefersReducedMotion } from "@/lib/device";
+import { isTouchDevice } from "@/lib/device";
 import { setsEqual } from "@/lib/globe-constants";
-import { getMapName } from "@/lib/country-resolve";
-import { getFeatureCentroid } from "@/lib/geo-centroid";
 import { applyPolygonStyles } from "@/lib/styled-country-features";
 import { useContainerDims } from "@/lib/use-container-dims";
 import { GLOBE } from "@/lib/design-tokens";
@@ -17,12 +14,11 @@ import {
 } from "@/lib/world-geographies";
 
 const EUROPE_POV = { lat: 48, lng: 10, altitude: 2.5 };
-const WIDE_ALTITUDE = 2.5;
-const FOCUS_ALTITUDE = 1.75;
 
 export interface WorldMapProps {
   claimedIds: Set<string>;
   highlightId: string | null;
+  connectingIds: Set<string>;
   clickableIds: Set<string>;
   interactive: boolean;
   flashSuccessId?: string | null;
@@ -35,6 +31,7 @@ export interface WorldMapProps {
 function WorldMapComponent({
   claimedIds,
   highlightId,
+  connectingIds,
   clickableIds,
   interactive,
   flashSuccessId = null,
@@ -47,20 +44,18 @@ function WorldMapComponent({
   const containerRef = useRef<HTMLDivElement>(null);
   const [features, setFeatures] = useState<CountryFeature[]>([]);
   const [globeReady, setGlobeReady] = useState(false);
-  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
   const dims = useContainerDims(containerRef);
-  const { shouldSkipPov, povTick } = useGlobeUserControl(globeRef, globeReady);
 
   const polygonStyles = useMemo(
     () =>
       buildPolygonStyleMap(
         claimedIds,
         highlightId,
-        clickableIds,
+        connectingIds,
         flashSuccessId,
         flashInvalidId,
       ),
-    [claimedIds, highlightId, clickableIds, flashSuccessId, flashInvalidId],
+    [claimedIds, highlightId, connectingIds, flashSuccessId, flashInvalidId],
   );
 
   const styledFeatures = useMemo(
@@ -85,60 +80,6 @@ function WorldMapComponent({
     globe.pauseAnimation();
     globe.controls().enabled = false;
   }, [isActive, globeReady]);
-
-  useEffect(() => {
-    const globe = globeRef.current;
-    if (!globe || !globeReady || features.length === 0 || shouldSkipPov()) {
-      return;
-    }
-
-    const duration = reducedMotion ? 0 : 800;
-
-    if (claimedIds.size === 0 && highlightId) {
-      const mapName = getMapName(highlightId);
-      if (!mapName) {
-        globe.pointOfView(EUROPE_POV, duration);
-        return;
-      }
-
-      const feature = features.find(
-        (entry) => entry.properties.countryId === highlightId,
-      );
-      if (!feature) {
-        globe.pointOfView(EUROPE_POV, duration);
-        return;
-      }
-
-      const { lat, lng } = getFeatureCentroid(feature);
-      globe.pointOfView({ lat, lng, altitude: WIDE_ALTITUDE }, duration);
-      return;
-    }
-
-    const focusId = highlightId ?? [...claimedIds].at(-1);
-    if (!focusId) {
-      globe.pointOfView(EUROPE_POV, duration);
-      return;
-    }
-
-    const mapName = getMapName(focusId);
-    if (!mapName) return;
-
-    const feature = features.find(
-      (entry) => entry.properties.countryId === focusId,
-    );
-    if (!feature) return;
-
-    const { lat, lng } = getFeatureCentroid(feature);
-    globe.pointOfView({ lat, lng, altitude: FOCUS_ALTITUDE }, duration);
-  }, [
-    highlightId,
-    claimedIds,
-    features,
-    globeReady,
-    reducedMotion,
-    shouldSkipPov,
-    povTick,
-  ]);
 
   const handleGlobeReady = useCallback(() => {
     const globe = globeRef.current;
@@ -225,6 +166,7 @@ function worldMapPropsEqual(
     prev.flashInvalidId === next.flashInvalidId &&
     prev.isActive === next.isActive &&
     setsEqual(prev.claimedIds, next.claimedIds) &&
+    setsEqual(prev.connectingIds, next.connectingIds) &&
     setsEqual(prev.clickableIds, next.clickableIds) &&
     prev.onCountryClick === next.onCountryClick &&
     prev.onInvalidCountryClick === next.onInvalidCountryClick

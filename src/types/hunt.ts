@@ -4,6 +4,7 @@ export interface HuntGuess {
   countryId: string;
   distanceMiles: number;
   warmer: WarmerHint;
+  fact?: string;
 }
 
 export interface CompletedHuntResult {

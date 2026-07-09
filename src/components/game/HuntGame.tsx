@@ -1,19 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { HuntGuessTracker } from "@/components/game/HuntGuessTracker";
 import { HuntGlobeBridge } from "@/components/game/GlobeBridge";
 import { HuntDailyResult } from "@/components/game/HuntDailyResult";
 import {
-  DailyDateStaleBanner,
   GameLiveRegion,
-  HudAnchor,
   HudLayer,
   HudPanel,
-  HudScroll,
-  HudSpacer,
-  HudToolbar,
+  HudChrome,
+  GameResultOverlay,
 } from "@/components/game/GameHud";
-import { ModeSwitcher } from "@/components/game/ModeSwitcher";
 import { GameMenu } from "@/components/menu/GameMenu";
 import type { HuntGuessMarker } from "@/components/map/HuntGlobe";
 import { getCountryDisplayName } from "@/lib/country-resolve";
@@ -30,6 +27,7 @@ import { useVisualViewportInset } from "@/lib/use-visual-viewport-inset";
 import { useDailyDateRollover } from "@/lib/use-daily-date-rollover";
 import { acquireGlobeInputLock, releaseGlobeInputLock } from "@/lib/globe-input-lock";
 import { appendHuntGuess, buildWinningHuntGuess } from "@/lib/hunt-guess";
+import { triggerHaptic } from "@/lib/game-feedback";
 import {
   clearHuntDailyStorage,
   createInitialHuntProgress,
@@ -71,6 +69,9 @@ export function HuntGame() {
   const [lastGuess, setLastGuess] = useState<HuntGuess | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [freshComplete, setFreshComplete] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showGuessError, setShowGuessError] = useState(false);
+  const [resultsDismissed, setResultsDismissed] = useState(false);
   const keyboardInset = useVisualViewportInset();
   const guessesRef = useRef(guesses);
   const hiddenCountryIdRef = useRef(hiddenCountryId);
@@ -88,6 +89,10 @@ export function HuntGame() {
       releaseGlobeInputLock(processingGuessRef);
     }
   }, [guesses, hiddenCountryId, phase, completedResult]);
+
+  useEffect(() => {
+    setResultsDismissed(false);
+  }, [completedResult]);
 
   const featureById = useMemo(() => {
     const map = new Map<string, CountryFeature>();
@@ -240,15 +245,24 @@ export function HuntGame() {
       primeAudio();
       if (!acquireGlobeInputLock(processingGuessRef)) return;
 
+      setIsProcessing(true);
+
       try {
         const response = await submitHuntGuess({
           date: dateSeed,
           countryId,
           previousDistanceMiles: currentGuesses.at(-1)?.distanceMiles ?? null,
+          guessNumber: currentGuesses.length + 1,
         });
 
         if (response.won && response.hiddenCountryId) {
           playCorrectGuessSound();
+          const solvedOnGuess = currentGuesses.length + 1;
+          if (solvedOnGuess <= 2) {
+            triggerHaptic("milestone");
+          } else {
+            triggerHaptic("success");
+          }
           const previousMiles = currentGuesses.at(-1)?.distanceMiles ?? null;
           const winningGuess = buildWinningHuntGuess(
             response.hiddenCountryId,
@@ -257,16 +271,20 @@ export function HuntGame() {
           const finalGuesses = appendHuntGuess(currentGuesses, winningGuess);
           guessesRef.current = finalGuesses;
           setGuesses(finalGuesses);
-          finishGame(finalGuesses, true, finalGuesses.length, response.hiddenCountryId);
+          finishGame(finalGuesses, true, solvedOnGuess, response.hiddenCountryId);
           return;
         }
 
         phaseRef.current = "guess-result";
+        triggerHaptic("error");
+        setShowGuessError(true);
+        window.setTimeout(() => setShowGuessError(false), 600);
 
         const guess: HuntGuess = {
           countryId,
           distanceMiles: response.distanceMiles,
           warmer: response.warmer,
+          fact: response.fact,
         };
 
         const nextGuesses = appendHuntGuess(currentGuesses, guess);
@@ -276,6 +294,8 @@ export function HuntGame() {
         setPhase("guess-result");
       } catch {
         releaseGlobeInputLock(processingGuessRef);
+      } finally {
+        setIsProcessing(false);
       }
     },
     [dateSeed, finishGame],
@@ -283,8 +303,12 @@ export function HuntGame() {
 
   const handleContinue = useCallback(async () => {
     if (guesses.length >= MAX_HUNT_GUESSES) {
-      const data = await revealHuntAnswer(dateSeed);
-      finishGame(guesses, false, null, data.hiddenCountryId ?? "unknown");
+      try {
+        const data = await revealHuntAnswer(dateSeed, guesses.length);
+        finishGame(guesses, false, null, data.hiddenCountryId ?? "unknown");
+      } catch {
+        triggerHaptic("error");
+      }
       return;
     }
     setPhase("playing");
@@ -345,69 +369,62 @@ export function HuntGame() {
       <GameMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
       {(!mapReady || !initialized) && (
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center bg-black text-sm text-slate-400">
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center bg-black text-sm text-[var(--ui-text-muted)]">
           Loading…
         </div>
+      )}
+
+      {isProcessing && (
+        <div className="pointer-events-none absolute inset-0 z-[5] globe-processing" />
+      )}
+
+      {showGuessError && (
+        <div className="pointer-events-none absolute inset-0 z-[5] error-vignette" />
       )}
 
       <GameLiveRegion message={huntLiveMessage} />
 
       <HudLayer>
-        <HudAnchor position="top">
-          {dateStale && (
-            <DailyDateStaleBanner onRefresh={() => window.location.reload()} />
-          )}
-          <HudPanel>
-            <HudToolbar
-              onMenuOpen={() => setMenuOpen(true)}
-              date={isPlaying ? dateSeed : undefined}
-              stat={
-                isPlaying
-                  ? { label: "Left", value: guessesRemaining }
-                  : undefined
-              }
-              secondaryStat={{
-                label: "Day streak",
-                value: calendarStreak.current,
-              }}
-              prompt={huntPrompt}
-              meta={isPlaying && phase === "playing" ? controlHint : undefined}
-            >
-              <ModeSwitcher />
-            </HudToolbar>
-          </HudPanel>
-        </HudAnchor>
-
-        <HudSpacer />
-
-        <HudAnchor position="bottom" keyboardInset={keyboardInset}>
-          {completedResult && (
-            <HudScroll>
-              <HuntDailyResult
-                result={completedResult}
-                variant={freshComplete ? "complete" : "already-played"}
-                onPlayAgain={unlimited ? handlePlayAgain : undefined}
-              />
-            </HudScroll>
-          )}
-
+        <HudChrome
+          onMenuOpen={() => setMenuOpen(true)}
+          date={isPlaying ? dateSeed : undefined}
+          stat={
+            isPlaying ? { label: "Left", value: guessesRemaining } : undefined
+          }
+          secondaryStat={{
+            label: "Day streak",
+            value: calendarStreak.current,
+          }}
+          prompt={huntPrompt}
+          meta={isPlaying && phase === "playing" ? controlHint : undefined}
+          dateStale={dateStale}
+          onDateRefresh={() => window.location.reload()}
+          keyboardInset={keyboardInset}
+          topExtra={
+            isPlaying ? (
+              <HuntGuessTracker used={guesses.length} className="mt-2" />
+            ) : undefined
+          }
+        >
           {showFeedback && (
-            <HudPanel>
+            <HudPanel className="panel-enter">
+              <HuntGuessTracker used={guesses.length} className="mb-2.5 sm:hidden" />
+
               <div className="flex items-baseline justify-between gap-2">
-                <p className="truncate text-sm font-semibold text-white">
+                <p className="truncate text-sm font-semibold text-[var(--ui-text-primary)]">
                   {getCountryDisplayName(lastGuess.countryId)}
                 </p>
-                <span className="shrink-0 text-[10px] text-slate-500">
+                <span className="shrink-0 text-[10px] text-[var(--ui-text-muted)]">
                   {guesses.length}/{MAX_HUNT_GUESSES}
                 </span>
               </div>
-              <p className="mt-0.5 text-xl font-semibold tabular-nums text-sky-300">
+              <p className="font-stat mt-0.5 text-xl font-semibold tabular-nums text-[var(--ui-accent-primary)]">
                 {formatMiles(lastGuess.distanceMiles)} away
               </p>
 
               {warmerLabel && (
                 <span
-                  className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+                  className={`badge-pop mt-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                     lastGuess.warmer === "warmer"
                       ? "bg-orange-500/20 text-orange-200"
                       : lastGuess.warmer === "colder"
@@ -417,6 +434,17 @@ export function HuntGame() {
                 >
                   {warmerLabel}
                 </span>
+              )}
+
+              {lastGuess.fact && (
+                <div className="mt-2.5 rounded-lg border border-[color-mix(in_srgb,var(--ui-accent-warm)_25%,transparent)] bg-[color-mix(in_srgb,var(--ui-accent-warm)_8%,transparent)] px-3 py-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--ui-accent-warm)]">
+                    Fun fact
+                  </p>
+                  <p className="mt-1 text-xs leading-relaxed text-[var(--ui-text-primary)]">
+                    {lastGuess.fact}
+                  </p>
+                </div>
               )}
 
               <button
@@ -430,7 +458,21 @@ export function HuntGame() {
               </button>
             </HudPanel>
           )}
-        </HudAnchor>
+        </HudChrome>
+
+        {completedResult && !resultsDismissed && (
+          <GameResultOverlay
+            label="Hunt results"
+            onClose={() => setResultsDismissed(true)}
+          >
+            <HuntDailyResult
+              result={completedResult}
+              variant={freshComplete ? "complete" : "already-played"}
+              layout="overlay"
+              onPlayAgain={unlimited ? handlePlayAgain : undefined}
+            />
+          </GameResultOverlay>
+        )}
       </HudLayer>
     </div>
   );

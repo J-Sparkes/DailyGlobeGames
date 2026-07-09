@@ -10,7 +10,34 @@ const MODE_LINKS: Record<"sweep" | "tap" | "hunt", string> = {
   hunt: "/hunt",
 };
 
-export function TrifectaNudge({ status }: { status: TrifectaStatus }) {
+export function TrifectaNudge({
+  status,
+  compact = false,
+}: {
+  status: TrifectaStatus;
+  compact?: boolean;
+}) {
+  if (compact) {
+    if (status.complete) {
+      return (
+        <p className="text-[10px] font-medium text-[var(--ui-success)]">
+          Trifecta complete today
+        </p>
+      );
+    }
+
+    const remaining = getRemainingModeLabels(status);
+    if (remaining.length === 0) return null;
+
+    return (
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[10px] text-[var(--ui-text-muted)]">
+          Daily trip {status.completed}/3
+        </p>
+        <TrifectaDots status={status} />
+      </div>
+    );
+  }
   if (status.complete) {
     return (
       <div className="mt-3 rounded-lg border border-[color-mix(in_srgb,var(--ui-success)_35%,transparent)] bg-[color-mix(in_srgb,var(--ui-success)_10%,transparent)] px-3 py-2">

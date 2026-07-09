@@ -3,10 +3,8 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Globe, { type GlobeMethods } from "react-globe.gl";
 import { buildHuntPolygonStyleMap } from "@/lib/globe-polygon-styles";
-import { useGlobeUserControl } from "@/lib/globe-user-control";
 import { isTouchDevice, prefersReducedMotion } from "@/lib/device";
 import { GLOBE } from "@/lib/design-tokens";
-import { getFeatureCentroid } from "@/lib/geo-centroid";
 import { applyPolygonStyles } from "@/lib/styled-country-features";
 import { useContainerDims } from "@/lib/use-container-dims";
 import {
@@ -49,8 +47,6 @@ function HuntGlobeComponent({
   const [globeReady, setGlobeReady] = useState(false);
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);
   const dims = useContainerDims(containerRef);
-  const { shouldSkipPov, povTick } = useGlobeUserControl(globeRef, globeReady);
-  const lastPovKeyRef = useRef("");
 
   const guessedIds = useMemo(
     () => new Set(guesses.map((guess) => guess.id.replace(/^guess-/, ""))),
@@ -126,48 +122,6 @@ function HuntGlobeComponent({
     globe.pointOfView(DEFAULT_POV, 0);
     setGlobeReady(true);
   }, []);
-
-  useEffect(() => {
-    if (!globeReady || features.length === 0 || shouldSkipPov()) return;
-
-    const globe = globeRef.current;
-    if (!globe) return;
-
-    const focusId =
-      revealHidden && hiddenCountryId
-        ? hiddenCountryId
-        : guesses.length > 0
-          ? guesses[guesses.length - 1]!.id.replace(/^guess-/, "")
-          : null;
-
-    const povKey = `${povTick}:${revealHidden}:${focusId ?? "default"}`;
-    if (povKey === lastPovKeyRef.current) return;
-    lastPovKeyRef.current = povKey;
-
-    const duration = reducedMotion ? 0 : 600;
-
-    if (!focusId) {
-      globe.pointOfView(DEFAULT_POV, duration);
-      return;
-    }
-
-    const feature = features.find(
-      (entry) => entry.properties.countryId === focusId,
-    );
-    if (!feature) return;
-
-    const { lat, lng } = getFeatureCentroid(feature);
-    globe.pointOfView({ lat, lng, altitude: 1.85 }, duration);
-  }, [
-    globeReady,
-    features,
-    guesses,
-    hiddenCountryId,
-    revealHidden,
-    reducedMotion,
-    shouldSkipPov,
-    povTick,
-  ]);
 
   const pointsData = useMemo(
     () =>

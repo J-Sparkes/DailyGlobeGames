@@ -21,7 +21,8 @@ export function FriendResultContext({
   mode,
   yourScore,
   date,
-}: FriendResultContextProps) {
+  compact = false,
+}: FriendResultContextProps & { compact?: boolean }) {
   const [friends, setFriends] = useState<FriendTodayActivity[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,6 +49,15 @@ export function FriendResultContext({
   if (others.length === 0) return null;
 
   const beaten = others.filter((f) => yourScore > f.score).length;
+
+  if (compact) {
+    return (
+      <p className="text-[10px] text-[var(--ui-text-muted)]">
+        {others.length} friend{others.length === 1 ? "" : "s"} played {mode} today
+        {beaten > 0 ? ` — you beat ${beaten}` : ""}
+      </p>
+    );
+  }
 
   return (
     <div className="mt-3 rounded-lg border border-[var(--ui-border-subtle)] bg-[color-mix(in_srgb,var(--ui-accent-primary)_6%,transparent)] px-3 py-2">

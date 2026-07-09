@@ -31,6 +31,10 @@ export const MAP = {
     cap: "rgba(27, 154, 170, 0.3)",
     stroke: "rgba(77, 205, 230, 0.9)",
   },
+  connecting: {
+    cap: "rgba(27, 154, 170, 0.15)",
+    stroke: "rgba(77, 205, 230, 0.45)",
+  },
   clickable: {
     cap: "rgba(255, 255, 255, 0.16)",
     stroke: "rgba(255, 255, 255, 0.65)",

@@ -18,19 +18,23 @@ import { getShareCardUrl } from "@/lib/share-deep-link";
 interface ShareResultProps {
   result: CompletedDailyResult;
   showCardPreview?: boolean;
+  rewardPop?: boolean;
+  compact?: boolean;
 }
 
 function ShareButton({
   label,
   onClick,
   href,
+  className = "",
 }: {
   label: string;
   onClick?: () => void;
   href?: string;
+  className?: string;
 }) {
-  const className =
-    "touch-target inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--ui-text-primary)] transition hover:border-[color-mix(in_srgb,var(--ui-accent-primary)_40%,transparent)] hover:bg-[color-mix(in_srgb,var(--ui-accent-primary)_10%,transparent)]";
+  const baseClassName =
+    "share-btn touch-target inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--ui-text-primary)] transition hover:border-[color-mix(in_srgb,var(--ui-accent-primary)_40%,transparent)] hover:bg-[color-mix(in_srgb,var(--ui-accent-primary)_10%,transparent)]";
 
   if (href) {
     return (
@@ -39,7 +43,7 @@ function ShareButton({
         target="_blank"
         rel="noopener noreferrer"
         onClick={onClick}
-        className={className}
+        className={`${baseClassName} ${className}`.trim()}
       >
         {label}
       </a>
@@ -47,7 +51,11 @@ function ShareButton({
   }
 
   return (
-    <button type="button" onClick={onClick} className={className}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`${baseClassName} ${className}`.trim()}
+    >
       {label}
     </button>
   );
@@ -83,7 +91,12 @@ function ShareCardPreview({ result }: { result: CompletedDailyResult }) {
   );
 }
 
-export function ShareResult({ result, showCardPreview = false }: ShareResultProps) {
+export function ShareResult({
+  result,
+  showCardPreview = false,
+  rewardPop = false,
+  compact = false,
+}: ShareResultProps) {
   const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const shareText = buildShareText(result);
@@ -123,32 +136,43 @@ export function ShareResult({ result, showCardPreview = false }: ShareResultProp
     typeof navigator !== "undefined" && typeof navigator.share === "function";
 
   return (
-    <div className="mt-4 border-t border-[var(--ui-border-subtle)] pt-4">
-      <p className="mb-3 text-sm font-medium text-[var(--ui-text-primary)]">
+    <div
+      className={`border-t border-[var(--ui-border-subtle)] pt-3 ${compact ? "share-compact mt-2 pt-2" : "mt-4 pt-4"}`}
+    >
+      <p
+        className={`font-medium text-[var(--ui-text-primary)] ${compact ? "mb-2 text-xs" : "mb-3 text-sm"}`}
+      >
         Share your sweep
       </p>
 
       {showCardPreview && <ShareCardPreview result={result} />}
 
-      <div className="mt-3">
-        <a
-          href={cardUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => trackShare("card_image")}
-          className="text-xs font-medium text-[var(--ui-accent-primary)] underline-offset-2 hover:underline"
-        >
-          Open share card image
-        </a>
-      </div>
+      {!compact && (
+        <div className="mt-3">
+          <a
+            href={cardUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackShare("card_image")}
+            className="text-xs font-medium text-[var(--ui-accent-primary)] underline-offset-2 hover:underline"
+          >
+            Open share card image
+          </a>
+        </div>
+      )}
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className={`share-actions flex flex-wrap gap-2 ${compact ? "" : "mt-3"}`}>
         {canNativeShare && (
-          <ShareButton label="Share…" onClick={handleNativeShare} />
+          <ShareButton
+            label="Share…"
+            onClick={handleNativeShare}
+            className={rewardPop ? "share-reward-pop" : ""}
+          />
         )}
         <ShareButton
           label={copied ? "Copied!" : "Copy"}
           onClick={handleCopy}
+          className={!canNativeShare && rewardPop ? "share-reward-pop" : ""}
         />
         <ShareButton
           label={linkCopied ? "Link copied!" : "Copy link"}

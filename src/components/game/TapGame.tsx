@@ -3,21 +3,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TapGlobeBridge } from "@/components/game/GlobeBridge";
 import {
-  DailyDateStaleBanner,
   GameLiveRegion,
-  HudAnchor,
   HudLayer,
   HudPanel,
-  HudScroll,
-  HudSpacer,
-  HudToolbar,
+  HudChrome,
+  GameResultOverlay,
 } from "@/components/game/GameHud";
-import { ModeSwitcher } from "@/components/game/ModeSwitcher";
 import { TapDailyResult } from "@/components/game/TapDailyResult";
 import { GameMenu } from "@/components/menu/GameMenu";
 import type { GlobeMarker } from "@/components/map/TapGlobe";
 import { isUnlimitedPlaysEnabled } from "@/lib/daily-play";
 import { isTouchDevice } from "@/lib/device";
+import { TAP_PIN_SIZE } from "@/lib/tap-globe-view";
 import { fetchTapDaily, submitTapGuess, submitTapResult } from "@/lib/api/client";
 import type { TapRoundPublic } from "@/lib/api/client";
 import { appendTapGameHistory } from "@/lib/profile-storage";
@@ -28,6 +25,11 @@ import { playCorrectGuessSound, primeAudio } from "@/lib/sounds";
 import { useVisualViewportInset } from "@/lib/use-visual-viewport-inset";
 import { acquireGlobeInputLock, releaseGlobeInputLock } from "@/lib/globe-input-lock";
 import { useDailyDateRollover } from "@/lib/use-daily-date-rollover";
+import {
+  TAP_HIGH_SCORE_STREAK_TARGET,
+  TAP_HIGH_SCORE_THRESHOLD,
+  triggerHaptic,
+} from "@/lib/game-feedback";
 import {
   clearTapDailyStorage,
   createInitialTapProgress,
@@ -66,12 +68,17 @@ export function TapGame() {
   const [currentRound, setCurrentRound] = useState<TapRoundResult | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [freshComplete, setFreshComplete] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [scorePop, setScorePop] = useState(false);
+  const [scoreBurst, setScoreBurst] = useState(false);
+  const [resultsDismissed, setResultsDismissed] = useState(false);
   const keyboardInset = useVisualViewportInset();
   const resultsRef = useRef(results);
   const roundIndexRef = useRef(roundIndex);
   const phaseRef = useRef(phase);
   const completedResultRef = useRef(completedResult);
   const processingTapRef = useRef(false);
+  const highScoreStreakRef = useRef(0);
   const dateStale = useDailyDateRollover(dateSeed);
 
   useEffect(() => {
@@ -83,6 +90,10 @@ export function TapGame() {
       releaseGlobeInputLock(processingTapRef);
     }
   }, [results, roundIndex, phase, completedResult]);
+
+  useEffect(() => {
+    setResultsDismissed(false);
+  }, [completedResult]);
 
   useEffect(() => {
     fetchTapDaily(dateSeed)
@@ -146,16 +157,27 @@ export function TapGame() {
         lat: currentRound.guessLat,
         lng: currentRound.guessLng,
         color: UI.error,
-        size: 0.35,
+        size: TAP_PIN_SIZE,
       },
       {
         id: "answer",
         lat: currentRound.answerLat,
         lng: currentRound.answerLng,
         color: UI.success,
-        size: 0.35,
+        size: TAP_PIN_SIZE,
       },
     ];
+  }, [phase, currentRound]);
+
+  const revealArc = useMemo(() => {
+    if (phase !== "round-result" || !currentRound) return null;
+
+    return {
+      startLat: currentRound.guessLat,
+      startLng: currentRound.guessLng,
+      endLat: currentRound.answerLat,
+      endLng: currentRound.answerLng,
+    };
   }, [phase, currentRound]);
 
   const finishGame = useCallback(
@@ -201,6 +223,7 @@ export function TapGame() {
       }
       if (!acquireGlobeInputLock(processingTapRef)) return;
 
+      setIsProcessing(true);
       phaseRef.current = "round-result";
       primeAudio();
 
@@ -212,8 +235,22 @@ export function TapGame() {
           lng,
         });
 
-        if (roundResult.basePoints >= 70) {
+        if (roundResult.basePoints >= TAP_HIGH_SCORE_THRESHOLD) {
           playCorrectGuessSound();
+          triggerHaptic("success");
+          highScoreStreakRef.current += 1;
+          if (highScoreStreakRef.current >= TAP_HIGH_SCORE_STREAK_TARGET) {
+            setScoreBurst(true);
+            triggerHaptic("milestone");
+            highScoreStreakRef.current = 0;
+            window.setTimeout(() => setScoreBurst(false), 600);
+          } else {
+            setScorePop(true);
+            window.setTimeout(() => setScorePop(false), 500);
+          }
+        } else {
+          highScoreStreakRef.current = 0;
+          triggerHaptic("success");
         }
 
         const nextResults = [...resultsRef.current, roundResult];
@@ -224,6 +261,8 @@ export function TapGame() {
       } catch {
         releaseGlobeInputLock(processingTapRef);
         phaseRef.current = "aiming";
+      } finally {
+        setIsProcessing(false);
       }
     },
     [dailyRounds, dateSeed],
@@ -246,8 +285,8 @@ export function TapGame() {
   }, [currentRound, roundIndex, results, finishGame]);
 
   const controlHint = isTouch
-    ? "Swipe to spin · pinch to zoom · tap to guess"
-    : "Drag to spin · scroll to zoom · click to guess";
+    ? "Swipe to spin · pinch to zoom · hold to lock in"
+    : "Drag to spin · scroll to zoom · hold click to confirm";
 
   const multiplier = getRoundMultiplier(roundIndex);
   const isPlaying = initialized && !completedResult && roundIndex < MAX_ROUNDS;
@@ -262,7 +301,7 @@ export function TapGame() {
     if (completedResult) return "Tap game complete.";
     if (phase === "round-result") return "Round result ready.";
     if (currentLocation) return currentLocation.prompt;
-    return "Tap the globe to guess.";
+    return "Hold on the globe to lock in your guess.";
   }, [completedResult, phase, currentLocation]);
 
   const tapGlobeProps = useMemo(
@@ -271,10 +310,11 @@ export function TapGame() {
         ? {
             interactive: phase === "aiming" && !completedResult,
             markers,
+            revealArc,
             onGlobeTap: handleGlobeTap,
           }
         : null,
-    [initialized, phase, completedResult, markers, handleGlobeTap],
+    [initialized, phase, completedResult, markers, revealArc, handleGlobeTap],
   );
 
   return (
@@ -283,78 +323,64 @@ export function TapGame() {
       <GameMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
       {!initialized && (
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center bg-black text-sm text-slate-400">
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center bg-black text-sm text-[var(--ui-text-muted)]">
           Loading…
         </div>
+      )}
+
+      {isProcessing && (
+        <div className="pointer-events-none absolute inset-0 z-[5] globe-processing" />
       )}
 
       <GameLiveRegion message={tapLiveMessage} />
 
       <HudLayer>
-        <HudAnchor position="top">
-          {dateStale && (
-            <DailyDateStaleBanner onRefresh={() => window.location.reload()} />
-          )}
-          <HudPanel>
-            <HudToolbar
-              onMenuOpen={() => setMenuOpen(true)}
-              date={isPlaying ? dateSeed : undefined}
-              stat={{
-                label: "Score",
-                value: completedResult?.totalScore ?? runningScore,
-              }}
-              secondaryStat={{
-                label: "Day streak",
-                value: calendarStreak.current,
-              }}
-              prompt={
-                isPlaying && phase === "aiming" && currentLocation
-                  ? currentLocation.prompt
-                  : undefined
-              }
-              meta={tapMeta}
-            >
-              <ModeSwitcher />
-            </HudToolbar>
-          </HudPanel>
-        </HudAnchor>
-
-        <HudSpacer />
-
-        <HudAnchor position="bottom" keyboardInset={keyboardInset}>
-          {completedResult && (
-            <HudScroll>
-              <TapDailyResult
-                result={completedResult}
-                variant={freshComplete ? "complete" : "already-played"}
-                onPlayAgain={unlimited ? handlePlayAgain : undefined}
-              />
-            </HudScroll>
-          )}
-
+        <HudChrome
+          onMenuOpen={() => setMenuOpen(true)}
+          date={isPlaying ? dateSeed : undefined}
+          stat={{
+            label: "Score",
+            value: completedResult?.totalScore ?? runningScore,
+            pop: scorePop,
+            burst: scoreBurst,
+          }}
+          secondaryStat={{
+            label: "Day streak",
+            value: calendarStreak.current,
+          }}
+          prompt={
+            isPlaying && phase === "aiming" && currentLocation
+              ? currentLocation.prompt
+              : undefined
+          }
+          meta={tapMeta}
+          dateStale={dateStale}
+          onDateRefresh={() => window.location.reload()}
+          keyboardInset={keyboardInset}
+        >
           {showRoundResult && (
-            <HudPanel>
+            <HudPanel className="panel-enter">
               <div className="flex items-baseline justify-between gap-3">
                 <div>
-                  <p className="text-[10px] uppercase tracking-wide text-slate-500">
+                  <p className="text-[10px] uppercase tracking-wide text-[var(--ui-text-muted)]">
                     Distance
                   </p>
-                  <p className="text-xl font-semibold tabular-nums text-white">
+                  <p className="font-stat text-xl font-semibold tabular-nums text-[var(--ui-text-primary)]">
                     {formatDistance(currentRound.distanceKm)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] uppercase tracking-wide text-slate-500">
+                  <p className="text-[10px] uppercase tracking-wide text-[var(--ui-text-muted)]">
                     Round
                   </p>
-                  <p className="text-xl font-semibold tabular-nums text-sky-300">
+                  <p className="font-stat text-xl font-semibold tabular-nums text-[var(--ui-accent-primary)]">
                     +{currentRound.totalPoints}
                   </p>
                 </div>
               </div>
 
               {currentRound.fact && (
-                <p className="mt-2 text-xs leading-relaxed text-slate-400 line-clamp-2">
+                <p className="mt-2 text-xs leading-relaxed text-[var(--ui-text-muted)] line-clamp-2">
                   {currentRound.fact}
                 </p>
               )}
@@ -370,7 +396,21 @@ export function TapGame() {
               </button>
             </HudPanel>
           )}
-        </HudAnchor>
+        </HudChrome>
+
+        {completedResult && !resultsDismissed && (
+          <GameResultOverlay
+            label="Tap results"
+            onClose={() => setResultsDismissed(true)}
+          >
+            <TapDailyResult
+              result={completedResult}
+              variant={freshComplete ? "complete" : "already-played"}
+              layout="overlay"
+              onPlayAgain={unlimited ? handlePlayAgain : undefined}
+            />
+          </GameResultOverlay>
+        )}
       </HudLayer>
     </div>
   );

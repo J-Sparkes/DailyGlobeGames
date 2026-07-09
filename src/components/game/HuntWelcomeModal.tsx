@@ -26,8 +26,13 @@ const STEPS = [
   },
   {
     step: "4",
-    title: "Three chances",
-    body: "You get three guesses. Click the hidden country to win — the sooner you find it, the higher your score.",
+    title: "Five chances",
+    body: "You get five guesses. Each miss unlocks a fun fact about the hidden country. Find it sooner for a higher score.",
+  },
+  {
+    step: "5",
+    title: "Score by speed",
+    body: "Win on guess 1 for 5 points, guess 2 for 4, and so on — down to 1 point on your final try.",
   },
 ] as const;
 
@@ -77,8 +82,8 @@ export function HuntWelcomeModal({ onClose }: HuntWelcomeModalProps) {
             Find the hidden country
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-slate-400">
-            A daily hot-and-cold hunt on the globe. Three guesses, one mystery
-            nation — how fast can you find it?
+            A daily hot-and-cold hunt on the globe. Five guesses, one mystery
+            nation — each miss reveals a clue.
           </p>
 
           <ol className="mt-6 space-y-3">
@@ -103,7 +108,7 @@ export function HuntWelcomeModal({ onClose }: HuntWelcomeModalProps) {
           <p className="mt-5 rounded-lg border border-white/[0.06] bg-black/30 px-4 py-3 text-xs leading-relaxed text-slate-500">
             {unlimited
               ? "Test mode is on — you can replay as many times as you like."
-              : "One hunt per day. Win on guess 1 for 3 points, guess 2 for 2, guess 3 for 1."}
+              : "One hunt per day. Win on guess 1 for 5 points, guess 2 for 4, down to 1 on guess 5."}
           </p>
 
           <button

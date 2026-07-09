@@ -1,4 +1,21 @@
 [
   ["United Kingdom", "France"],
-  ["United Kingdom", "Ireland"]
+  ["United Kingdom", "Ireland"],
+  ["Turkey", "Azerbaijan"],
+  ["Egypt", "Palestine"],
+  ["Cyprus", "Turkey"],
+  ["Cyprus", "Greece"],
+  ["Cyprus", "Syria"],
+  ["Cyprus", "Lebanon"],
+  ["Iceland", "Norway"],
+  ["Japan", "South Korea"],
+  ["Japan", "Russia"],
+  ["Madagascar", "Mozambique"],
+  ["New Zealand", "Australia"],
+  ["Cuba", "Haiti"],
+  ["Cuba", "Jamaica"],
+  ["Cuba", "Bahamas"],
+  ["Jamaica", "Haiti"],
+  ["Bahamas", "Haiti"],
+  ["Trinidad and Tobago", "Venezuela"]
 ]

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest run",
-    "validate-data": "node scripts/validate-data.mjs"
+    "validate-data": "node scripts/validate-data.mjs",
+    "sync-borders": "node scripts/sync-border-graph.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

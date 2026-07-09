@@ -23,6 +23,8 @@ const countriesData = loadJson("src/data/countries.json");
 const countries = countriesData.countries;
 const countryIds = new Set(countries.map((c) => c.id));
 
+const neighborIndex = new Map(countries.map((country) => [country.id, country]));
+
 for (const country of countries) {
   if (!country.id || !country.name || !country.mapName) {
     fail(`Country missing required fields: ${JSON.stringify(country.id)}`);
@@ -30,6 +32,13 @@ for (const country of countries) {
   for (const neighbor of country.neighbors) {
     if (!countryIds.has(neighbor)) {
       fail(`${country.id} references unknown neighbor ${neighbor}`);
+      continue;
+    }
+    const reverse = neighborIndex.get(neighbor);
+    if (!reverse.neighbors.includes(country.id)) {
+      fail(
+        `Bidirectional mismatch: ${country.id} -> ${neighbor} but not reverse`,
+      );
     }
   }
   if (country.inDailyPool && country.neighbors.length === 0) {

@@ -84,6 +84,7 @@ export async function submitHuntGuess(payload: {
   date: string;
   countryId: string;
   previousDistanceMiles: number | null;
+  guessNumber: number;
 }) {
   const res = await fetch("/api/daily/hunt/guess", {
     method: "POST",
@@ -96,6 +97,7 @@ export async function submitHuntGuess(payload: {
     distanceMiles: number;
     warmer: "warmer" | "colder" | "same" | null;
     won: boolean;
+    fact?: string;
     hiddenCountryId?: string;
   }>;
 }
@@ -115,11 +117,11 @@ export async function submitHuntResult(payload: {
   return res.json();
 }
 
-export async function revealHuntAnswer(date: string) {
+export async function revealHuntAnswer(date: string, guessCount: number) {
   const res = await fetch("/api/daily/hunt/reveal", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ date }),
+    body: JSON.stringify({ date, guessCount }),
   });
   if (!res.ok) throw new Error("Reveal failed");
   return res.json() as Promise<{ hiddenCountryId: string }>;
