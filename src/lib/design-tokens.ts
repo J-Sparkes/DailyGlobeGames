@@ -27,13 +27,15 @@ export const MAP = {
     cap: "rgba(245, 166, 35, 0.5)",
     stroke: "rgba(255, 209, 102, 0.95)",
   },
+  /** Swept territories — violet reads clearly against land and ocean */
   claimed: {
-    cap: "rgba(27, 154, 170, 0.3)",
-    stroke: "rgba(77, 205, 230, 0.9)",
+    cap: "rgba(139, 92, 246, 0.44)",
+    stroke: "rgba(196, 181, 253, 0.92)",
   },
+  /** Frontier neighbors — same hue, lighter fill so overlap stays readable */
   connecting: {
-    cap: "rgba(27, 154, 170, 0.15)",
-    stroke: "rgba(77, 205, 230, 0.45)",
+    cap: "rgba(139, 92, 246, 0.14)",
+    stroke: "rgba(167, 139, 250, 0.72)",
   },
   clickable: {
     cap: "rgba(255, 255, 255, 0.16)",
@@ -44,8 +46,8 @@ export const MAP = {
     stroke: "rgba(255, 255, 255, 0.35)",
   },
   success: {
-    cap: "rgba(61, 219, 135, 0.55)",
-    stroke: "rgba(61, 219, 135, 0.9)",
+    cap: "rgba(255, 214, 102, 0.58)",
+    stroke: "rgba(255, 236, 179, 0.95)",
   },
   invalid: {
     cap: "rgba(255, 92, 92, 0.45)",

@@ -84,16 +84,12 @@ export function GeographyGame() {
   const inputRef = useRef<HTMLInputElement>(null);
   const gameOverTimerRef = useRef<number | null>(null);
   const phaseRef = useRef<GamePhase>("naming");
-  const selectionLockRef = useRef(false);
   const sweepCompletedRef = useRef(false);
   const keyboardInset = useVisualViewportInset();
   const dateStale = useDailyDateRollover(dateSeed);
 
   useEffect(() => {
     phaseRef.current = phase;
-    if (phase === "selecting") {
-      selectionLockRef.current = false;
-    }
   }, [phase]);
 
   const finishGame = useCallback(
@@ -272,7 +268,6 @@ export function GeographyGame() {
   useEffect(() => {
     if (
       !mapReady ||
-      phase !== "selecting" ||
       claimedIds.length === 0 ||
       gameOver ||
       completedResult
@@ -282,15 +277,26 @@ export function GeographyGame() {
     }
 
     const frontier = getFrontierCountryIds(claimedIds);
-    if (isSweepDeadEnd(phase, claimedIds, frontier)) {
-      finishSweepSuccess(claimedIds);
+
+    if (phase === "selecting") {
+      if (isSweepDeadEnd(phase, claimedIds, frontier)) {
+        finishSweepSuccess(claimedIds);
+        return;
+      }
+      setClickableIds((prev) => setFromArrayStable(prev, frontier));
       return;
     }
 
-    setClickableIds((prev) => setFromArrayStable(prev, frontier));
+    if (phase === "naming" && !claimedIds.includes(targetId)) {
+      setClickableIds((prev) => setFromArrayStable(prev, frontier));
+      return;
+    }
+
+    setClickableIds(EMPTY_STRING_SET);
   }, [
     mapReady,
     phase,
+    targetId,
     claimedIds,
     gameOver,
     completedResult,
@@ -323,8 +329,8 @@ export function GeographyGame() {
     phase === "naming"
       ? claimedIds.length === 0
         ? "Name the highlighted country to begin today's sweep."
-        : "Name the country you selected."
-      : "Tap a glowing neighbor on the globe, then name it.";
+        : "Name the highlighted country, or tap another neighbor to switch."
+      : "Tap a neighbor to select — tap another to switch — then name it.";
 
   const controlHint = isTouch
     ? "Swipe to spin · pinch to zoom"
@@ -336,9 +342,9 @@ export function GeographyGame() {
     if (phase === "naming") {
       return claimedIds.length === 0
         ? "Name the highlighted country to begin today's sweep."
-        : "Name the country you selected.";
+        : "Name the highlighted country, or tap another neighbor to switch.";
     }
-    return "Tap a glowing neighbor on the globe, then name it.";
+    return "Tap a neighbor to select — tap another to switch — then name it.";
   }, [gameOver, completedResult, phase, claimedIds.length]);
 
   const handlePlayAgain = useCallback(() => {
@@ -349,7 +355,6 @@ export function GeographyGame() {
     setClaimedIds([]);
     setPhase("naming");
     phaseRef.current = "naming";
-    selectionLockRef.current = false;
     sweepCompletedRef.current = false;
     setTargetId(dailyStartId ?? "");
     setGuess("");
@@ -424,13 +429,15 @@ export function GeographyGame() {
 
   const handleCountryClick = useCallback(
     (countryId: string) => {
-      if (gameOver || completedResult || selectionLockRef.current) return;
-      if (!canSelectFrontierCountry(phaseRef.current, selectionLockRef.current)) {
+      if (gameOver || completedResult) return;
+      if (!clickableIds.has(countryId)) return;
+      if (
+        !canSelectFrontierCountry(phaseRef.current, targetId, claimedIds)
+      ) {
         return;
       }
-      if (!clickableIds.has(countryId)) return;
+      if (phaseRef.current === "naming" && countryId === targetId) return;
 
-      selectionLockRef.current = true;
       phaseRef.current = "naming";
       setTargetId(countryId);
       setPhase("naming");
@@ -438,7 +445,7 @@ export function GeographyGame() {
       setInputError(false);
       requestAnimationFrame(() => inputRef.current?.focus());
     },
-    [gameOver, completedResult, clickableIds],
+    [gameOver, completedResult, clickableIds, targetId, claimedIds],
   );
 
   const showGlobe = mapReady && initialized;

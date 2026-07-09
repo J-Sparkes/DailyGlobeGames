@@ -2,7 +2,19 @@ import type { GamePhase } from "@/lib/daily-play";
 
 export function canSelectFrontierCountry(
   phase: GamePhase,
-  selectionLocked: boolean,
+  targetId: string,
+  claimedIds: string[],
 ): boolean {
-  return phase === "selecting" && !selectionLocked;
+  if (phase === "selecting") return true;
+
+  // Naming an unclaimed frontier pick — allow switching to another neighbor
+  if (
+    phase === "naming" &&
+    claimedIds.length > 0 &&
+    !claimedIds.includes(targetId)
+  ) {
+    return true;
+  }
+
+  return false;
 }
