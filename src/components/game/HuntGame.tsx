@@ -5,12 +5,16 @@ import { HuntGuessTracker } from "@/components/game/HuntGuessTracker";
 import { HuntGlobeBridge } from "@/components/game/GlobeBridge";
 import { HuntDailyResult } from "@/components/game/HuntDailyResult";
 import {
+  DailyDateStaleBanner,
   GameLiveRegion,
+  HudAnchor,
   HudLayer,
   HudPanel,
-  HudChrome,
+  HudSpacer,
+  HudToolbar,
   GameResultOverlay,
 } from "@/components/game/GameHud";
+import { ModeSwitcher } from "@/components/game/ModeSwitcher";
 import { GameMenu } from "@/components/menu/GameMenu";
 import type { HuntGuessMarker } from "@/components/map/HuntGlobe";
 import { getCountryDisplayName } from "@/lib/country-resolve";
@@ -385,30 +389,38 @@ export function HuntGame() {
       <GameLiveRegion message={huntLiveMessage} />
 
       <HudLayer>
-        <HudChrome
-          onMenuOpen={() => setMenuOpen(true)}
-          date={isPlaying ? dateSeed : undefined}
-          stat={
-            isPlaying ? { label: "Left", value: guessesRemaining } : undefined
-          }
-          secondaryStat={{
-            label: "Day streak",
-            value: calendarStreak.current,
-          }}
-          prompt={huntPrompt}
-          meta={isPlaying && phase === "playing" ? controlHint : undefined}
-          dateStale={dateStale}
-          onDateRefresh={() => window.location.reload()}
-          keyboardInset={keyboardInset}
-          topExtra={
-            isPlaying ? (
+        <HudAnchor position="top">
+          {dateStale && (
+            <DailyDateStaleBanner onRefresh={() => window.location.reload()} />
+          )}
+          <HudPanel>
+            <HudToolbar
+              onMenuOpen={() => setMenuOpen(true)}
+              date={isPlaying ? dateSeed : undefined}
+              stat={
+                isPlaying ? { label: "Left", value: guessesRemaining } : undefined
+              }
+              secondaryStat={{
+                label: "Day streak",
+                value: calendarStreak.current,
+              }}
+              prompt={huntPrompt}
+              meta={isPlaying && phase === "playing" ? controlHint : undefined}
+            >
+              <ModeSwitcher />
+            </HudToolbar>
+            {isPlaying && (
               <HuntGuessTracker used={guesses.length} className="mt-2" />
-            ) : undefined
-          }
-        >
+            )}
+          </HudPanel>
+        </HudAnchor>
+
+        <HudSpacer />
+
+        <HudAnchor position="bottom" keyboardInset={keyboardInset}>
           {showFeedback && (
             <HudPanel className="panel-enter">
-              <HuntGuessTracker used={guesses.length} className="mb-2.5 sm:hidden" />
+              <HuntGuessTracker used={guesses.length} className="mb-2.5" />
 
               <div className="flex items-baseline justify-between gap-2">
                 <p className="truncate text-sm font-semibold text-[var(--ui-text-primary)]">
@@ -458,7 +470,7 @@ export function HuntGame() {
               </button>
             </HudPanel>
           )}
-        </HudChrome>
+        </HudAnchor>
 
         {completedResult && !resultsDismissed && (
           <GameResultOverlay

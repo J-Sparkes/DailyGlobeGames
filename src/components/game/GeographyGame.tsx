@@ -3,13 +3,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DailyResult } from "@/components/game/DailyResult";
 import {
+  DailyDateStaleBanner,
   GameLiveRegion,
+  HudAnchor,
   HudLayer,
   HudPanel,
-  HudChrome,
+  HudSpacer,
+  HudToolbar,
   GameResultOverlay,
 } from "@/components/game/GameHud";
 import { SweepGlobeBridge } from "@/components/game/GlobeBridge";
+import { ModeSwitcher } from "@/components/game/ModeSwitcher";
 import { GameMenu } from "@/components/menu/GameMenu";
 import { isCorrectAnswer } from "@/lib/answer-check";
 import { getFrontierCountryIds, loadBorderGraph } from "@/lib/border-graph";
@@ -499,33 +503,43 @@ export function GeographyGame() {
       <GameLiveRegion message={liveMessage} />
 
       <HudLayer>
-        <HudChrome
-          onMenuOpen={() => setMenuOpen(true)}
-          date={
-            initialized && !completedResult && !gameOver ? dateSeed : undefined
-          }
-          stat={{
-            label: "Streak",
-            value: completedResult?.streak ?? claimedIds.length,
-            pop: streakPop,
-            burst: milestoneBurst,
-          }}
-          secondaryStat={{
-            label: "Day streak",
-            value: calendarStreak.current,
-          }}
-          prompt={
-            initialized && !completedResult && !gameOver ? prompt : undefined
-          }
-          meta={
-            initialized && !completedResult && !gameOver
-              ? controlHint
-              : undefined
-          }
-          dateStale={dateStale}
-          onDateRefresh={() => window.location.reload()}
-          keyboardInset={keyboardInset}
-        >
+        <HudAnchor position="top">
+          {dateStale && (
+            <DailyDateStaleBanner onRefresh={() => window.location.reload()} />
+          )}
+          <HudPanel>
+            <HudToolbar
+              onMenuOpen={() => setMenuOpen(true)}
+              date={
+                initialized && !completedResult && !gameOver ? dateSeed : undefined
+              }
+              stat={{
+                label: "Streak",
+                value: completedResult?.streak ?? claimedIds.length,
+                pop: streakPop,
+                burst: milestoneBurst,
+              }}
+              secondaryStat={{
+                label: "Day streak",
+                value: calendarStreak.current,
+              }}
+              prompt={
+                initialized && !completedResult && !gameOver ? prompt : undefined
+              }
+              meta={
+                initialized && !completedResult && !gameOver
+                  ? controlHint
+                  : undefined
+              }
+            >
+              <ModeSwitcher />
+            </HudToolbar>
+          </HudPanel>
+        </HudAnchor>
+
+        <HudSpacer />
+
+        <HudAnchor position="bottom" keyboardInset={keyboardInset}>
           {!gameOver && !completedResult && phase === "naming" && mapReady && (
             <HudPanel>
               <form
@@ -568,7 +582,7 @@ export function GeographyGame() {
               </form>
             </HudPanel>
           )}
-        </HudChrome>
+        </HudAnchor>
 
         {completedResult && !gameOver && !resultsDismissed && (
           <GameResultOverlay

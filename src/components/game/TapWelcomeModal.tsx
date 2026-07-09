@@ -1,124 +1,72 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { isUnlimitedPlaysEnabled } from "@/lib/daily-play";
-import { primeAudio } from "@/lib/sounds";
+import {
+  WelcomeModalShell,
+  type WelcomeStep,
+} from "@/components/game/WelcomeModalShell";
 
 interface TapWelcomeModalProps {
   onClose: () => void;
 }
 
-const STEPS = [
+const STEPS: WelcomeStep[] = [
   {
-    step: "1",
-    title: "Read the prompt",
-    body: "Each day you get five locations — cities, landmarks, and historic places. Everyone sees the same five.",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M4 6h16M4 12h10M4 18h6" />
+      </svg>
+    ),
+    title: "Read the clue",
+    hint: "Five locations. Same five for everyone.",
   },
   {
-    step: "2",
-    title: "Tap the globe",
-    body: "Spin and zoom the satellite globe, then tap where you think the place is. No borders or labels to help you.",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M12 21s-6-4.35-6-10a6 6 0 1 1 12 0c0 5.65-6 10-6 10z" />
+        <circle cx="12" cy="11" r="2" />
+      </svg>
+    ),
+    title: "Hold to lock in",
+    hint: "Spin the globe, then press and hold your guess.",
   },
   {
-    step: "3",
-    title: "Score by distance",
-    body: "Closer taps earn more points (0–100 per round). Later rounds count double or triple toward your total.",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <circle cx="12" cy="12" r="9" />
+        <circle cx="12" cy="12" r="4" />
+      </svg>
+    ),
+    title: "Closer = more pts",
+    hint: "0–100 per round. Later rounds multiply.",
   },
   {
-    step: "4",
-    title: "Finish all five",
-    body: "Unlike Sweep mode, you always play every round. Max score is 1,000 — share your emoji score grid with friends.",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M6 9h12M6 15h8" />
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+      </svg>
+    ),
+    title: "Play all five",
+    hint: "Max 1,000 pts — share your score grid.",
   },
-] as const;
+];
 
 export function TapWelcomeModal({ onClose }: TapWelcomeModalProps) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const unlimited = isUnlimitedPlaysEnabled();
 
-  useEffect(() => {
-    closeButtonRef.current?.focus();
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [onClose]);
-
   return (
-    <div
-      className="welcome-backdrop pointer-events-auto fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
-      role="presentation"
-      onClick={onClose}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="tap-welcome-title"
-        className="welcome-panel relative w-full max-w-lg rounded-2xl border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-hud)] shadow-2xl shadow-black/60"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(56,189,248,0.12),_transparent_55%)]" />
-
-        <div className="relative px-6 pb-6 pt-8 sm:px-8 sm:pb-8">
-          <p className="text-xs font-semibold tracking-[0.28em] text-sky-400/90 uppercase">
-            How to play
-          </p>
-          <h2
-            id="tap-welcome-title"
-            className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl"
-          >
-            Tap the map, score by distance
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-slate-400">
-            A daily pin-the-map game. Five locations, one tap each — how close can
-            you get?
-          </p>
-
-          <ol className="mt-6 space-y-3">
-            {STEPS.map((item) => (
-              <li
-                key={item.step}
-                className="flex gap-4 rounded-xl border border-white/[0.06] bg-white/[0.03] p-4"
-              >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-500/15 text-sm font-semibold text-sky-300 ring-1 ring-sky-500/25">
-                  {item.step}
-                </span>
-                <div>
-                  <p className="font-medium text-slate-100">{item.title}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-slate-400">
-                    {item.body}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-
-          <p className="mt-5 rounded-lg border border-white/[0.06] bg-black/30 px-4 py-3 text-xs leading-relaxed text-slate-500">
-            {unlimited
-              ? "Test mode is on — you can replay as many times as you like."
-              : "One Tap game per day. Share your score when you finish all five rounds."}
-          </p>
-
-          <button
-            ref={closeButtonRef}
-            type="button"
-            onClick={() => {
-              primeAudio();
-              onClose();
-            }}
-            className="touch-target mt-6 w-full min-h-11 rounded-xl btn-primary px-4 py-3.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ui-accent-primary)_60%,transparent)] focus:ring-offset-2 focus:ring-offset-[var(--ui-surface-hud)]"
-          >
-            Start playing
-          </button>
-        </div>
-      </div>
-    </div>
+    <WelcomeModalShell
+      titleId="tap-welcome-title"
+      title="Tap the map"
+      tagline="Pin five daily places. Score by how close you get."
+      steps={STEPS}
+      footnote={
+        unlimited
+          ? "Test mode — replay anytime."
+          : "One Tap game per day. Finish all five to share."
+      }
+      onClose={onClose}
+    />
   );
 }

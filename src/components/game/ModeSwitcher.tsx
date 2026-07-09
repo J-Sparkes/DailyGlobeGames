@@ -44,56 +44,16 @@ const MODES = [
   },
 ] as const;
 
-export function ModeSwitcher({
-  variant = "default",
-}: {
-  variant?: "default" | "dock";
-}) {
+export function ModeSwitcher() {
   const pathname = usePathname();
   const { trifecta } = useRetention();
 
   const linkClass = (active: boolean) =>
-    `touch-target flex shrink-0 items-center justify-center gap-1 rounded-md font-semibold uppercase transition ${
-      variant === "dock"
-        ? `min-h-9 min-w-9 px-2 text-[10px] tracking-wide ${
-            active
-              ? "bg-[var(--ui-accent-primary)] text-white"
-              : "text-[var(--ui-text-muted)] hover:bg-white/10 hover:text-[var(--ui-text-primary)]"
-          }`
-        : `gap-1.5 px-2.5 py-1.5 text-xs tracking-wide ${
-            active
-              ? "bg-[var(--ui-accent-primary)] text-white"
-              : "text-[var(--ui-text-muted)] hover:bg-white/10 hover:text-[var(--ui-text-primary)]"
-          }`
+    `touch-target flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold tracking-wide uppercase transition ${
+      active
+        ? "bg-[var(--ui-accent-primary)] text-white"
+        : "text-[var(--ui-text-muted)] hover:bg-white/10 hover:text-[var(--ui-text-primary)]"
     }`;
-
-  if (variant === "dock") {
-    return (
-      <nav
-        className="hud-mobile-dock__modes"
-        aria-label="Game mode"
-      >
-        <div className="flex items-center gap-0.5">
-          {MODES.map((mode) => {
-            const active = mode.match(pathname);
-            return (
-              <Link
-                key={mode.href}
-                href={mode.href}
-                className={linkClass(active)}
-                aria-current={active ? "page" : undefined}
-                aria-label={mode.label}
-                title={mode.label}
-              >
-                {mode.icon}
-              </Link>
-            );
-          })}
-        </div>
-        <TrifectaDots status={trifecta} />
-      </nav>
-    );
-  }
 
   return (
     <div className="flex flex-col items-center gap-0.5">

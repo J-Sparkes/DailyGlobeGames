@@ -1,129 +1,72 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { isUnlimitedPlaysEnabled } from "@/lib/daily-play";
-import { primeAudio } from "@/lib/sounds";
+import {
+  WelcomeModalShell,
+  type WelcomeStep,
+} from "@/components/game/WelcomeModalShell";
 
 interface HuntWelcomeModalProps {
   onClose: () => void;
 }
 
-const STEPS = [
+const STEPS: WelcomeStep[] = [
   {
-    step: "1",
-    title: "A hidden country",
-    body: "Every day, one country is chosen in secret. The map shows no borders — only satellite imagery.",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M12 3a9 9 0 1 0 9 9" />
+        <path d="M12 7v4l2.5 2.5" />
+      </svg>
+    ),
+    title: "Hidden country",
+    hint: "No borders — just satellite imagery.",
   },
   {
-    step: "2",
-    title: "Tap to measure",
-    body: "Click any country on the globe. You'll see how many miles away it is from today's hidden country.",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M12 21s-6-4.35-6-10a6 6 0 1 1 12 0" />
+        <path d="M12 11v2" />
+      </svg>
+    ),
+    title: "Tap & measure",
+    hint: "See how many miles away you are.",
   },
   {
-    step: "3",
-    title: "Hot and cold",
-    body: "Each guess tells you if you're warmer or colder than your last try. Use the distances to triangulate.",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z" />
+      </svg>
+    ),
+    title: "Hot or cold",
+    hint: "Each miss reveals a trivia clue.",
   },
   {
-    step: "4",
-    title: "Five chances",
-    body: "You get five guesses. Each miss unlocks a fun fact about the hidden country. Find it sooner for a higher score.",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7L12 16.8 5.7 21l2.3-7-6-4.6h7.6z" />
+      </svg>
+    ),
+    title: "Five guesses",
+    hint: "Find it fast for up to 5 points.",
   },
-  {
-    step: "5",
-    title: "Score by speed",
-    body: "Win on guess 1 for 5 points, guess 2 for 4, and so on — down to 1 point on your final try.",
-  },
-] as const;
+];
 
 export function HuntWelcomeModal({ onClose }: HuntWelcomeModalProps) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const unlimited = isUnlimitedPlaysEnabled();
 
-  useEffect(() => {
-    closeButtonRef.current?.focus();
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [onClose]);
-
   return (
-    <div
-      className="welcome-backdrop pointer-events-auto fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
-      role="presentation"
-      onClick={onClose}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="hunt-welcome-title"
-        className="welcome-panel relative w-full max-w-lg rounded-2xl border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-hud)] shadow-2xl shadow-black/60"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(56,189,248,0.12),_transparent_55%)]" />
-
-        <div className="relative px-6 pb-6 pt-8 sm:px-8 sm:pb-8">
-          <p className="text-xs font-semibold tracking-[0.28em] text-sky-400/90 uppercase">
-            How to play
-          </p>
-          <h2
-            id="hunt-welcome-title"
-            className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl"
-          >
-            Find the hidden country
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-slate-400">
-            A daily hot-and-cold hunt on the globe. Five guesses, one mystery
-            nation — each miss reveals a clue.
-          </p>
-
-          <ol className="mt-6 space-y-3">
-            {STEPS.map((item) => (
-              <li
-                key={item.step}
-                className="flex gap-4 rounded-xl border border-white/[0.06] bg-white/[0.03] p-4"
-              >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-500/15 text-sm font-semibold text-sky-300 ring-1 ring-sky-500/25">
-                  {item.step}
-                </span>
-                <div>
-                  <p className="font-medium text-slate-100">{item.title}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-slate-400">
-                    {item.body}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-
-          <p className="mt-5 rounded-lg border border-white/[0.06] bg-black/30 px-4 py-3 text-xs leading-relaxed text-slate-500">
-            {unlimited
-              ? "Test mode is on — you can replay as many times as you like."
-              : "One hunt per day. Win on guess 1 for 5 points, guess 2 for 4, down to 1 on guess 5."}
-          </p>
-
-          <button
-            ref={closeButtonRef}
-            type="button"
-            onClick={() => {
-              primeAudio();
-              onClose();
-            }}
-            className="touch-target mt-6 w-full min-h-11 rounded-xl btn-primary px-4 py-3.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--ui-accent-primary)_60%,transparent)] focus:ring-offset-2 focus:ring-offset-[var(--ui-surface-hud)]"
-          >
-            Start hunting
-          </button>
-        </div>
-      </div>
-    </div>
+    <WelcomeModalShell
+      titleId="hunt-welcome-title"
+      title="Hunt the nation"
+      tagline="One secret country. Triangulate with distance and clues."
+      steps={STEPS}
+      footnote={
+        unlimited
+          ? "Test mode — replay anytime."
+          : "One hunt per day. Win sooner for a higher score."
+      }
+      ctaLabel="Start hunting"
+      onClose={onClose}
+    />
   );
 }

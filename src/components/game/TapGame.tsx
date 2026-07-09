@@ -3,12 +3,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TapGlobeBridge } from "@/components/game/GlobeBridge";
 import {
+  DailyDateStaleBanner,
   GameLiveRegion,
+  HudAnchor,
   HudLayer,
   HudPanel,
-  HudChrome,
+  HudSpacer,
+  HudToolbar,
   GameResultOverlay,
 } from "@/components/game/GameHud";
+import { ModeSwitcher } from "@/components/game/ModeSwitcher";
 import { TapDailyResult } from "@/components/game/TapDailyResult";
 import { GameMenu } from "@/components/menu/GameMenu";
 import type { GlobeMarker } from "@/components/map/TapGlobe";
@@ -335,29 +339,39 @@ export function TapGame() {
       <GameLiveRegion message={tapLiveMessage} />
 
       <HudLayer>
-        <HudChrome
-          onMenuOpen={() => setMenuOpen(true)}
-          date={isPlaying ? dateSeed : undefined}
-          stat={{
-            label: "Score",
-            value: completedResult?.totalScore ?? runningScore,
-            pop: scorePop,
-            burst: scoreBurst,
-          }}
-          secondaryStat={{
-            label: "Day streak",
-            value: calendarStreak.current,
-          }}
-          prompt={
-            isPlaying && phase === "aiming" && currentLocation
-              ? currentLocation.prompt
-              : undefined
-          }
-          meta={tapMeta}
-          dateStale={dateStale}
-          onDateRefresh={() => window.location.reload()}
-          keyboardInset={keyboardInset}
-        >
+        <HudAnchor position="top">
+          {dateStale && (
+            <DailyDateStaleBanner onRefresh={() => window.location.reload()} />
+          )}
+          <HudPanel>
+            <HudToolbar
+              onMenuOpen={() => setMenuOpen(true)}
+              date={isPlaying ? dateSeed : undefined}
+              stat={{
+                label: "Score",
+                value: completedResult?.totalScore ?? runningScore,
+                pop: scorePop,
+                burst: scoreBurst,
+              }}
+              secondaryStat={{
+                label: "Day streak",
+                value: calendarStreak.current,
+              }}
+              prompt={
+                isPlaying && phase === "aiming" && currentLocation
+                  ? currentLocation.prompt
+                  : undefined
+              }
+              meta={tapMeta}
+            >
+              <ModeSwitcher />
+            </HudToolbar>
+          </HudPanel>
+        </HudAnchor>
+
+        <HudSpacer />
+
+        <HudAnchor position="bottom" keyboardInset={keyboardInset}>
           {showRoundResult && (
             <HudPanel className="panel-enter">
               <div className="flex items-baseline justify-between gap-3">
@@ -396,7 +410,7 @@ export function TapGame() {
               </button>
             </HudPanel>
           )}
-        </HudChrome>
+        </HudAnchor>
 
         {completedResult && !resultsDismissed && (
           <GameResultOverlay
