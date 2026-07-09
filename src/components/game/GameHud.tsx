@@ -4,7 +4,6 @@ import type { CSSProperties, ReactNode } from "react";
 import { useEffect } from "react";
 import { MobileInstructionBox } from "@/components/game/MobileInstructionBox";
 import { MenuButton } from "@/components/menu/MenuButton";
-import type { GameMode } from "@/lib/game-mode-instructions";
 
 export function HudLayer({ children }: { children: ReactNode }) {
   return (
@@ -263,17 +262,19 @@ export function GameLiveRegion({ message }: { message: string }) {
 
 /** Bottom-centered mobile gameplay instruction overlay */
 export function HudMobileInstruction({
-  mode,
+  primary,
+  secondary,
   visible = true,
 }: {
-  mode: GameMode;
+  primary: string;
+  secondary?: string;
   visible?: boolean;
 }) {
-  if (!visible) return null;
+  if (!visible || !primary) return null;
 
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[12] flex justify-center px-3 pb-[max(0.75rem,var(--safe-bottom))] pl-[max(0.75rem,var(--safe-left))] pr-[max(0.75rem,var(--safe-right))] sm:hidden">
-      <MobileInstructionBox mode={mode} />
+      <MobileInstructionBox primary={primary} secondary={secondary} />
     </div>
   );
 }

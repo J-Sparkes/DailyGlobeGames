@@ -409,7 +409,8 @@ export function TapGame() {
         </HudAnchor>
 
         <HudMobileInstruction
-          mode="tap"
+          primary={currentLocation?.prompt ?? "Hold on the globe to lock in your guess."}
+          secondary={tapMeta}
           visible={isPlaying && !showRoundResult && !completedResult}
         />
 

@@ -591,7 +591,8 @@ export function GeographyGame() {
         </HudAnchor>
 
         <HudMobileInstruction
-          mode="sweep"
+          primary={prompt}
+          secondary={controlHint}
           visible={initialized && !completedResult && !gameOver}
         />
 

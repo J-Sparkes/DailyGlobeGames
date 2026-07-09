@@ -471,7 +471,8 @@ export function HuntGame() {
         </HudAnchor>
 
         <HudMobileInstruction
-          mode="hunt"
+          primary={huntPrompt ?? "Tap a country on the globe."}
+          secondary={isPlaying && phase === "playing" ? controlHint : undefined}
           visible={isPlaying && !showFeedback && !completedResult}
         />
 

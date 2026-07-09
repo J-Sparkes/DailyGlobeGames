@@ -183,11 +183,11 @@ textarea {
   padding-bottom: calc(5.75rem + var(--safe-bottom));
 }
 
-.mobile-instruction-box__text {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
+.mobile-instruction-box__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .overlay-safe-top {
