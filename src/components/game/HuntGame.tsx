@@ -11,6 +11,7 @@ import {
   HudPanel,
   HudSpacer,
   HudTopChrome,
+  HudMobileInstruction,
   GameResultOverlay,
 } from "@/components/game/GameHud";
 import { ModeSwitcher } from "@/components/game/ModeSwitcher";
@@ -468,6 +469,11 @@ export function HuntGame() {
             </HudPanel>
           )}
         </HudAnchor>
+
+        <HudMobileInstruction
+          mode="hunt"
+          visible={isPlaying && !showFeedback && !completedResult}
+        />
 
         {completedResult && !resultsDismissed && (
           <GameResultOverlay

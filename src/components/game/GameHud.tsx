@@ -2,7 +2,9 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect } from "react";
+import { MobileInstructionBox } from "@/components/game/MobileInstructionBox";
 import { MenuButton } from "@/components/menu/MenuButton";
+import type { GameMode } from "@/lib/game-mode-instructions";
 
 export function HudLayer({ children }: { children: ReactNode }) {
   return (
@@ -20,10 +22,13 @@ export function HudAnchor({
   children,
   position,
   keyboardInset = 0,
+  reserveMobileInstruction = false,
 }: {
   children: ReactNode;
   position: "top" | "bottom";
   keyboardInset?: number;
+  /** Lift bottom panels above the mobile instruction card */
+  reserveMobileInstruction?: boolean;
 }) {
   const style: CSSProperties | undefined =
     position === "bottom" && keyboardInset > 0
@@ -35,7 +40,9 @@ export function HudAnchor({
       className={
         position === "top"
           ? "hud-slot hud-slot--top shrink-0"
-          : "hud-slot hud-slot--bottom shrink-0"
+          : `hud-slot hud-slot--bottom shrink-0${
+              reserveMobileInstruction ? " hud-slot--bottom-with-instruction" : ""
+            }`
       }
       style={style}
     >
@@ -250,6 +257,23 @@ export function GameLiveRegion({ message }: { message: string }) {
   return (
     <div className="sr-only" aria-live="polite" aria-atomic="true">
       {message}
+    </div>
+  );
+}
+
+/** Bottom-centered mobile gameplay instruction overlay */
+export function HudMobileInstruction({
+  mode,
+  visible = true,
+}: {
+  mode: GameMode;
+  visible?: boolean;
+}) {
+  if (!visible) return null;
+
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[12] flex justify-center px-3 pb-[max(0.75rem,var(--safe-bottom))] pl-[max(0.75rem,var(--safe-left))] pr-[max(0.75rem,var(--safe-right))] sm:hidden">
+      <MobileInstructionBox mode={mode} />
     </div>
   );
 }

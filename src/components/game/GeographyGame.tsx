@@ -9,6 +9,7 @@ import {
   HudPanel,
   HudSpacer,
   HudTopChrome,
+  HudMobileInstruction,
   GameResultOverlay,
 } from "@/components/game/GameHud";
 import { SweepGlobeBridge } from "@/components/game/GlobeBridge";
@@ -534,7 +535,17 @@ export function GeographyGame() {
 
         <HudSpacer />
 
-        <HudAnchor position="bottom" keyboardInset={keyboardInset}>
+        <HudAnchor
+          position="bottom"
+          keyboardInset={keyboardInset}
+          reserveMobileInstruction={
+            initialized &&
+            !completedResult &&
+            !gameOver &&
+            phase === "naming" &&
+            mapReady
+          }
+        >
           {!gameOver && !completedResult && phase === "naming" && mapReady && (
             <HudPanel>
               <form
@@ -578,6 +589,11 @@ export function GeographyGame() {
             </HudPanel>
           )}
         </HudAnchor>
+
+        <HudMobileInstruction
+          mode="sweep"
+          visible={initialized && !completedResult && !gameOver}
+        />
 
         {completedResult && !gameOver && !resultsDismissed && (
           <GameResultOverlay

@@ -179,6 +179,17 @@ textarea {
   padding-bottom: max(0.5rem, var(--safe-bottom));
 }
 
+.hud-slot--bottom-with-instruction {
+  padding-bottom: calc(5.75rem + var(--safe-bottom));
+}
+
+.mobile-instruction-box__text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
 .overlay-safe-top {
   padding-top: max(0.75rem, var(--safe-top));
 }
