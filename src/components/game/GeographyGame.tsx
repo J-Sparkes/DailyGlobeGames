@@ -153,7 +153,8 @@ export function GeographyGame({
     !completedResult &&
     !gameOver &&
     !pendingGameOver &&
-    Boolean(dailyStartId);
+    Boolean(dailyStartId) &&
+    claimedIds.length > 0;
 
   const { seconds: blitzSeconds, addBonus: addBlitzBonus } = useBlitzTimer({
     active: blitzActive,
@@ -371,7 +372,7 @@ export function GeographyGame({
     phase === "naming"
       ? claimedIds.length === 0
         ? isBlitz
-          ? "Name the highlighted country — you've got 30 seconds!"
+          ? "Name the highlighted country to start the clock."
           : "Name the highlighted country to begin today's sweep."
         : isBlitz
           ? "Name the country, or tap a neighbor to switch. +3s per correct guess."
@@ -435,7 +436,7 @@ export function GeographyGame({
 
     window.setTimeout(() => setFlashSuccessId(null), 700);
 
-    if (isBlitz) {
+    if (isBlitz && prevLength > 0) {
       addBlitzBonus(BLITZ_BONUS_SECONDS);
       setBlitzBonusPulse(true);
       window.setTimeout(() => setBlitzBonusPulse(false), 400);
@@ -603,7 +604,11 @@ export function GeographyGame({
             topExtra={
               isBlitz && initialized && !completedResult && !gameOver ? (
                 <div className="flex justify-end border-t border-[var(--ui-border-subtle)] px-3 py-2">
-                  <BlitzTimer seconds={blitzSeconds} pulse={blitzBonusPulse} />
+                  <BlitzTimer
+                    seconds={blitzSeconds}
+                    pulse={blitzBonusPulse}
+                    running={blitzActive}
+                  />
                 </div>
               ) : undefined
             }

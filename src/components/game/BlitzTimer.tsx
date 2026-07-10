@@ -5,9 +5,10 @@ import { BLITZ_START_SECONDS } from "@/lib/blitz-timer";
 interface BlitzTimerProps {
   seconds: number;
   pulse?: boolean;
+  running?: boolean;
 }
 
-export function BlitzTimer({ seconds, pulse = false }: BlitzTimerProps) {
+export function BlitzTimer({ seconds, pulse = false, running = true }: BlitzTimerProps) {
   const urgent = seconds <= 5;
   const fillPct = Math.min(
     100,
@@ -18,7 +19,11 @@ export function BlitzTimer({ seconds, pulse = false }: BlitzTimerProps) {
     <div
       className="flex min-w-[5.5rem] flex-col items-end gap-1"
       aria-live="polite"
-      aria-label={`${seconds} seconds remaining`}
+      aria-label={
+        running
+          ? `${seconds} seconds remaining`
+          : `${seconds} seconds — starts after your first correct guess`
+      }
     >
       <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--ui-text-muted)]">
         Time
@@ -39,9 +44,11 @@ export function BlitzTimer({ seconds, pulse = false }: BlitzTimerProps) {
         </div>
         <p
           className={`font-stat min-w-[2.25rem] text-right text-lg font-semibold leading-none tabular-nums ${
-            urgent
+            urgent && running
               ? "text-red-400 animate-pulse"
-              : "text-[var(--ui-accent-warm)]"
+              : running
+                ? "text-[var(--ui-accent-warm)]"
+                : "text-[var(--ui-text-muted)]"
           } ${pulse ? "streak-pop" : ""}`}
         >
           {seconds}s
