@@ -1,14 +1,20 @@
 import { getDateSeed } from "@/lib/daily-seed";
 import { getCompletedResultForToday } from "@/lib/daily-play";
+import { getBlitzCompletedForToday } from "@/lib/blitz-daily-play";
 import { getHuntCompletedResultForToday } from "@/lib/hunt-daily-play";
 import { getAllGameHistory } from "@/lib/game-history";
+import { getQuizCompletedForToday } from "@/lib/quiz-daily-play";
 import { getTapCompletedResultForToday } from "@/lib/tap-daily-play";
 
-export type TrifectaMode = "sweep" | "tap" | "hunt";
+export const DAILY_MODE_COUNT = 5;
+
+export type TrifectaMode = "sweep" | "blitz" | "quiz" | "tap" | "hunt";
 
 export interface TrifectaStatus {
   date: string;
   sweep: boolean;
+  blitz: boolean;
+  quiz: boolean;
   tap: boolean;
   hunt: boolean;
   completed: number;
@@ -23,23 +29,31 @@ export function getTrifectaForDate(date: string): TrifectaStatus {
 
   const today = getDateSeed();
   if (date === today) {
-    if (getCompletedResultForToday()) modes.add("sweep");
+    if (getCompletedResultForToday() && !getBlitzCompletedForToday()) {
+      modes.add("sweep");
+    }
+    if (getBlitzCompletedForToday()) modes.add("blitz");
+    if (getQuizCompletedForToday()) modes.add("quiz");
     if (getTapCompletedResultForToday()) modes.add("tap");
     if (getHuntCompletedResultForToday()) modes.add("hunt");
   }
 
   const sweep = modes.has("sweep");
+  const blitz = modes.has("blitz");
+  const quiz = modes.has("quiz");
   const tap = modes.has("tap");
   const hunt = modes.has("hunt");
-  const completed = [sweep, tap, hunt].filter(Boolean).length;
+  const completed = [sweep, blitz, quiz, tap, hunt].filter(Boolean).length;
 
   return {
     date,
     sweep,
+    blitz,
+    quiz,
     tap,
     hunt,
     completed,
-    complete: completed === 3,
+    complete: completed === DAILY_MODE_COUNT,
   };
 }
 
@@ -50,6 +64,8 @@ export function getTodayTrifecta(): TrifectaStatus {
 export function getRemainingModeLabels(status: TrifectaStatus): string[] {
   const remaining: string[] = [];
   if (!status.sweep) remaining.push("Sweep");
+  if (!status.blitz) remaining.push("Blitz");
+  if (!status.quiz) remaining.push("Quiz");
   if (!status.tap) remaining.push("Tap");
   if (!status.hunt) remaining.push("Hunt");
   return remaining;

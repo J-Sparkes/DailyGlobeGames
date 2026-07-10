@@ -13,7 +13,7 @@ export type AnalyticsEvent =
   | "premium_convert";
 
 export interface AnalyticsPayload {
-  mode?: "sweep" | "tap" | "hunt";
+  mode?: "sweep" | "blitz" | "quiz" | "tap" | "hunt";
   score?: number;
   streak_length?: number;
   channel?: string;

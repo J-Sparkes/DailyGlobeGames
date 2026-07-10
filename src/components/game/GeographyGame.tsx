@@ -28,6 +28,7 @@ import {
   type CompletedDailyResult,
   type GamePhase,
 } from "@/lib/daily-play";
+import { saveBlitzCompletedResult, getBlitzCompletedForDate } from "@/lib/blitz-daily-play";
 import { isSweepDeadEnd, sanitizeSweepProgress } from "@/lib/sweep-progress";
 import { resolveCountry } from "@/lib/country-resolve";
 import { fetchSweepDaily, submitSweepResult } from "@/lib/api/client";
@@ -40,6 +41,7 @@ import {
 } from "@/lib/globe-constants";
 import { isTouchDevice } from "@/lib/device";
 import { appendGameHistory } from "@/lib/profile-storage";
+import { appendGuestBlitzHistory } from "@/lib/guest-history";
 import { playCorrectGuessSound, playWrongGuessSound, primeAudio } from "@/lib/sounds";
 import { useVisualViewportInset } from "@/lib/use-visual-viewport-inset";
 import { shouldFinishSweepSuccess } from "@/lib/sweep-finish";
@@ -124,9 +126,14 @@ export function GeographyGame({
         targetCountryId,
         streak: path.length,
       };
-      saveCompletedResult(result);
-      appendGameHistory(result);
-      recordDailyComplete("sweep", result.streak);
+      if (isBlitz) {
+        saveBlitzCompletedResult(result);
+        appendGuestBlitzHistory(result);
+      } else {
+        saveCompletedResult(result);
+        appendGameHistory(result);
+      }
+      recordDailyComplete(isBlitz ? "blitz" : "sweep", result.streak);
       setGameOver(result);
       void submitSweepResult({
         date: dateSeed,
@@ -138,7 +145,7 @@ export function GeographyGame({
         setCompletedResult(result);
       }
     },
-    [dateSeed, unlimited],
+    [dateSeed, isBlitz, unlimited],
   );
 
   const handleBlitzExpire = useCallback(() => {
@@ -173,9 +180,14 @@ export function GeographyGame({
         targetCountryId: path.at(-1) ?? dailyStartId ?? "",
         streak: path.length,
       };
-      saveCompletedResult(result);
-      appendGameHistory(result);
-      recordDailyComplete("sweep", result.streak);
+      if (isBlitz) {
+        saveBlitzCompletedResult(result);
+        appendGuestBlitzHistory(result);
+      } else {
+        saveCompletedResult(result);
+        appendGameHistory(result);
+      }
+      recordDailyComplete(isBlitz ? "blitz" : "sweep", result.streak);
       setCompletedResult(result);
       void submitSweepResult({
         date: dateSeed,
@@ -184,7 +196,7 @@ export function GeographyGame({
         targetCountryId: path.at(-1) ?? dailyStartId ?? "",
       });
     },
-    [dateSeed, dailyStartId],
+    [dateSeed, dailyStartId, isBlitz],
   );
 
   useEffect(() => {
@@ -252,7 +264,9 @@ export function GeographyGame({
     setInputError(false);
     sweepCompletedRef.current = false;
 
-    const completed = getCompletedResultForDate(dateSeed);
+    const completed = isBlitz
+      ? getBlitzCompletedForDate(dateSeed)
+      : getCompletedResultForDate(dateSeed);
     if (completed) {
       setCompletedResult(completed);
       setInitialized(true);
@@ -280,7 +294,7 @@ export function GeographyGame({
     }
 
     setInitialized(true);
-  }, [dailyStartId, unlimited, dateSeed]);
+  }, [dailyStartId, unlimited, dateSeed, isBlitz]);
 
   useEffect(() => {
     loadBorderGraph().then(() => setMapReady(true));

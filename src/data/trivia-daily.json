@@ -1,0 +1,30 @@
+{
+  "daily": {
+    "name": "Japan",
+    "coordinates": {
+      "lat": 36.2048,
+      "lng": 138.2529
+    },
+    "clues": [
+      "In its native language, this country's name means 'origin of the sun'.",
+      "The capital has the world's busiest pedestrian scramble crossing.",
+      "An archipelago on the Pacific Ring of Fire with more than 6,800 islands.",
+      "Home to Mount Fuji, bullet trains, and cherry blossom season.",
+      "The Land of the Rising Sun."
+    ]
+  },
+  "bonus": {
+    "name": "Brazil",
+    "coordinates": {
+      "lat": -14.235,
+      "lng": -51.9253
+    },
+    "clues": [
+      "The largest country in South America and the only Portuguese-speaking nation in the Americas.",
+      "Contains about 60% of the Amazon rainforest within its borders.",
+      "Its capital was purpose-built inland in the 1960s, while Rio hosts Carnival.",
+      "Famous for samba, the Christ the Redeemer statue, and five World Cup titles.",
+      "The fifth-largest country in the world by land area."
+    ]
+  }
+}

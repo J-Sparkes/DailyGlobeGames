@@ -8,7 +8,7 @@ import {
   markReferralComplete,
 } from "@/lib/referral";
 import { getStreakFreezeMonth } from "@/lib/retention-storage";
-import { getTodayTrifecta } from "@/lib/trifecta";
+import { getTodayTrifecta, DAILY_MODE_COUNT } from "@/lib/trifecta";
 
 let trifectaTrackedDate: string | null = null;
 
@@ -19,7 +19,7 @@ export function notifyRetentionUpdate(): void {
 }
 
 export function recordDailyComplete(
-  mode: "sweep" | "tap" | "hunt",
+  mode: "sweep" | "blitz" | "quiz" | "tap" | "hunt",
   score: number,
 ): void {
   recordPlayDay();
@@ -66,5 +66,7 @@ async function completeReferralIfNeeded(): Promise<void> {
 
 export function trifectaShareSuffix(): string {
   const trifecta = getTodayTrifecta();
-  return trifecta.complete ? "\n\n✨ Daily trifecta — all 3 modes complete!" : "";
+  return trifecta.complete
+    ? `\n\n✨ Daily complete — all ${DAILY_MODE_COUNT} modes done today!`
+    : "";
 }

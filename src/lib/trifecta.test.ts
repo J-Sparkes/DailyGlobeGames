@@ -7,11 +7,13 @@ describe("trifecta", () => {
       getRemainingModeLabels({
         date: "2026-06-30",
         sweep: true,
+        blitz: false,
+        quiz: false,
         tap: false,
         hunt: false,
         completed: 1,
         complete: false,
       }),
-    ).toEqual(["Tap", "Hunt"]);
+    ).toEqual(["Blitz", "Quiz", "Tap", "Hunt"]);
   });
 });

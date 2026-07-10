@@ -25,7 +25,7 @@ export function recordPlayDay(): void {
   window.localStorage.setItem(LAST_PLAY_KEY, today);
 }
 
-export function recordFirstWin(mode: "sweep" | "tap" | "hunt"): void {
+export function recordFirstWin(mode: "sweep" | "blitz" | "quiz" | "tap" | "hunt"): void {
   if (typeof window === "undefined") return;
   if (window.localStorage.getItem(FIRST_WIN_KEY)) return;
   window.localStorage.setItem(FIRST_WIN_KEY, mode);

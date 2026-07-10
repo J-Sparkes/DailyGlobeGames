@@ -1,13 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import type { TrifectaStatus } from "@/lib/trifecta";
+import {
+  DAILY_MODE_COUNT,
+  type TrifectaMode,
+  type TrifectaStatus,
+} from "@/lib/trifecta";
 import { getRemainingModeLabels } from "@/lib/trifecta";
 
-const MODE_LINKS: Record<"sweep" | "tap" | "hunt", string> = {
+const MODE_LINKS: Record<TrifectaMode, string> = {
   sweep: "/",
+  blitz: "/blitz",
+  quiz: "/trivia",
   tap: "/tap",
   hunt: "/hunt",
+};
+
+const MODE_LABELS: Record<TrifectaMode, string> = {
+  sweep: "Sweep",
+  blitz: "Blitz",
+  quiz: "Quiz",
+  tap: "Tap",
+  hunt: "Hunt",
 };
 
 export function TrifectaNudge({
@@ -21,7 +35,7 @@ export function TrifectaNudge({
     if (status.complete) {
       return (
         <p className="text-[10px] font-medium text-[var(--ui-success)]">
-          Trifecta complete today
+          All {DAILY_MODE_COUNT} modes complete today
         </p>
       );
     }
@@ -32,7 +46,7 @@ export function TrifectaNudge({
     return (
       <div className="flex items-center justify-between gap-2">
         <p className="text-[10px] text-[var(--ui-text-muted)]">
-          Daily trip {status.completed}/3
+          Daily trip {status.completed}/{DAILY_MODE_COUNT}
         </p>
         <TrifectaDots status={status} />
       </div>
@@ -42,7 +56,7 @@ export function TrifectaNudge({
     return (
       <div className="mt-3 rounded-lg border border-[color-mix(in_srgb,var(--ui-success)_35%,transparent)] bg-[color-mix(in_srgb,var(--ui-success)_10%,transparent)] px-3 py-2">
         <p className="text-xs font-semibold text-[var(--ui-success)]">
-          Trifecta complete — all three modes done today.
+          All {DAILY_MODE_COUNT} modes complete today.
         </p>
       </div>
     );
@@ -54,12 +68,12 @@ export function TrifectaNudge({
   return (
     <div className="mt-3 rounded-lg border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-raised)] px-3 py-2">
       <p className="text-xs text-[var(--ui-text-muted)]">
-        Daily trip: {status.completed}/3 complete
+        Daily trip: {status.completed}/{DAILY_MODE_COUNT} complete
       </p>
       <p className="mt-1 text-sm text-[var(--ui-text-primary)]">
         Still open today —{" "}
         {remaining.map((label, index) => {
-          const mode = label.toLowerCase() as "sweep" | "tap" | "hunt";
+          const mode = label.toLowerCase() as TrifectaMode;
           return (
             <span key={label}>
               {index > 0 && (index === remaining.length - 1 ? " and " : ", ")}
@@ -78,16 +92,18 @@ export function TrifectaNudge({
 }
 
 export function TrifectaDots({ status }: { status: TrifectaStatus }) {
-  const modes: Array<{ key: keyof Pick<TrifectaStatus, "sweep" | "tap" | "hunt">; label: string }> = [
-    { key: "sweep", label: "Sweep" },
-    { key: "tap", label: "Tap" },
-    { key: "hunt", label: "Hunt" },
+  const modes: Array<{ key: TrifectaMode; label: string }> = [
+    { key: "sweep", label: MODE_LABELS.sweep },
+    { key: "blitz", label: MODE_LABELS.blitz },
+    { key: "quiz", label: MODE_LABELS.quiz },
+    { key: "tap", label: MODE_LABELS.tap },
+    { key: "hunt", label: MODE_LABELS.hunt },
   ];
 
   return (
     <div
       className="flex items-center justify-center gap-1 pt-1"
-      aria-label={`${status.completed} of 3 modes complete today`}
+      aria-label={`${status.completed} of ${DAILY_MODE_COUNT} modes complete today`}
     >
       {modes.map(({ key, label }) => (
         <span

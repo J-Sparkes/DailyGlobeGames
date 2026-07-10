@@ -1,6 +1,6 @@
 export interface GameHistoryEntry {
   date: string;
-  mode?: "sweep" | "tap" | "hunt";
+  mode?: "sweep" | "blitz" | "quiz" | "tap" | "hunt";
   streak?: number;
   path?: string[];
   totalScore?: number;

@@ -67,6 +67,25 @@ export function appendGuestHuntHistory(result: CompletedHuntResult): void {
   });
 }
 
+export function appendGuestBlitzHistory(result: CompletedDailyResult): void {
+  upsertEntry({
+    date: result.date,
+    mode: "blitz",
+    streak: result.streak,
+    path: result.path,
+    recordedAt: new Date().toISOString(),
+  });
+}
+
+export function appendGuestQuizHistory(date: string, score: number): void {
+  upsertEntry({
+    date,
+    mode: "quiz",
+    totalScore: score,
+    recordedAt: new Date().toISOString(),
+  });
+}
+
 export function getGuestBestSweep(): number {
   const sweepGames = readGuestHistory().filter(
     (entry) => (entry.mode ?? "sweep") === "sweep",
