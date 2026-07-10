@@ -28,7 +28,7 @@
   "$defs": {
     "country": {
       "type": "object",
-      "required": ["id", "name", "mapName", "aliases", "neighbors", "inDailyPool"],
+      "required": ["id", "name", "mapName", "aliases", "land_borders", "maritime_links", "inDailyPool"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -54,9 +54,18 @@
           },
           "uniqueItems": true
         },
-        "neighbors": {
+        "land_borders": {
           "type": "array",
-          "description": "IDs of adjoining countries the player may click next.",
+          "description": "IDs of countries sharing a land border with this nation.",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "uniqueItems": true
+        },
+        "maritime_links": {
+          "type": "array",
+          "description": "IDs of countries reachable by sea from this nation (ferry/air gameplay links).",
           "items": {
             "type": "string",
             "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"

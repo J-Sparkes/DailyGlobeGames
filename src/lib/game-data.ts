@@ -10,11 +10,13 @@ export const countryById = new Map(countries.map((c) => [c.id, c]));
 
 export const countryByMapName = new Map(countries.map((c) => [c.mapName, c]));
 
+import { getLinkedCountryIds } from "@/lib/country-links";
+
 export function getNeighborCountries(countryId: string): Country[] {
   const country = countryById.get(countryId);
   if (!country) return [];
 
-  return country.neighbors
+  return getLinkedCountryIds(country)
     .map((id) => countryById.get(id))
     .filter((c): c is Country => c !== undefined);
 }

@@ -5,6 +5,8 @@ import { Suspense, useEffect, useState } from "react";
 import { WelcomeModal } from "@/components/game/WelcomeModal";
 import { hasSeenWelcome, markWelcomeSeen } from "@/lib/welcome-storage";
 
+import type { SweepGameMode } from "@/lib/sweep-game-mode";
+
 const GeographyGame = dynamic(
   () =>
     import("@/components/game/GeographyGame").then((mod) => ({
@@ -20,7 +22,7 @@ const GeographyGame = dynamic(
   },
 );
 
-export function GameClient() {
+export function GameClient({ gameMode = "sweep" }: { gameMode?: SweepGameMode }) {
   const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export function GameClient() {
           </div>
         }
       >
-        <GeographyGame />
+        <GeographyGame gameMode={gameMode} />
       </Suspense>
     </div>
   );

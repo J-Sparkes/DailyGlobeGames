@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Syncs countries.json neighbor arrays from TopoJSON land borders + maritime-links.
- * Enforces bidirectional integrity within the playable country pool.
+ * Syncs countries.json land_borders from TopoJSON and maritime_links from
+ * src/data/maritime-links.json. Enforces bidirectional integrity.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -20,9 +20,8 @@ function linkPair(graph, a, b) {
   graph.get(b).add(a);
 }
 
-function buildBorderGraph() {
+function buildLandGraph() {
   const topo = JSON.parse(readFileSync(topoPath, "utf8"));
-  const maritimeLinks = JSON.parse(readFileSync(maritimePath, "utf8"));
   const geometries = topo.objects.countries.geometries;
   const adjacent = neighbors(geometries);
   const graph = new Map();
@@ -38,41 +37,61 @@ function buildBorderGraph() {
     }
   });
 
-  for (const [a, b] of maritimeLinks) {
-    if (!a || !b) throw new Error(`Invalid maritime link: ${JSON.stringify([a, b])}`);
-    linkPair(graph, a, b);
-  }
-
   return graph;
 }
 
-function syncNeighbors(countries, graph) {
+function buildMaritimeGraph(maritimeLinks) {
+  const graph = new Map();
+  for (const [a, b] of maritimeLinks) {
+    if (!a || !b) {
+      throw new Error(`Invalid maritime link: ${JSON.stringify([a, b])}`);
+    }
+    linkPair(graph, a, b);
+  }
+  return graph;
+}
+
+function mapNamesToIds(mapNames, byMapName) {
+  return [...mapNames]
+    .map((mapName) => byMapName.get(mapName)?.id)
+    .filter(Boolean)
+    .sort();
+}
+
+function syncCountryLinks(countries, landGraph, maritimeGraph) {
   const byMapName = new Map(countries.map((country) => [country.mapName, country]));
   const byId = new Map(countries.map((country) => [country.id, country]));
   const errors = [];
 
   for (const country of countries) {
-    const mapNeighbors = graph.get(country.mapName) ?? new Set();
-    const neighborIds = [...mapNeighbors]
-      .map((mapName) => byMapName.get(mapName)?.id)
-      .filter(Boolean)
-      .sort();
+    const landMapNames = landGraph.get(country.mapName) ?? new Set();
+    const maritimeMapNames = maritimeGraph.get(country.mapName) ?? new Set();
 
-    country.neighbors = neighborIds;
+    country.land_borders = mapNamesToIds(landMapNames, byMapName);
+    country.maritime_links = mapNamesToIds(maritimeMapNames, byMapName);
+
+    if ("neighbors" in country) delete country.neighbors;
   }
 
   for (const country of countries) {
-    for (const neighborId of country.neighbors) {
-      const neighbor = byId.get(neighborId);
-      if (!neighbor) {
-        errors.push(`${country.id} references missing neighbor ${neighborId}`);
-        continue;
+    for (const field of ["land_borders", "maritime_links"]) {
+      for (const neighborId of country[field]) {
+        const neighbor = byId.get(neighborId);
+        if (!neighbor) {
+          errors.push(`${country.id} references missing ${field} target ${neighborId}`);
+          continue;
+        }
+        if (!neighbor[field].includes(country.id)) {
+          errors.push(
+            `Bidirectional mismatch (${field}): ${country.id} -> ${neighborId} but not reverse`,
+          );
+        }
       }
-      if (!neighbor.neighbors.includes(country.id)) {
-        errors.push(
-          `Bidirectional mismatch: ${country.id} -> ${neighborId} but not reverse`,
-        );
-      }
+    }
+
+    const totalLinks = country.land_borders.length + country.maritime_links.length;
+    if (country.inDailyPool && totalLinks === 0) {
+      errors.push(`${country.id} is in daily pool but has no land or maritime links`);
     }
   }
 
@@ -80,8 +99,10 @@ function syncNeighbors(countries, graph) {
 }
 
 const dataset = JSON.parse(readFileSync(countriesPath, "utf8"));
-const graph = buildBorderGraph();
-const errors = syncNeighbors(dataset.countries, graph);
+const maritimeLinks = JSON.parse(readFileSync(maritimePath, "utf8"));
+const landGraph = buildLandGraph();
+const maritimeGraph = buildMaritimeGraph(maritimeLinks);
+const errors = syncCountryLinks(dataset.countries, landGraph, maritimeGraph);
 
 if (errors.length > 0) {
   console.error("Border sync failed:");

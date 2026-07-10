@@ -59,6 +59,7 @@ const GlobeShellContext = createContext<GlobeShellContextValue | null>(null);
 function modeFromPath(pathname: string): GlobeGameMode {
   if (pathname.startsWith("/tap")) return "tap";
   if (pathname.startsWith("/hunt")) return "hunt";
+  if (pathname.startsWith("/blitz")) return "sweep";
   return "sweep";
 }
 

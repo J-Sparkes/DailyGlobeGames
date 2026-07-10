@@ -12,12 +12,15 @@ import {
   loadCountryFeatures,
   type CountryFeature,
 } from "@/lib/world-geographies";
-
-const EUROPE_POV = { lat: 48, lng: 10, altitude: 2.5 };
+import {
+  povForCountryFeature,
+  SWEEP_FALLBACK_POV,
+} from "@/lib/globe-pov";
 
 export interface WorldMapProps {
   claimedIds: Set<string>;
   highlightId: string | null;
+  dailyCountryId: string | null;
   connectingIds: Set<string>;
   clickableIds: Set<string>;
   interactive: boolean;
@@ -31,6 +34,7 @@ export interface WorldMapProps {
 function WorldMapComponent({
   claimedIds,
   highlightId,
+  dailyCountryId,
   connectingIds,
   clickableIds,
   interactive,
@@ -45,6 +49,14 @@ function WorldMapComponent({
   const [features, setFeatures] = useState<CountryFeature[]>([]);
   const [globeReady, setGlobeReady] = useState(false);
   const dims = useContainerDims(containerRef);
+
+  const featureById = useMemo(() => {
+    const map = new Map<string, CountryFeature>();
+    for (const feature of features) {
+      map.set(feature.properties.countryId, feature);
+    }
+    return map;
+  }, [features]);
 
   const polygonStyles = useMemo(
     () =>
@@ -81,6 +93,23 @@ function WorldMapComponent({
     globe.controls().enabled = false;
   }, [isActive, globeReady]);
 
+  const applyInitialPov = useCallback(
+    (countryId: string | null) => {
+      const globe = globeRef.current;
+      if (!globe || !globeReady) return;
+
+      const feature = countryId ? featureById.get(countryId) : undefined;
+      const pov = feature ? povForCountryFeature(feature) : SWEEP_FALLBACK_POV;
+      globe.pointOfView(pov, 0);
+    },
+    [featureById, globeReady],
+  );
+
+  useEffect(() => {
+    if (!globeReady || features.length === 0) return;
+    applyInitialPov(dailyCountryId);
+  }, [dailyCountryId, globeReady, features.length, applyInitialPov]);
+
   const handleGlobeReady = useCallback(() => {
     const globe = globeRef.current;
     if (!globe) return;
@@ -99,7 +128,6 @@ function WorldMapComponent({
     controls.rotateSpeed = isTouchNow ? 0.55 : 0.35;
     controls.zoomSpeed = isTouchNow ? 0.9 : 0.6;
 
-    globe.pointOfView(EUROPE_POV, 0);
     setGlobeReady(true);
   }, []);
 
@@ -162,6 +190,7 @@ function worldMapPropsEqual(
   return (
     prev.interactive === next.interactive &&
     prev.highlightId === next.highlightId &&
+    prev.dailyCountryId === next.dailyCountryId &&
     prev.flashSuccessId === next.flashSuccessId &&
     prev.flashInvalidId === next.flashInvalidId &&
     prev.isActive === next.isActive &&

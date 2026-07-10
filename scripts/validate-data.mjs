@@ -18,31 +18,45 @@ function loadJson(path) {
   return JSON.parse(readFileSync(join(root, path), "utf8"));
 }
 
+function validateLinkField(countries, countryIds, neighborIndex, field) {
+  for (const country of countries) {
+    for (const neighbor of country[field] ?? []) {
+      if (!countryIds.has(neighbor)) {
+        fail(`${country.id} references unknown ${field} target ${neighbor}`);
+        continue;
+      }
+      const reverse = neighborIndex.get(neighbor);
+      if (!reverse[field]?.includes(country.id)) {
+        fail(
+          `Bidirectional mismatch (${field}): ${country.id} -> ${neighbor} but not reverse`,
+        );
+      }
+    }
+  }
+}
+
 // --- Countries ---
 const countriesData = loadJson("src/data/countries.json");
 const countries = countriesData.countries;
 const countryIds = new Set(countries.map((c) => c.id));
-
 const neighborIndex = new Map(countries.map((country) => [country.id, country]));
 
 for (const country of countries) {
   if (!country.id || !country.name || !country.mapName) {
     fail(`Country missing required fields: ${JSON.stringify(country.id)}`);
   }
-  for (const neighbor of country.neighbors) {
-    if (!countryIds.has(neighbor)) {
-      fail(`${country.id} references unknown neighbor ${neighbor}`);
-      continue;
-    }
-    const reverse = neighborIndex.get(neighbor);
-    if (!reverse.neighbors.includes(country.id)) {
-      fail(
-        `Bidirectional mismatch: ${country.id} -> ${neighbor} but not reverse`,
-      );
-    }
+  if (!Array.isArray(country.land_borders) || !Array.isArray(country.maritime_links)) {
+    fail(`${country.id} must define land_borders and maritime_links arrays`);
   }
-  if (country.inDailyPool && country.neighbors.length === 0) {
-    fail(`${country.id} is in daily pool but has no neighbors`);
+}
+
+validateLinkField(countries, countryIds, neighborIndex, "land_borders");
+validateLinkField(countries, countryIds, neighborIndex, "maritime_links");
+
+for (const country of countries) {
+  const totalLinks = country.land_borders.length + country.maritime_links.length;
+  if (country.inDailyPool && totalLinks === 0) {
+    fail(`${country.id} is in daily pool but has no land or maritime links`);
   }
 }
 

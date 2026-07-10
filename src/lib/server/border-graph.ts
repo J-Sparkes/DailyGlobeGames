@@ -1,18 +1,7 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import maritimeLinks from "@/data/maritime-links.json";
-import { countryById } from "@/lib/game-data";
+import { countries, countryById } from "@/lib/game-data";
+import { getLinkedCountryIds } from "@/lib/country-links";
 import { getMapName } from "@/lib/country-resolve";
 import { toCountryId } from "@/lib/country-id";
-import { neighbors } from "topojson-client";
-import type {
-  GeometryCollection,
-  Topology,
-} from "topojson-specification";
-
-type CountryGeometry = GeometryCollection["geometries"][number] & {
-  properties?: { name?: string };
-};
 
 let neighborByMapName: Map<string, Set<string>> | null = null;
 
@@ -27,49 +16,37 @@ function linkPair(
   graph.get(b)!.add(a);
 }
 
-export function loadServerBorderGraph(): Map<string, Set<string>> {
-  if (neighborByMapName) return neighborByMapName;
-
-  const filePath = join(process.cwd(), "public/world-countries-110m.json");
-  const raw = readFileSync(filePath, "utf8");
-  const topo = JSON.parse(raw) as Topology<{
-    countries: GeometryCollection;
-  }>;
-
-  const geometries = topo.objects.countries.geometries as CountryGeometry[];
+function buildBorderGraphFromCountries(): Map<string, Set<string>> {
   const graph = new Map<string, Set<string>>();
-  const adjacent = neighbors(geometries) as number[][];
 
-  geometries.forEach((geometry, index) => {
-    const props = geometry.properties as { name?: string } | null;
-    const name = props?.name;
-    if (!name) return;
-    if (!graph.has(name)) graph.set(name, new Set());
-
-    for (const neighborIndex of adjacent[index] ?? []) {
-      const neighborProps = geometries[neighborIndex]?.properties as {
-        name?: string;
-      } | null;
-      const neighborName = neighborProps?.name;
-      if (neighborName) linkPair(graph, name, neighborName);
+  for (const country of countries) {
+    if (!graph.has(country.mapName)) {
+      graph.set(country.mapName, new Set());
     }
-  });
 
-  for (const [a, b] of maritimeLinks as [string, string][]) {
-    linkPair(graph, a, b);
+    for (const neighborId of getLinkedCountryIds(country)) {
+      const neighbor = countryById.get(neighborId);
+      if (!neighbor) continue;
+      linkPair(graph, country.mapName, neighbor.mapName);
+    }
   }
 
-  neighborByMapName = graph;
   return graph;
+}
+
+export function loadServerBorderGraph(): Map<string, Set<string>> {
+  if (neighborByMapName) return neighborByMapName;
+  neighborByMapName = buildBorderGraphFromCountries();
+  return neighborByMapName;
 }
 
 function getBorderingCountryIds(
   graph: Map<string, Set<string>>,
   mapName: string,
 ): string[] {
-  const neighborSet = graph.get(mapName);
-  if (!neighborSet) return [];
-  return [...neighborSet].map(toCountryId);
+  const linkedMapNames = graph.get(mapName);
+  if (!linkedMapNames) return [];
+  return [...linkedMapNames].map(toCountryId);
 }
 
 export function getServerFrontierCountryIds(claimedIds: string[]): string[] {

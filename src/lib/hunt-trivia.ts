@@ -1,6 +1,7 @@
 import countryData from "@/data/countries.json";
 import curatedFacts from "@/data/hunt-country-facts.json";
 import { countryById } from "@/lib/game-data";
+import { getLandBorderIds } from "@/lib/country-links";
 import { MAX_HUNT_GUESSES } from "@/lib/hunt-scoring";
 import type { CountryDataset } from "@/types/country";
 
@@ -60,22 +61,22 @@ function buildFallbackFacts(countryId: string): string[] {
     ];
   }
 
-  const neighbors = country.neighbors ?? [];
+  const landBorders = getLandBorderIds(country);
   const name = country.name;
   const letters = name.replace(/[^a-z]/gi, "");
   const facts: string[] = [];
 
-  if (neighbors.length === 0) {
+  if (landBorders.length === 0) {
     facts.push(
       "Today's mystery nation has no land borders — every edge meets the sea.",
     );
-  } else if (neighbors.length === 1) {
+  } else if (landBorders.length === 1) {
     facts.push(
       "Only one other country shares a land border with the nation you're hunting.",
     );
   } else {
     facts.push(
-      `The hidden country shares land borders with exactly ${neighbors.length} other nations.`,
+      `The hidden country shares land borders with exactly ${landBorders.length} other nations.`,
     );
   }
 
@@ -107,7 +108,7 @@ function buildFallbackFacts(countryId: string): string[] {
   );
 
   facts.push(
-    neighbors.length >= 4
+    landBorders.length >= 4
       ? "It's a crossroads nation — four or more countries touch its borders."
       : "It isn't one of the world's most crowded border zones — fewer than four land neighbors.",
   );

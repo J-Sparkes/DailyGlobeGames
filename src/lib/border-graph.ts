@@ -1,15 +1,7 @@
-import maritimeLinks from "@/data/maritime-links.json";
-import { countryById } from "@/lib/game-data";
+import { countries, countryById } from "@/lib/game-data";
+import { getLinkedCountryIds } from "@/lib/country-links";
 import { getMapName } from "@/lib/country-resolve";
 import { toCountryId } from "@/lib/country-id";
-import type {
-  GeometryCollection,
-  Topology,
-} from "topojson-specification";
-
-type CountryGeometry = GeometryCollection["geometries"][number] & {
-  properties?: { name?: string };
-};
 
 let neighborByMapName: Map<string, Set<string>> | null = null;
 let loadPromise: Promise<Map<string, Set<string>>> | null = null;
@@ -25,44 +17,32 @@ function linkPair(
   graph.get(b)!.add(a);
 }
 
+function buildBorderGraphFromCountries(): Map<string, Set<string>> {
+  const graph = new Map<string, Set<string>>();
+
+  for (const country of countries) {
+    if (!graph.has(country.mapName)) {
+      graph.set(country.mapName, new Set());
+    }
+
+    for (const neighborId of getLinkedCountryIds(country)) {
+      const neighbor = countryById.get(neighborId);
+      if (!neighbor) continue;
+      linkPair(graph, country.mapName, neighbor.mapName);
+    }
+  }
+
+  return graph;
+}
+
 export async function loadBorderGraph(): Promise<Map<string, Set<string>>> {
   if (neighborByMapName) return neighborByMapName;
   if (loadPromise) return loadPromise;
 
-  loadPromise = (async () => {
-    const { neighbors } = await import("topojson-client");
-    const response = await fetch("/world-countries-110m.json");
-    const topo = (await response.json()) as Topology<{
-      countries: GeometryCollection;
-    }>;
-
-    const geometries = topo.objects.countries.geometries as CountryGeometry[];
-
-    const graph = new Map<string, Set<string>>();
-    const adjacent = neighbors(geometries) as number[][];
-
-    geometries.forEach((geometry, index) => {
-      const props = geometry.properties as { name?: string } | null;
-      const name = props?.name;
-      if (!name) return;
-      if (!graph.has(name)) graph.set(name, new Set());
-
-      for (const neighborIndex of adjacent[index] ?? []) {
-        const neighborProps = geometries[neighborIndex]?.properties as {
-          name?: string;
-        } | null;
-        const neighborName = neighborProps?.name;
-        if (neighborName) linkPair(graph, name, neighborName);
-      }
-    });
-
-    for (const [a, b] of maritimeLinks as [string, string][]) {
-      linkPair(graph, a, b);
-    }
-
-    neighborByMapName = graph;
-    return graph;
-  })();
+  loadPromise = Promise.resolve().then(() => {
+    neighborByMapName = buildBorderGraphFromCountries();
+    return neighborByMapName;
+  });
 
   return loadPromise;
 }
@@ -70,10 +50,10 @@ export async function loadBorderGraph(): Promise<Map<string, Set<string>>> {
 export function getBorderingCountryIds(mapName: string): string[] {
   if (!neighborByMapName) return [];
 
-  const neighbors = neighborByMapName.get(mapName);
-  if (!neighbors) return [];
+  const linkedMapNames = neighborByMapName.get(mapName);
+  if (!linkedMapNames) return [];
 
-  return [...neighbors].map(toCountryId);
+  return [...linkedMapNames].map(toCountryId);
 }
 
 export function getFrontierCountryIds(claimedIds: string[]): string[] {
@@ -94,4 +74,10 @@ export function getFrontierCountryIds(claimedIds: string[]): string[] {
   }
 
   return [...frontier];
+}
+
+/** @internal Resets cached graph — for tests only. */
+export function clearBorderGraphCache(): void {
+  neighborByMapName = null;
+  loadPromise = null;
 }

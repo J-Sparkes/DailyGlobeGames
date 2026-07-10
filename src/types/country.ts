@@ -3,7 +3,8 @@ export interface Country {
   name: string;
   mapName: string;
   aliases: string[];
-  neighbors: string[];
+  land_borders: string[];
+  maritime_links: string[];
   inDailyPool: boolean;
   iso3166Alpha2?: string;
 }

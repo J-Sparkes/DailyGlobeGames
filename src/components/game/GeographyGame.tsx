@@ -47,8 +47,20 @@ import { canSelectFrontierCountry } from "@/lib/sweep-select";
 import { shouldAcceptSweepSubmit } from "@/lib/sweep-submit";
 import { useDailyDateRollover } from "@/lib/use-daily-date-rollover";
 import { isNewMilestone, triggerHaptic } from "@/lib/game-feedback";
+import { BlitzTimer } from "@/components/game/BlitzTimer";
+import { BLITZ_BONUS_SECONDS } from "@/lib/blitz-timer";
+import {
+  isSweepBlitzMode,
+  type SweepGameMode,
+} from "@/lib/sweep-game-mode";
+import { useBlitzTimer } from "@/lib/use-blitz-timer";
 
-export function GeographyGame() {
+export function GeographyGame({
+  gameMode = "sweep",
+}: {
+  gameMode?: SweepGameMode;
+}) {
+  const isBlitz = isSweepBlitzMode(gameMode);
   const [dailyStartId, setDailyStartId] = useState<string | null>(null);
   const dateSeed = useDailyDate();
   const { calendarStreak } = useRetention();
@@ -76,6 +88,7 @@ export function GeographyGame() {
   const [milestoneBurst, setMilestoneBurst] = useState(false);
   const [inputSuccess, setInputSuccess] = useState(false);
   const [resultsDismissed, setResultsDismissed] = useState(false);
+  const [blitzBonusPulse, setBlitzBonusPulse] = useState(false);
   const [pendingGameOver, setPendingGameOver] = useState<{
     path: string[];
     failedGuess: string;
@@ -85,8 +98,18 @@ export function GeographyGame() {
   const gameOverTimerRef = useRef<number | null>(null);
   const phaseRef = useRef<GamePhase>("naming");
   const sweepCompletedRef = useRef(false);
+  const claimedIdsRef = useRef(claimedIds);
+  const targetIdRef = useRef(targetId);
   const keyboardInset = useVisualViewportInset();
   const dateStale = useDailyDateRollover(dateSeed);
+
+  useEffect(() => {
+    claimedIdsRef.current = claimedIds;
+  }, [claimedIds]);
+
+  useEffect(() => {
+    targetIdRef.current = targetId;
+  }, [targetId]);
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -117,6 +140,25 @@ export function GeographyGame() {
     },
     [dateSeed, unlimited],
   );
+
+  const handleBlitzExpire = useCallback(() => {
+    if (gameOver || completedResult || pendingGameOver) return;
+    finishGame(claimedIdsRef.current, "", targetIdRef.current);
+  }, [finishGame, gameOver, completedResult, pendingGameOver]);
+
+  const blitzActive =
+    isBlitz &&
+    initialized &&
+    mapReady &&
+    !completedResult &&
+    !gameOver &&
+    !pendingGameOver &&
+    Boolean(dailyStartId);
+
+  const { seconds: blitzSeconds, addBonus: addBlitzBonus } = useBlitzTimer({
+    active: blitzActive,
+    onExpire: handleBlitzExpire,
+  });
 
   const finishSweepSuccess = useCallback(
     (path: string[]) => {
@@ -328,9 +370,15 @@ export function GeographyGame() {
   const prompt =
     phase === "naming"
       ? claimedIds.length === 0
-        ? "Name the highlighted country to begin today's sweep."
-        : "Name the highlighted country, or tap another neighbor to switch."
-      : "Tap a neighbor to select — tap another to switch — then name it.";
+        ? isBlitz
+          ? "Name the highlighted country — you've got 30 seconds!"
+          : "Name the highlighted country to begin today's sweep."
+        : isBlitz
+          ? "Name the country, or tap a neighbor to switch. +3s per correct guess."
+          : "Name the highlighted country, or tap another neighbor to switch."
+      : isBlitz
+        ? "Tap a neighbor, then name it. Correct guesses add 3 seconds."
+        : "Tap a neighbor to select — tap another to switch — then name it.";
 
   const controlHint = isTouch
     ? "Swipe to spin · pinch to zoom"
@@ -360,7 +408,41 @@ export function GeographyGame() {
     setGuess("");
     setInputError(false);
     setClickableIds(new Set());
+    setBlitzBonusPulse(false);
   }, [dailyStartId]);
+
+  const onCorrectCountryGuess = useCallback(() => {
+    playCorrectGuessSound();
+    const prevLength = claimedIds.length;
+    const nextClaimed = [...claimedIds, targetId];
+    const nextLength = nextClaimed.length;
+    setClaimedIds(nextClaimed);
+    setGuess("");
+    setInputError(false);
+    setFlashSuccessId(targetId);
+    setInputSuccess(true);
+    window.setTimeout(() => setInputSuccess(false), 400);
+
+    if (isNewMilestone(prevLength, nextLength)) {
+      setMilestoneBurst(true);
+      triggerHaptic("milestone");
+      window.setTimeout(() => setMilestoneBurst(false), 600);
+    } else {
+      setStreakPop(true);
+      triggerHaptic("success");
+      window.setTimeout(() => setStreakPop(false), 500);
+    }
+
+    window.setTimeout(() => setFlashSuccessId(null), 700);
+
+    if (isBlitz) {
+      addBlitzBonus(BLITZ_BONUS_SECONDS);
+      setBlitzBonusPulse(true);
+      window.setTimeout(() => setBlitzBonusPulse(false), 400);
+    }
+
+    setPhase("selecting");
+  }, [claimedIds, targetId, isBlitz, addBlitzBonus]);
 
   const handleSubmit = useCallback(
     (event?: React.FormEvent) => {
@@ -377,29 +459,7 @@ export function GeographyGame() {
       }
 
       if (isCorrectAnswer(guess, targetCountry)) {
-        playCorrectGuessSound();
-        const prevLength = claimedIds.length;
-        const nextClaimed = [...claimedIds, targetId];
-        const nextLength = nextClaimed.length;
-        setClaimedIds(nextClaimed);
-        setGuess("");
-        setInputError(false);
-        setFlashSuccessId(targetId);
-        setInputSuccess(true);
-        window.setTimeout(() => setInputSuccess(false), 400);
-
-        if (isNewMilestone(prevLength, nextLength)) {
-          setMilestoneBurst(true);
-          triggerHaptic("milestone");
-          window.setTimeout(() => setMilestoneBurst(false), 600);
-        } else {
-          setStreakPop(true);
-          triggerHaptic("success");
-          window.setTimeout(() => setStreakPop(false), 500);
-        }
-
-        window.setTimeout(() => setFlashSuccessId(null), 700);
-        setPhase("selecting");
+        onCorrectCountryGuess();
         return;
       }
 
@@ -419,6 +479,7 @@ export function GeographyGame() {
       claimedIds,
       targetId,
       pendingGameOver,
+      onCorrectCountryGuess,
     ],
   );
 
@@ -455,6 +516,7 @@ export function GeographyGame() {
       showGlobe
         ? {
             claimedIds: displayClaimedIds,
+            dailyCountryId: dailyStartId,
             highlightId:
               gameOver || completedResult
                 ? null
@@ -475,6 +537,7 @@ export function GeographyGame() {
     [
       showGlobe,
       displayClaimedIds,
+      dailyStartId,
       gameOver,
       completedResult,
       phase,
@@ -537,6 +600,13 @@ export function GeographyGame() {
             dateStale={dateStale}
             onDateRefresh={() => window.location.reload()}
             modeSwitcher={<ModeSwitcher />}
+            topExtra={
+              isBlitz && initialized && !completedResult && !gameOver ? (
+                <div className="flex justify-end border-t border-[var(--ui-border-subtle)] px-3 py-2">
+                  <BlitzTimer seconds={blitzSeconds} pulse={blitzBonusPulse} />
+                </div>
+              ) : undefined
+            }
           />
         </HudAnchor>
 

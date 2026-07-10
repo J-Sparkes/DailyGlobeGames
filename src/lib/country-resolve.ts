@@ -23,7 +23,8 @@ export function resolveCountry(countryId: string): Country | undefined {
     name: mapName,
     mapName,
     aliases: [mapName],
-    neighbors: [],
+    land_borders: [],
+    maritime_links: [],
     inDailyPool: false,
   };
 }
