@@ -18,8 +18,8 @@ const STEPS: WelcomeStep[] = [
         <path d="M12 7v5l3 2" />
       </svg>
     ),
-    title: "Spot the glow",
-    hint: "Name today's highlighted country to start.",
+    title: "Find the glow",
+    hint: "Type the name of the glowing country.",
   },
   {
     icon: (
@@ -27,8 +27,8 @@ const STEPS: WelcomeStep[] = [
         <path d="M4 12h16M12 4v16" />
       </svg>
     ),
-    title: "Chain borders",
-    hint: "Claim neighbors, then type each new country.",
+    title: "Pick a neighbor",
+    hint: "Tap a country next door, then type its name.",
   },
   {
     icon: (
@@ -38,7 +38,7 @@ const STEPS: WelcomeStep[] = [
       </svg>
     ),
     title: "Spin the globe",
-    hint: "No labels — use terrain and coastlines.",
+    hint: "Move the map around. Names are hidden on purpose.",
   },
   {
     icon: (
@@ -47,7 +47,7 @@ const STEPS: WelcomeStep[] = [
       </svg>
     ),
     title: "One miss ends it",
-    hint: "Build the longest streak you can.",
+    hint: "A wrong name stops your run. Get as many as you can.",
   },
 ];
 
@@ -58,12 +58,12 @@ export function WelcomeModal({ onClose }: WelcomeModalProps) {
     <WelcomeModalShell
       titleId="welcome-title"
       title="Sweep the map"
-      tagline="One daily start country. How far can your border chain go?"
+      tagline="Name countries that touch. Keep going until you miss."
       steps={STEPS}
       footnote={
         unlimited
-          ? "Test mode — replay anytime."
-          : "One sweep per day. Share your streak when you're done."
+          ? "Test mode — you can play again anytime."
+          : "One Sweep per day. Share your score when you finish."
       }
       onClose={onClose}
     />

@@ -3,10 +3,10 @@ import { absoluteUrl, SITE_DOMAIN, SITE_NAME } from "@/lib/site";
 export type GameModeKey = "sweep" | "tap" | "hunt";
 
 export const PRODUCT_TAGLINE =
-  "Three free daily geography games on a 3D globe — like Wordle for maps.";
+  "Three free daily geography games on a globe — like Wordle for maps.";
 
 export const PRODUCT_SUMMARY =
-  "Daily Globe Games is a free browser-based daily puzzle site with three geography modes on an interactive 3D globe: Sweep (borders), Tap (landmarks), and Hunt (hidden countries).";
+  "Daily Globe Games is a free daily puzzle site with three map games: Sweep (name bordering countries), Tap (find places from clues), and Hunt (find a hidden country).";
 
 /** One canonical, quotable sentence per mode — reuse everywhere AI/crawlers read. */
 export const MODE_DEFINITIONS: Record<
@@ -16,42 +16,42 @@ export const MODE_DEFINITIONS: Record<
   sweep: {
     name: "Sweep",
     path: "/",
-    title: "Daily Sweep — border geography game",
+    title: "Daily Sweep — name countries on the globe",
     definition:
-      "Sweep is a daily border geography game: name the highlighted country, then expand across neighboring countries from today's start nation on a 3D globe.",
+      "In Sweep, type the glowing country's name. Then tap countries that share a border and name those too. One wrong name ends your run.",
   },
   tap: {
     name: "Tap",
     path: "/tap",
-    title: "Daily Tap — landmark location game",
+    title: "Daily Tap — find places on the globe",
     definition:
-      "Tap is a daily landmark location game: read a clue and tap the 3D globe to guess the place; score by distance across five rounds.",
+      "In Tap, read a clue and tap the globe where you think that place is. Closer taps score more. You play five rounds.",
   },
   hunt: {
     name: "Hunt",
     path: "/hunt",
-    title: "Daily Hunt — hidden country game",
+    title: "Daily Hunt — find the hidden country",
     definition:
-      "Hunt is a daily hidden-country game: find a secret territory using hot-or-cold distance clues, with up to five guesses.",
+      "In Hunt, a country is hidden. Tap guesses to see how far you are, then follow warmer or colder hints. You get five guesses.",
   },
 };
 
 export const PRODUCT_FACTS = {
-  reset: "Each mode resets at midnight UTC with one official free play per mode per day.",
-  free:
-    "Playing Sweep, Tap, and Hunt is free in the browser with no account required.",
+  reset:
+    "Each game resets at midnight UTC. You get one free play of each game per day.",
+  free: "Sweep, Tap, and Hunt are free in your browser. You do not need an account.",
   premium:
-    "Premium unlocks the puzzle archive so players can replay past daily puzzles; core daily play remains free.",
+    "Premium unlocks the puzzle archive so you can replay old days. Today's games stay free.",
   classroom:
-    "Daily Globe Games is free for classrooms, works without login, and is designed as a roughly five-minute geography warm-up.",
+    "Daily Globe Games is free for classrooms, works without login, and takes about five minutes.",
   scoring: {
     sweep:
-      "Sweep scoring is a streak of correctly named countries along a valid border path until a wrong guess ends the run.",
-    tap: "Tap scoring awards points by how close each tap is to the target across five rounds, with later rounds worth more.",
-    hunt: "Hunt scoring awards more points for finding the hidden country in fewer guesses (best score is 5).",
+      "In Sweep, your score is how many countries you name in a row before a wrong guess.",
+    tap: "In Tap, you score points by how close each tap is. Later rounds are worth more.",
+    hunt: "In Hunt, finding the country in fewer guesses scores more points (best score is 5).",
   },
   audience:
-    "Daily Globe Games is for map lovers, students, teachers, and anyone who wants a short daily geography habit.",
+    "Daily Globe Games is for map fans, students, teachers, and anyone who likes a short daily geography game.",
   contactEmail: "hello@dailyglobegames.com",
   domain: SITE_DOMAIN,
   name: SITE_NAME,
@@ -94,7 +94,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Do I need an account?",
     answer:
-      "No. You can play all three modes without signing in. An optional account adds friends, leaderboards, and cross-device sync.",
+      "No. You can play all three games without signing in. An optional account adds friends, leaderboards, and sync across devices.",
   },
   {
     question: "How does scoring work?",
@@ -107,7 +107,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Where can I learn the rules?",
     answer:
-      "See the How to play guides for Sweep, Tap, and Hunt at /how-to, or the FAQ at /faq.",
+      "Read the How to play guides for Sweep, Tap, and Hunt at /how-to, or check the FAQ at /faq.",
   },
 ];
 

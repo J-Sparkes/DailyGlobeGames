@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import triviaDaily from "@/data/trivia-daily.json";
 import { GameOverlay } from "@/components/game/GameOverlay";
 import {
   GameResultOverlay,
@@ -19,6 +18,7 @@ import {
   calculateDistance,
   getDirectionalHint,
 } from "@/lib/calculateDistance";
+import { getDailyTrivia } from "@/lib/daily-trivia";
 import { isUnlimitedPlaysEnabled } from "@/lib/daily-play";
 import {
   clearQuizDailyStorage,
@@ -79,15 +79,25 @@ export default function App() {
   const isPlaying = gameState === "playing" && !locked && !completedResult;
   const showResultOverlay = Boolean(completedResult) && !resultsDismissed;
 
-  const currentRound = useMemo(
-    () => (gameMode === "bonus" ? triviaDaily.bonus : triviaDaily.daily),
-    [gameMode],
-  );
+  const triviaDaily = useMemo(() => getDailyTrivia(dateSeed), [dateSeed]);
+
+  const currentRound = useMemo(() => {
+    const round = gameMode === "bonus" ? triviaDaily.bonus : triviaDaily.daily;
+    const resolved = countryLookup
+      ? resolveTriviaCountryByName(round.name, countryLookup)
+      : null;
+    if (!resolved) return round;
+    return {
+      ...round,
+      countryId: resolved.countryId,
+      coordinates: resolved.coordinates,
+    };
+  }, [countryLookup, gameMode, triviaDaily]);
 
   const quizPrompt = useMemo(() => {
     if (!isPlaying) return undefined;
-    if (gameMode === "bonus") return "Bonus round — name the hidden country.";
-    return "Name today's country from the clues.";
+    if (gameMode === "bonus") return "Bonus round — type the country name.";
+    return "Read the clues, then type the country name.";
   }, [gameMode, isPlaying]);
 
   useEffect(() => {

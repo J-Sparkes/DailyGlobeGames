@@ -32,6 +32,47 @@ function shuffleWithSeed<T>(items: T[], seed: string): T[] {
   return copy;
 }
 
+/** 0-based UTC day of year (0 = Jan 1). */
+export function getUtcDayOfYear(date: Date): number {
+  const start = Date.UTC(date.getUTCFullYear(), 0, 1);
+  const current = Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+  );
+  return Math.floor((current - start) / 86_400_000);
+}
+
+/**
+ * Build a year-long deck by concatenating seeded shuffles of the pool
+ * so consecutive days deal disjoint hands until the deck wraps.
+ */
+export function buildTapYearDeck(
+  pool: DailyLocation[],
+  year: number,
+  daysInYear = 366,
+  count = 5,
+): DailyLocation[] {
+  const sorted = [...pool].sort((a, b) => a.id.localeCompare(b.id));
+  const slotsNeeded = daysInYear * count;
+  const deck: DailyLocation[] = [];
+  let copyIndex = 0;
+
+  while (deck.length < slotsNeeded) {
+    deck.push(
+      ...shuffleWithSeed(sorted, `${year}-tap-deck-${copyIndex}`),
+    );
+    copyIndex += 1;
+  }
+
+  return deck;
+}
+
+/**
+ * Deterministic Tap rounds for a UTC date.
+ * Uses a year deck so each day gets a different set, with minimal
+ * day-to-day repeats, drawn from the full location pool.
+ */
 export function pickDailyLocations(
   pool: DailyLocation[],
   count = 5,
@@ -41,9 +82,12 @@ export function pickDailyLocations(
     throw new Error(`Location pool needs at least ${count} entries`);
   }
 
-  const seed = `${getDateSeed(date)}-tap`;
-  const shuffled = shuffleWithSeed(pool, seed);
-  const picked = shuffled.slice(0, count);
+  const dateSeed = getDateSeed(date);
+  const year = Number(dateSeed.slice(0, 4));
+  const dayOfYear = getUtcDayOfYear(date);
+  const deck = buildTapYearDeck(pool, year, 366, count);
+  const start = dayOfYear * count;
+  const picked = deck.slice(start, start + count);
 
   return [...picked].sort((a, b) => a.difficulty - b.difficulty);
 }

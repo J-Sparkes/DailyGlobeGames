@@ -386,14 +386,14 @@ export function GeographyGame({
     phase === "naming"
       ? claimedIds.length === 0
         ? isBlitz
-          ? "Name the highlighted country to start the clock."
-          : "Name the highlighted country to begin today's sweep."
+          ? "Type the glowing country's name to start the clock."
+          : "Type the glowing country's name."
         : isBlitz
-          ? "Name the country, or tap a neighbor to switch. +3s per correct guess."
-          : "Name the highlighted country, or tap another neighbor to switch."
+          ? "Type this name — or tap another neighbor. Right answers add 3 seconds."
+          : "Type this country's name — or tap another neighbor."
       : isBlitz
-        ? "Tap a neighbor, then name it. Correct guesses add 3 seconds."
-        : "Tap a neighbor to select — tap another to switch — then name it.";
+        ? "Tap a glowing neighbor, then type its name. Right answers add 3 seconds."
+        : "Tap a glowing neighbor, then type its name.";
 
   const controlHint = isTouch
     ? "Swipe to spin · pinch to zoom"
@@ -401,13 +401,13 @@ export function GeographyGame({
 
   const liveMessage = useMemo(() => {
     if (gameOver) return "Game over.";
-    if (completedResult) return "Today's sweep complete.";
+    if (completedResult) return "Today's Sweep is done.";
     if (phase === "naming") {
       return claimedIds.length === 0
-        ? "Name the highlighted country to begin today's sweep."
-        : "Name the highlighted country, or tap another neighbor to switch.";
+        ? "Type the glowing country's name."
+        : "Type this country's name — or tap another neighbor.";
     }
-    return "Tap a neighbor to select — tap another to switch — then name it.";
+    return "Tap a glowing neighbor, then type its name.";
   }, [gameOver, completedResult, phase, claimedIds.length]);
 
   const handlePlayAgain = useCallback(() => {

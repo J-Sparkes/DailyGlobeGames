@@ -289,8 +289,8 @@ export function TapGame() {
   }, [currentRound, roundIndex, results, finishGame]);
 
   const controlHint = isTouch
-    ? "Swipe to spin · pinch to zoom · hold to lock in"
-    : "Drag to spin · scroll to zoom · hold click to confirm";
+    ? "Swipe to spin · pinch to zoom · press and hold to pin"
+    : "Drag to spin · scroll to zoom · hold click to pin";
 
   const multiplier = getRoundMultiplier(roundIndex);
   const isPlaying = initialized && !completedResult && roundIndex < MAX_ROUNDS;
@@ -302,10 +302,10 @@ export function TapGame() {
       : undefined;
 
   const tapLiveMessage = useMemo(() => {
-    if (completedResult) return "Tap game complete.";
+    if (completedResult) return "Tap is done for today.";
     if (phase === "round-result") return "Round result ready.";
     if (currentLocation) return currentLocation.prompt;
-    return "Hold on the globe to lock in your guess.";
+    return "Press and hold on the globe to place your pin.";
   }, [completedResult, phase, currentLocation]);
 
   const tapGlobeProps = useMemo(
@@ -409,7 +409,7 @@ export function TapGame() {
         </HudAnchor>
 
         <HudMobileInstruction
-          primary={currentLocation?.prompt ?? "Hold on the globe to lock in your guess."}
+          primary={currentLocation?.prompt ?? "Press and hold on the globe to place your pin."}
           secondary={tapMeta}
           visible={isPlaying && !showRoundResult && !completedResult}
         />

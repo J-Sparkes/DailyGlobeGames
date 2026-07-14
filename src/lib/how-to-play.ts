@@ -22,30 +22,30 @@ export const HOW_TO_GUIDES: Record<GameModeKey, HowToGuide> = {
     slug: "sweep",
     title: "How to play Sweep",
     description:
-      "Learn Sweep, the Daily Globe Games border geography mode — name countries and expand across neighbors on a 3D globe.",
+      "Learn Sweep: type country names and grow across neighbors on the globe.",
     definition: MODE_DEFINITIONS.sweep.definition,
     steps: [
       {
         name: "Open today's Sweep",
-        text: "Go to dailyglobegames.com. A starting country is highlighted on the 3D globe.",
+        text: "Go to dailyglobegames.com. One country glows on the globe.",
       },
       {
-        name: "Name the highlighted country",
-        text: "Type the country name and submit. Correct answers claim the country and grow your streak.",
+        name: "Type the glowing country",
+        text: "Type its name and press Go. If you're right, you keep it and your streak goes up.",
       },
       {
-        name: "Expand across borders",
-        text: "Tap a glowing neighboring country, then name it. Keep expanding along valid borders.",
+        name: "Pick a neighbor",
+        text: "Tap a glowing country next door, then type that name too. Keep going country by country.",
       },
       {
-        name: "End the run",
-        text: "A wrong guess ends today's Sweep. Share your streak with a spoiler-free score card.",
+        name: "When the run ends",
+        text: "One wrong name ends today's Sweep. Share your streak — the card won't spoil answers.",
       },
     ],
     tips: [
       PRODUCT_FACTS.reset,
       PRODUCT_FACTS.scoring.sweep,
-      "Spin and zoom the globe to inspect borders before you guess.",
+      "Spin and zoom the globe so you can see the borders before you guess.",
     ],
   },
   tap: {
@@ -53,30 +53,30 @@ export const HOW_TO_GUIDES: Record<GameModeKey, HowToGuide> = {
     slug: "tap",
     title: "How to play Tap",
     description:
-      "Learn Tap, the Daily Globe Games landmark mode — read a clue and tap the globe; every kilometer counts.",
+      "Learn Tap: read a clue, then tap the globe as close as you can.",
     definition: MODE_DEFINITIONS.tap.definition,
     steps: [
       {
         name: "Read the clue",
-        text: "Each round shows a location prompt such as a city or landmark.",
+        text: "Each round names a place, like a city or famous landmark.",
       },
       {
-        name: "Aim on the globe",
-        text: "Spin and zoom to the place you think matches the clue.",
+        name: "Find it on the globe",
+        text: "Spin and zoom to where you think that place is.",
       },
       {
-        name: "Confirm your tap",
-        text: "Hold click (or hold on touch) to lock in your guess for that round.",
+        name: "Press and hold",
+        text: "Press and hold (or hold click) to drop your pin for that round.",
       },
       {
         name: "Play five rounds",
-        text: "Score by distance across five daily rounds, then share your total.",
+        text: "Closer taps score more. After five rounds, share your total.",
       },
     ],
     tips: [
       PRODUCT_FACTS.reset,
       PRODUCT_FACTS.scoring.tap,
-      "Later rounds can be worth more — stay precise when the multiplier rises.",
+      "Later rounds are worth more — take your time when the score boost is high.",
     ],
   },
   hunt: {
@@ -84,30 +84,30 @@ export const HOW_TO_GUIDES: Record<GameModeKey, HowToGuide> = {
     slug: "hunt",
     title: "How to play Hunt",
     description:
-      "Learn Hunt, the Daily Globe Games hidden-country mode — use hot-or-cold distance clues to find the secret territory.",
+      "Learn Hunt: find a hidden country using distance and hot-or-cold clues.",
     definition: MODE_DEFINITIONS.hunt.definition,
     steps: [
       {
         name: "Start today's Hunt",
-        text: "Open /hunt. A country is hidden somewhere on the globe.",
+        text: "Open /hunt. One country is hidden somewhere on the globe.",
       },
       {
-        name: "Tap a country guess",
-        text: "Select a country on the globe. You get distance feedback in miles.",
+        name: "Tap a country",
+        text: "Pick a country. We tell you how many miles away you are.",
       },
       {
-        name: "Follow warmer or colder hints",
-        text: "Use hot-or-cold clues and trivia facts to narrow the search.",
+        name: "Use warmer and colder",
+        text: "Warmer means closer. Each miss can also give a fun fact clue.",
       },
       {
-        name: "Solve within five guesses",
-        text: "Find the hidden country in as few guesses as possible for a higher score.",
+        name: "Five tries",
+        text: "Find it in as few guesses as you can. Fewer guesses means a higher score.",
       },
     ],
     tips: [
       PRODUCT_FACTS.reset,
       PRODUCT_FACTS.scoring.hunt,
-      "Fewer guesses earn a better Hunt score — best score is 5.",
+      "Fewer guesses earn more points — the best Hunt score is 5.",
     ],
   },
 };

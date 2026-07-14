@@ -27,7 +27,7 @@ export async function loadCountryFeatures(): Promise<CountryFeature[]> {
   if (loadPromise) return loadPromise;
 
   loadPromise = (async () => {
-    const response = await fetch("/world-countries-110m.json");
+    const response = await fetch("/world-countries-50m.json");
     if (!response.ok) {
       throw new MapLoadError(`Map fetch failed (${response.status})`);
     }

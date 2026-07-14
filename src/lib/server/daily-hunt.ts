@@ -1,5 +1,6 @@
 import { getDateSeed } from "@/lib/daily-seed";
 import fameData from "@/data/hunt-fame-tiers.json";
+import { isPlayableCountryId } from "@/lib/game-data";
 import { getFeatureCentroid } from "@/lib/geo-centroid";
 import type { CountryFeature } from "@/lib/world-geographies";
 
@@ -50,6 +51,7 @@ function isValidCentroid(lat: number, lng: number): boolean {
 export function buildHuntPool(features: CountryFeature[]): CountryFeature[] {
   return features.filter((feature) => {
     const countryId = feature.properties.countryId;
+    if (!isPlayableCountryId(countryId)) return false;
     if (EXCLUDED.has(countryId)) return false;
 
     const { lat, lng } = getFeatureCentroid(feature);

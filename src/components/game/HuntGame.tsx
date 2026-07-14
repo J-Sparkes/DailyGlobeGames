@@ -322,22 +322,22 @@ export function HuntGame() {
   const huntPrompt =
     isPlaying && phase === "playing"
       ? guessesRemaining === 1
-        ? "1 guess left — tap a country"
-        : `${guessesRemaining} guesses left — tap a country`
+        ? "1 try left — tap a country"
+        : `${guessesRemaining} tries left — tap a country`
       : undefined;
 
   const huntLiveMessage = useMemo(() => {
-    if (completedResult) return completedResult.won ? "Hunt won." : "Hunt complete.";
+    if (completedResult) return completedResult.won ? "You found it." : "Hunt is done for today.";
     return huntPrompt ?? "Tap a country on the globe.";
   }, [completedResult, huntPrompt]);
 
   const warmerLabel =
     lastGuess?.warmer === "warmer"
-      ? "Warmer"
+      ? "Warmer — you're closer"
       : lastGuess?.warmer === "colder"
-        ? "Colder"
+        ? "Colder — you're farther"
         : lastGuess?.warmer === "same"
-          ? "Same distance"
+          ? "Same distance as last time"
           : null;
 
   const controlHint = isTouch

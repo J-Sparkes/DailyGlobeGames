@@ -36,4 +36,48 @@ describe("country maritime links", () => {
       expect.arrayContaining(["new-zealand", "papua-new-guinea", "indonesia"]),
     );
   });
+
+  it("keeps Indonesia connected beyond Oceania so Sweep does not dead-end", async () => {
+    clearBorderGraphCache();
+    await loadBorderGraph();
+
+    const indonesia = countryById.get("indonesia")!;
+    const links = getLinkedCountryIds(indonesia);
+    expect(links).toEqual(
+      expect.arrayContaining(["papua-new-guinea", "australia", "south-korea"]),
+    );
+
+    const frontier = getFrontierCountryIds(["indonesia"]);
+    expect(frontier).toEqual(
+      expect.arrayContaining(["papua-new-guinea", "australia", "south-korea"]),
+    );
+  });
+
+  it("keeps the full country graph in one connected component", () => {
+    const ids = [...countryById.keys()];
+    const graph = new Map(ids.map((id) => [id, new Set()]));
+
+    for (const id of ids) {
+      const country = countryById.get(id)!;
+      for (const neighbor of getLinkedCountryIds(country)) {
+        graph.get(id)!.add(neighbor);
+        graph.get(neighbor)?.add(id);
+      }
+    }
+
+    const start = ids[0]!;
+    const seen = new Set([start]);
+    const stack = [start];
+    while (stack.length) {
+      const cur = stack.pop()!;
+      for (const next of graph.get(cur) ?? []) {
+        if (!seen.has(next)) {
+          seen.add(next);
+          stack.push(next);
+        }
+      }
+    }
+
+    expect(seen.size).toBe(ids.length);
+  });
 });

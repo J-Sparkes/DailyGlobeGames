@@ -19,7 +19,7 @@ let cache: CountryFeature[] | null = null;
 export function loadServerCountryFeatures(): CountryFeature[] {
   if (cache) return cache;
 
-  const filePath = join(process.cwd(), "public/world-countries-110m.json");
+  const filePath = join(process.cwd(), "public/world-countries-50m.json");
   const raw = readFileSync(filePath, "utf8");
   const topo = JSON.parse(raw) as Topology<{
     countries: GeometryCollection;

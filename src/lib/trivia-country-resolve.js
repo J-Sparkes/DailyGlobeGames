@@ -1,4 +1,5 @@
 import { countries } from "@/lib/game-data";
+import { unCountryById } from "@/lib/un-countries";
 import { getFeatureCentroid } from "@/lib/geo-centroid";
 import { loadCountryFeatures } from "@/lib/world-geographies";
 
@@ -29,9 +30,10 @@ export async function loadTriviaCountryLookup() {
 
   for (const country of countries) {
     const feature = featureById.get(country.id);
+    const un = unCountryById.get(country.id);
     const coordinates = feature
       ? getFeatureCentroid(feature)
-      : { lat: 0, lng: 0 };
+      : { lat: un?.lat ?? 0, lng: un?.lng ?? 0 };
 
     const entry = {
       name: country.name,
@@ -67,7 +69,9 @@ export function resolveTriviaCountryInput(input, lookup) {
 
   for (const country of countries) {
     const aliases = [country.name, country.mapName, ...country.aliases];
-    const match = aliases.some((alias) => normalizeName(alias).includes(normalized));
+    const match = aliases.some((alias) =>
+      normalizeName(alias).includes(normalized),
+    );
     if (match) {
       return lookup.get(normalizeName(country.name)) ?? null;
     }

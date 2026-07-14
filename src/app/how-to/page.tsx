@@ -29,8 +29,8 @@ export default function HowToIndexPage() {
       />
       <h1 className="mb-2 text-2xl font-semibold text-white">How to play</h1>
       <p className="mb-8 text-slate-400">
-        Short guides for each Daily Globe Games mode. Pick a mode to learn the
-        rules, then play today&apos;s puzzle.
+        Short guides for each game. Pick one to learn the rules, then play
+        today&apos;s puzzle.
       </p>
 
       <ul className="space-y-4">

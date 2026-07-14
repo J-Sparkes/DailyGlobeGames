@@ -10,7 +10,7 @@ import { neighbors } from "topojson-client";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const countriesPath = join(root, "src/data/countries.json");
-const topoPath = join(root, "public/world-countries-110m.json");
+const topoPath = join(root, "public/world-countries-50m.json");
 const maritimePath = join(root, "src/data/maritime-links.json");
 
 function linkPair(graph, a, b) {

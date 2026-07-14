@@ -8,6 +8,8 @@ export interface DailyLocation {
   lng: number;
   difficulty: 1 | 2 | 3 | 4 | 5;
   category: LocationCategory;
+  /** Present for country-capital targets covering the playable country set. */
+  countryId?: string;
   fact?: string;
 }
 

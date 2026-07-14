@@ -18,7 +18,7 @@ const STEPS: WelcomeStep[] = [
       </svg>
     ),
     title: "Read the clue",
-    hint: "Five locations. Same five for everyone.",
+    hint: "You get five places to find today.",
   },
   {
     icon: (
@@ -27,8 +27,8 @@ const STEPS: WelcomeStep[] = [
         <circle cx="12" cy="11" r="2" />
       </svg>
     ),
-    title: "Hold to lock in",
-    hint: "Spin the globe, then press and hold your guess.",
+    title: "Hold to drop a pin",
+    hint: "Spin the globe, then press and hold where you think it is.",
   },
   {
     icon: (
@@ -37,8 +37,8 @@ const STEPS: WelcomeStep[] = [
         <circle cx="12" cy="12" r="4" />
       </svg>
     ),
-    title: "Closer = more pts",
-    hint: "0–100 per round. Later rounds multiply.",
+    title: "Closer scores more",
+    hint: "Nearer taps get more points. Later rounds are worth more.",
   },
   {
     icon: (
@@ -48,7 +48,7 @@ const STEPS: WelcomeStep[] = [
       </svg>
     ),
     title: "Play all five",
-    hint: "Max 1,000 pts — share your score grid.",
+    hint: "Finish every round, then share your total score.",
   },
 ];
 
@@ -59,11 +59,11 @@ export function TapWelcomeModal({ onClose }: TapWelcomeModalProps) {
     <WelcomeModalShell
       titleId="tap-welcome-title"
       title="Tap the map"
-      tagline="Pin five daily places. Score by how close you get."
+      tagline="Read each clue. Tap the globe as close as you can."
       steps={STEPS}
       footnote={
         unlimited
-          ? "Test mode — replay anytime."
+          ? "Test mode — you can play again anytime."
           : "One Tap game per day. Finish all five to share."
       }
       onClose={onClose}

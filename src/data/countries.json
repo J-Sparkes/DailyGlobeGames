@@ -1,20 +1,24 @@
 {
-  "version": "0.3.0",
-  "updatedAt": "2026-07-10",
+  "version": "1.0.0",
+  "updatedAt": "2026-07-13",
   "countries": [
     {
       "id": "afghanistan",
       "name": "Afghanistan",
       "mapName": "Afghanistan",
       "aliases": [
-        "Afghanistan"
+        "Afghanistan",
+        "Islamic Republic of Afghanistan",
+        "AF",
+        "Afġānistān"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "AF",
       "land_borders": [
         "china",
         "iran",
         "pakistan",
+        "tajikistan",
         "turkmenistan",
         "uzbekistan"
       ],
@@ -25,15 +29,118 @@
       "name": "Albania",
       "mapName": "Albania",
       "aliases": [
-        "Albania"
+        "Albania",
+        "Republic of Albania",
+        "AL",
+        "Shqipëri",
+        "Shqipëria",
+        "Shqipnia"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "AL",
       "land_borders": [
         "greece",
-        "kosovo",
         "macedonia",
         "montenegro"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "algeria",
+      "name": "Algeria",
+      "mapName": "Algeria",
+      "aliases": [
+        "Algeria",
+        "People's Democratic Republic of Algeria",
+        "DZ",
+        "Dzayer",
+        "Algérie"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "DZ",
+      "land_borders": [
+        "libya",
+        "mali",
+        "mauritania",
+        "morocco",
+        "niger",
+        "tunisia"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "andorra",
+      "name": "Andorra",
+      "mapName": "Andorra",
+      "aliases": [
+        "Andorra",
+        "Principality of Andorra",
+        "AD",
+        "Principat d'Andorra"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "AD",
+      "land_borders": [
+        "france",
+        "spain"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "angola",
+      "name": "Angola",
+      "mapName": "Angola",
+      "aliases": [
+        "Angola",
+        "Republic of Angola",
+        "AO",
+        "República de Angola",
+        "ʁɛpublika de an'ɡɔla"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "AO",
+      "land_borders": [
+        "congo",
+        "dr-congo",
+        "namibia",
+        "zambia"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "antigua-and-barbuda",
+      "name": "Antigua and Barbuda",
+      "mapName": "Antigua and Barb.",
+      "aliases": [
+        "Antigua and Barbuda",
+        "AG"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "AG",
+      "land_borders": [],
+      "maritime_links": [
+        "dominica",
+        "saint-kitts-and-nevis"
+      ]
+    },
+    {
+      "id": "argentina",
+      "name": "Argentina",
+      "mapName": "Argentina",
+      "aliases": [
+        "Argentina",
+        "Argentine Republic",
+        "AR",
+        "República Argentina"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "AR",
+      "land_borders": [
+        "bolivia",
+        "brazil",
+        "chile",
+        "paraguay",
+        "uruguay"
       ],
       "maritime_links": []
     },
@@ -42,9 +149,13 @@
       "name": "Armenia",
       "mapName": "Armenia",
       "aliases": [
-        "Armenia"
+        "Armenia",
+        "Republic of Armenia",
+        "AM",
+        "Hayastan",
+        "Հայաստանի Հանրապետություն"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "AM",
       "land_borders": [
         "azerbaijan",
@@ -59,7 +170,9 @@
       "name": "Australia",
       "mapName": "Australia",
       "aliases": [
-        "Australia"
+        "Australia",
+        "Commonwealth of Australia",
+        "AU"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "AU",
@@ -71,46 +184,16 @@
       ]
     },
     {
-      "id": "indonesia",
-      "name": "Indonesia",
-      "mapName": "Indonesia",
-      "aliases": [
-        "Indonesia"
-      ],
-      "inDailyPool": true,
-      "iso3166Alpha2": "ID",
-      "land_borders": [
-        "papua-new-guinea"
-      ],
-      "maritime_links": [
-        "australia"
-      ]
-    },
-    {
-      "id": "papua-new-guinea",
-      "name": "Papua New Guinea",
-      "mapName": "Papua New Guinea",
-      "aliases": [
-        "Papua New Guinea",
-        "PNG"
-      ],
-      "inDailyPool": true,
-      "iso3166Alpha2": "PG",
-      "land_borders": [
-        "indonesia"
-      ],
-      "maritime_links": [
-        "australia"
-      ]
-    },
-    {
       "id": "austria",
       "name": "Austria",
       "mapName": "Austria",
       "aliases": [
         "Austria",
         "Österreich",
-        "Osterreich"
+        "Osterreich",
+        "Republic of Austria",
+        "AT",
+        "Oesterreich"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "AT",
@@ -119,6 +202,7 @@
         "germany",
         "hungary",
         "italy",
+        "liechtenstein",
         "slovakia",
         "slovenia",
         "switzerland"
@@ -130,15 +214,19 @@
       "name": "Azerbaijan",
       "mapName": "Azerbaijan",
       "aliases": [
-        "Azerbaijan"
+        "Azerbaijan",
+        "Republic of Azerbaijan",
+        "AZ",
+        "Azərbaycan Respublikası"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "AZ",
       "land_borders": [
         "armenia",
         "georgia",
         "iran",
-        "russia"
+        "russia",
+        "turkey"
       ],
       "maritime_links": [
         "turkey"
@@ -150,14 +238,67 @@
       "mapName": "Bahamas",
       "aliases": [
         "Bahamas",
-        "The Bahamas"
+        "The Bahamas",
+        "Commonwealth of the Bahamas",
+        "BS"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "BS",
       "land_borders": [],
       "maritime_links": [
         "cuba",
-        "haiti"
+        "haiti",
+        "iceland"
+      ]
+    },
+    {
+      "id": "bahrain",
+      "name": "Bahrain",
+      "mapName": "Bahrain",
+      "aliases": [
+        "Bahrain",
+        "Kingdom of Bahrain",
+        "BH",
+        "Mamlakat al-Baḥrayn"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BH",
+      "land_borders": [],
+      "maritime_links": [
+        "qatar"
+      ]
+    },
+    {
+      "id": "bangladesh",
+      "name": "Bangladesh",
+      "mapName": "Bangladesh",
+      "aliases": [
+        "Bangladesh",
+        "People's Republic of Bangladesh",
+        "BD",
+        "Gônôprôjatôntri Bangladesh"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BD",
+      "land_borders": [
+        "india",
+        "myanmar"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "barbados",
+      "name": "Barbados",
+      "mapName": "Barbados",
+      "aliases": [
+        "Barbados",
+        "BB"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BB",
+      "land_borders": [],
+      "maritime_links": [
+        "saint-lucia"
       ]
     },
     {
@@ -166,7 +307,12 @@
       "mapName": "Belarus",
       "aliases": [
         "Belarus",
-        "Byelorussia"
+        "Byelorussia",
+        "Republic of Belarus",
+        "BY",
+        "Bielaruś",
+        "Белоруссия",
+        "Республика Белоруссия"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "BY",
@@ -184,7 +330,16 @@
       "name": "Belgium",
       "mapName": "Belgium",
       "aliases": [
-        "Belgium"
+        "Belgium",
+        "Kingdom of Belgium",
+        "BE",
+        "België",
+        "Belgie",
+        "Belgien",
+        "Belgique",
+        "Koninkrijk België",
+        "Royaume de Belgique",
+        "Königreich Belgien"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "BE",
@@ -197,13 +352,96 @@
       "maritime_links": []
     },
     {
+      "id": "belize",
+      "name": "Belize",
+      "mapName": "Belize",
+      "aliases": [
+        "Belize",
+        "BZ"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BZ",
+      "land_borders": [
+        "guatemala",
+        "mexico"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "benin",
+      "name": "Benin",
+      "mapName": "Benin",
+      "aliases": [
+        "Benin",
+        "Republic of Benin",
+        "BJ",
+        "République du Bénin"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BJ",
+      "land_borders": [
+        "burkina-faso",
+        "niger",
+        "nigeria",
+        "togo"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "bhutan",
+      "name": "Bhutan",
+      "mapName": "Bhutan",
+      "aliases": [
+        "Bhutan",
+        "Kingdom of Bhutan",
+        "BT"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BT",
+      "land_borders": [
+        "china",
+        "india"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "bolivia",
+      "name": "Bolivia",
+      "mapName": "Bolivia",
+      "aliases": [
+        "Bolivia",
+        "Plurinational State of Bolivia",
+        "BO",
+        "Buliwya",
+        "Wuliwya",
+        "Bolivia, Plurinational State of",
+        "Estado Plurinacional de Bolivia",
+        "Buliwya Mamallaqta",
+        "Wuliwya Suyu",
+        "Tetã Volívia"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BO",
+      "land_borders": [
+        "argentina",
+        "brazil",
+        "chile",
+        "paraguay",
+        "peru"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "bosnia-and-herz",
       "name": "Bosnia and Herzegovina",
       "mapName": "Bosnia and Herz.",
       "aliases": [
         "Bosnia and Herzegovina",
         "Bosnia",
-        "Bosnia and Herz."
+        "Bosnia and Herz.",
+        "BA",
+        "Bosnia-Herzegovina",
+        "Босна и Херцеговина"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "BA",
@@ -215,11 +453,81 @@
       "maritime_links": []
     },
     {
+      "id": "botswana",
+      "name": "Botswana",
+      "mapName": "Botswana",
+      "aliases": [
+        "Botswana",
+        "Republic of Botswana",
+        "BW",
+        "Lefatshe la Botswana"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BW",
+      "land_borders": [
+        "namibia",
+        "south-africa",
+        "zimbabwe"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "brazil",
+      "name": "Brazil",
+      "mapName": "Brazil",
+      "aliases": [
+        "Brazil",
+        "Federative Republic of Brazil",
+        "BR",
+        "Brasil",
+        "República Federativa do Brasil"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BR",
+      "land_borders": [
+        "argentina",
+        "bolivia",
+        "colombia",
+        "france",
+        "guyana",
+        "paraguay",
+        "peru",
+        "suriname",
+        "uruguay",
+        "venezuela"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "brunei",
+      "name": "Brunei",
+      "mapName": "Brunei",
+      "aliases": [
+        "Brunei",
+        "Nation of Brunei, Abode of Peace",
+        "BN",
+        "Brunei Darussalam",
+        "Nation of Brunei",
+        "the Abode of Peace"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BN",
+      "land_borders": [
+        "malaysia"
+      ],
+      "maritime_links": [
+        "philippines"
+      ]
+    },
+    {
       "id": "bulgaria",
       "name": "Bulgaria",
       "mapName": "Bulgaria",
       "aliases": [
-        "Bulgaria"
+        "Bulgaria",
+        "Republic of Bulgaria",
+        "BG",
+        "Република България"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "BG",
@@ -233,25 +541,212 @@
       "maritime_links": []
     },
     {
+      "id": "burkina-faso",
+      "name": "Burkina Faso",
+      "mapName": "Burkina Faso",
+      "aliases": [
+        "Burkina Faso",
+        "BF"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BF",
+      "land_borders": [
+        "benin",
+        "ghana",
+        "ivory-coast",
+        "mali",
+        "niger",
+        "togo"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "burundi",
+      "name": "Burundi",
+      "mapName": "Burundi",
+      "aliases": [
+        "Burundi",
+        "Republic of Burundi",
+        "BI",
+        "Republika y'Uburundi",
+        "République du Burundi"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "BI",
+      "land_borders": [
+        "dr-congo",
+        "rwanda",
+        "tanzania"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "cambodia",
+      "name": "Cambodia",
+      "mapName": "Cambodia",
+      "aliases": [
+        "Cambodia",
+        "Kingdom of Cambodia",
+        "KH"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "KH",
+      "land_borders": [
+        "laos",
+        "thailand",
+        "vietnam"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "cameroon",
+      "name": "Cameroon",
+      "mapName": "Cameroon",
+      "aliases": [
+        "Cameroon",
+        "Republic of Cameroon",
+        "CM",
+        "République du Cameroun"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "CM",
+      "land_borders": [
+        "central-african-republic",
+        "chad",
+        "congo",
+        "equatorial-guinea",
+        "gabon",
+        "nigeria"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "canada",
+      "name": "Canada",
+      "mapName": "Canada",
+      "aliases": [
+        "Canada",
+        "CA"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "CA",
+      "land_borders": [
+        "united-states"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "cape-verde",
+      "name": "Cape Verde",
+      "mapName": "Cabo Verde",
+      "aliases": [
+        "Cape Verde",
+        "Republic of Cabo Verde",
+        "CV",
+        "República de Cabo Verde"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "CV",
+      "land_borders": [],
+      "maritime_links": [
+        "gambia"
+      ]
+    },
+    {
+      "id": "central-african-republic",
+      "name": "Central African Republic",
+      "mapName": "Central African Rep.",
+      "aliases": [
+        "Central African Republic",
+        "CF",
+        "République centrafricaine"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "CF",
+      "land_borders": [
+        "cameroon",
+        "chad",
+        "congo",
+        "dr-congo",
+        "south-sudan",
+        "sudan"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "chad",
+      "name": "Chad",
+      "mapName": "Chad",
+      "aliases": [
+        "Chad",
+        "Republic of Chad",
+        "TD",
+        "Tchad",
+        "République du Tchad"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "TD",
+      "land_borders": [
+        "cameroon",
+        "central-african-republic",
+        "libya",
+        "niger",
+        "nigeria",
+        "sudan"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "chile",
+      "name": "Chile",
+      "mapName": "Chile",
+      "aliases": [
+        "Chile",
+        "Republic of Chile",
+        "CL",
+        "República de Chile"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "CL",
+      "land_borders": [
+        "argentina",
+        "bolivia",
+        "peru"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "china",
       "name": "China",
       "mapName": "China",
       "aliases": [
         "China",
         "People's Republic of China",
-        "PRC"
+        "PRC",
+        "CN",
+        "Zhōngguó",
+        "Zhongguo",
+        "Zhonghua",
+        "中华人民共和国",
+        "Zhōnghuá Rénmín Gònghéguó"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "CN",
       "land_borders": [
         "afghanistan",
+        "bhutan",
         "india",
         "kazakhstan",
         "kyrgyzstan",
+        "laos",
         "mongolia",
+        "myanmar",
+        "nepal",
         "north-korea",
         "pakistan",
-        "russia"
+        "russia",
+        "tajikistan",
+        "vietnam"
       ],
       "maritime_links": []
     },
@@ -260,26 +755,92 @@
       "name": "Colombia",
       "mapName": "Colombia",
       "aliases": [
-        "Colombia"
+        "Colombia",
+        "Republic of Colombia",
+        "CO",
+        "República de Colombia"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "CO",
       "land_borders": [
+        "brazil",
+        "ecuador",
         "panama",
+        "peru",
         "venezuela"
       ],
       "maritime_links": []
+    },
+    {
+      "id": "comoros",
+      "name": "Comoros",
+      "mapName": "Comoros",
+      "aliases": [
+        "Comoros",
+        "Union of the Comoros",
+        "KM",
+        "Union des Comores",
+        "Udzima wa Komori",
+        "al-Ittiḥād al-Qumurī"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "KM",
+      "land_borders": [],
+      "maritime_links": [
+        "madagascar"
+      ]
+    },
+    {
+      "id": "congo",
+      "name": "Congo",
+      "mapName": "Congo",
+      "aliases": [
+        "Congo",
+        "Republic of the Congo",
+        "CG",
+        "Congo-Brazzaville"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "CG",
+      "land_borders": [
+        "angola",
+        "cameroon",
+        "central-african-republic",
+        "dr-congo",
+        "gabon"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "cook-islands",
+      "name": "Cook Islands",
+      "mapName": "Cook Is.",
+      "aliases": [
+        "Cook Islands",
+        "CK",
+        "Kūki 'Āirani"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "CK",
+      "land_borders": [],
+      "maritime_links": [
+        "niue"
+      ]
     },
     {
       "id": "costa-rica",
       "name": "Costa Rica",
       "mapName": "Costa Rica",
       "aliases": [
-        "Costa Rica"
+        "Costa Rica",
+        "Republic of Costa Rica",
+        "CR",
+        "República de Costa Rica"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "CR",
       "land_borders": [
+        "nicaragua",
         "panama"
       ],
       "maritime_links": []
@@ -290,7 +851,10 @@
       "mapName": "Croatia",
       "aliases": [
         "Croatia",
-        "Hrvatska"
+        "Hrvatska",
+        "Republic of Croatia",
+        "HR",
+        "Republika Hrvatska"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "HR",
@@ -308,9 +872,12 @@
       "name": "Cuba",
       "mapName": "Cuba",
       "aliases": [
-        "Cuba"
+        "Cuba",
+        "Republic of Cuba",
+        "CU",
+        "República de Cuba"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "CU",
       "land_borders": [],
       "maritime_links": [
@@ -324,9 +891,15 @@
       "name": "Cyprus",
       "mapName": "Cyprus",
       "aliases": [
-        "Cyprus"
+        "Cyprus",
+        "Republic of Cyprus",
+        "CY",
+        "Kýpros",
+        "Kıbrıs",
+        "Κυπριακή Δημοκρατία",
+        "Kıbrıs Cumhuriyeti"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "CY",
       "land_borders": [],
       "maritime_links": [
@@ -343,7 +916,10 @@
       "aliases": [
         "Czechia",
         "Czech Republic",
-        "Czech"
+        "Czech",
+        "CZ",
+        "Česká republika",
+        "Česko"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "CZ",
@@ -361,7 +937,10 @@
       "mapName": "Denmark",
       "aliases": [
         "Denmark",
-        "Danmark"
+        "Danmark",
+        "Kingdom of Denmark",
+        "DK",
+        "Kongeriget Danmark"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "DK",
@@ -371,17 +950,105 @@
       "maritime_links": []
     },
     {
+      "id": "djibouti",
+      "name": "Djibouti",
+      "mapName": "Djibouti",
+      "aliases": [
+        "Djibouti",
+        "Republic of Djibouti",
+        "DJ",
+        "Jabuuti",
+        "Gabuuti",
+        "République de Djibouti",
+        "Gabuutih Ummuuno",
+        "Jamhuuriyadda Jabuuti"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "DJ",
+      "land_borders": [
+        "eritrea",
+        "ethiopia"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "dominica",
+      "name": "Dominica",
+      "mapName": "Dominica",
+      "aliases": [
+        "Dominica",
+        "Commonwealth of Dominica",
+        "DM",
+        "Dominique",
+        "Wai‘tu kubuli"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "DM",
+      "land_borders": [],
+      "maritime_links": [
+        "antigua-and-barbuda",
+        "saint-lucia"
+      ]
+    },
+    {
       "id": "dominican-republic",
       "name": "Dominican Republic",
       "mapName": "Dominican Rep.",
       "aliases": [
         "Dominican Republic",
-        "Dominican Rep."
+        "Dominican Rep.",
+        "DO"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "DO",
       "land_borders": [
         "haiti"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "dr-congo",
+      "name": "DR Congo",
+      "mapName": "Dem. Rep. Congo",
+      "aliases": [
+        "DR Congo",
+        "Democratic Republic of the Congo",
+        "CD",
+        "Congo-Kinshasa",
+        "Congo, the Democratic Republic of the",
+        "Democratic Republic of Congo",
+        "DRC"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "CD",
+      "land_borders": [
+        "angola",
+        "burundi",
+        "central-african-republic",
+        "congo",
+        "rwanda",
+        "south-sudan",
+        "tanzania",
+        "uganda",
+        "zambia"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "ecuador",
+      "name": "Ecuador",
+      "mapName": "Ecuador",
+      "aliases": [
+        "Ecuador",
+        "Republic of Ecuador",
+        "EC",
+        "República del Ecuador"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "EC",
+      "land_borders": [
+        "colombia",
+        "peru"
       ],
       "maritime_links": []
     },
@@ -390,13 +1057,16 @@
       "name": "Egypt",
       "mapName": "Egypt",
       "aliases": [
-        "Egypt"
+        "Egypt",
+        "Arab Republic of Egypt",
+        "EG"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "EG",
       "land_borders": [
         "israel",
         "libya",
+        "palestine",
         "sudan"
       ],
       "maritime_links": [
@@ -404,11 +1074,77 @@
       ]
     },
     {
+      "id": "el-salvador",
+      "name": "El Salvador",
+      "mapName": "El Salvador",
+      "aliases": [
+        "El Salvador",
+        "Republic of El Salvador",
+        "SV",
+        "República de El Salvador"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SV",
+      "land_borders": [
+        "guatemala",
+        "honduras"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "equatorial-guinea",
+      "name": "Equatorial Guinea",
+      "mapName": "Eq. Guinea",
+      "aliases": [
+        "Equatorial Guinea",
+        "Republic of Equatorial Guinea",
+        "GQ",
+        "República de Guinea Ecuatorial",
+        "République de Guinée équatoriale",
+        "República da Guiné Equatorial"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "GQ",
+      "land_borders": [
+        "cameroon",
+        "gabon"
+      ],
+      "maritime_links": [
+        "sao-tome-and-principe"
+      ]
+    },
+    {
+      "id": "eritrea",
+      "name": "Eritrea",
+      "mapName": "Eritrea",
+      "aliases": [
+        "Eritrea",
+        "State of Eritrea",
+        "ER",
+        "ሃገረ ኤርትራ",
+        "Dawlat Iritriyá",
+        "ʾErtrā",
+        "Iritriyā"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "ER",
+      "land_borders": [
+        "djibouti",
+        "ethiopia",
+        "sudan"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "estonia",
       "name": "Estonia",
       "mapName": "Estonia",
       "aliases": [
-        "Estonia"
+        "Estonia",
+        "Republic of Estonia",
+        "EE",
+        "Eesti",
+        "Eesti Vabariik"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "EE",
@@ -419,12 +1155,82 @@
       "maritime_links": []
     },
     {
+      "id": "eswatini",
+      "name": "Eswatini",
+      "mapName": "eSwatini",
+      "aliases": [
+        "Eswatini",
+        "Kingdom of Eswatini",
+        "SZ",
+        "Swaziland",
+        "weSwatini",
+        "Swatini",
+        "Ngwane",
+        "Umbuso weSwatini"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SZ",
+      "land_borders": [
+        "mozambique",
+        "south-africa"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "ethiopia",
+      "name": "Ethiopia",
+      "mapName": "Ethiopia",
+      "aliases": [
+        "Ethiopia",
+        "Federal Democratic Republic of Ethiopia",
+        "ET",
+        "ʾĪtyōṗṗyā",
+        "የኢትዮጵያ ፌዴራላዊ ዲሞክራሲያዊ ሪፐብሊክ"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "ET",
+      "land_borders": [
+        "djibouti",
+        "eritrea",
+        "kenya",
+        "somalia",
+        "south-sudan",
+        "sudan"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "fiji",
+      "name": "Fiji",
+      "mapName": "Fiji",
+      "aliases": [
+        "Fiji",
+        "Republic of Fiji",
+        "FJ",
+        "Viti",
+        "Matanitu ko Viti",
+        "Fijī Gaṇarājya"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "FJ",
+      "land_borders": [],
+      "maritime_links": [
+        "tonga",
+        "tuvalu",
+        "vanuatu"
+      ]
+    },
+    {
       "id": "finland",
       "name": "Finland",
       "mapName": "Finland",
       "aliases": [
         "Finland",
-        "Suomi"
+        "Suomi",
+        "Republic of Finland",
+        "FI",
+        "Suomen tasavalta",
+        "Republiken Finland"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "FI",
@@ -441,16 +1247,22 @@
       "mapName": "France",
       "aliases": [
         "France",
-        "French Republic"
+        "French Republic",
+        "FR",
+        "République française"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "FR",
       "land_borders": [
+        "andorra",
         "belgium",
+        "brazil",
         "germany",
         "italy",
         "luxembourg",
+        "monaco",
         "spain",
+        "suriname",
         "switzerland"
       ],
       "maritime_links": [
@@ -458,13 +1270,52 @@
       ]
     },
     {
+      "id": "gabon",
+      "name": "Gabon",
+      "mapName": "Gabon",
+      "aliases": [
+        "Gabon",
+        "Gabonese Republic",
+        "GA",
+        "République Gabonaise"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "GA",
+      "land_borders": [
+        "cameroon",
+        "congo",
+        "equatorial-guinea"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "gambia",
+      "name": "Gambia",
+      "mapName": "Gambia",
+      "aliases": [
+        "Gambia",
+        "Republic of the Gambia",
+        "GM"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "GM",
+      "land_borders": [
+        "senegal"
+      ],
+      "maritime_links": [
+        "cape-verde"
+      ]
+    },
+    {
       "id": "georgia",
       "name": "Georgia",
       "mapName": "Georgia",
       "aliases": [
-        "Georgia"
+        "Georgia",
+        "GE",
+        "Sakartvelo"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "GE",
       "land_borders": [
         "armenia",
@@ -481,7 +1332,9 @@
       "aliases": [
         "Germany",
         "Deutschland",
-        "Federal Republic of Germany"
+        "Federal Republic of Germany",
+        "DE",
+        "Bundesrepublik Deutschland"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "DE",
@@ -499,12 +1352,34 @@
       "maritime_links": []
     },
     {
+      "id": "ghana",
+      "name": "Ghana",
+      "mapName": "Ghana",
+      "aliases": [
+        "Ghana",
+        "Republic of Ghana",
+        "GH"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "GH",
+      "land_borders": [
+        "burkina-faso",
+        "ivory-coast",
+        "togo"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "greece",
       "name": "Greece",
       "mapName": "Greece",
       "aliases": [
         "Greece",
-        "Hellas"
+        "Hellas",
+        "Hellenic Republic",
+        "GR",
+        "Elláda",
+        "Ελληνική Δημοκρατία"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "GR",
@@ -519,13 +1394,110 @@
       ]
     },
     {
+      "id": "grenada",
+      "name": "Grenada",
+      "mapName": "Grenada",
+      "aliases": [
+        "Grenada",
+        "GD"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "GD",
+      "land_borders": [],
+      "maritime_links": [
+        "saint-vincent-and-the-grenadines",
+        "trinidad-and-tobago"
+      ]
+    },
+    {
+      "id": "guatemala",
+      "name": "Guatemala",
+      "mapName": "Guatemala",
+      "aliases": [
+        "Guatemala",
+        "Republic of Guatemala",
+        "GT"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "GT",
+      "land_borders": [
+        "belize",
+        "el-salvador",
+        "honduras",
+        "mexico"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "guinea",
+      "name": "Guinea",
+      "mapName": "Guinea",
+      "aliases": [
+        "Guinea",
+        "Republic of Guinea",
+        "GN",
+        "République de Guinée"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "GN",
+      "land_borders": [
+        "guinea-bissau",
+        "ivory-coast",
+        "liberia",
+        "mali",
+        "senegal",
+        "sierra-leone"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "guinea-bissau",
+      "name": "Guinea-Bissau",
+      "mapName": "Guinea-Bissau",
+      "aliases": [
+        "Guinea-Bissau",
+        "Republic of Guinea-Bissau",
+        "GW",
+        "República da Guiné-Bissau"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "GW",
+      "land_borders": [
+        "guinea",
+        "senegal"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "guyana",
+      "name": "Guyana",
+      "mapName": "Guyana",
+      "aliases": [
+        "Guyana",
+        "Co-operative Republic of Guyana",
+        "GY"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "GY",
+      "land_borders": [
+        "brazil",
+        "suriname",
+        "venezuela"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "haiti",
       "name": "Haiti",
       "mapName": "Haiti",
       "aliases": [
-        "Haiti"
+        "Haiti",
+        "Republic of Haiti",
+        "HT",
+        "République d'Haïti",
+        "Repiblik Ayiti"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "HT",
       "land_borders": [
         "dominican-republic"
@@ -537,13 +1509,33 @@
       ]
     },
     {
+      "id": "honduras",
+      "name": "Honduras",
+      "mapName": "Honduras",
+      "aliases": [
+        "Honduras",
+        "Republic of Honduras",
+        "HN",
+        "República de Honduras"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "HN",
+      "land_borders": [
+        "el-salvador",
+        "guatemala",
+        "nicaragua"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "hungary",
       "name": "Hungary",
       "mapName": "Hungary",
       "aliases": [
         "Hungary",
         "Magyarország",
-        "Magyarorszag"
+        "Magyarorszag",
+        "HU"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "HU",
@@ -564,12 +1556,16 @@
       "mapName": "Iceland",
       "aliases": [
         "Iceland",
-        "Island"
+        "Island",
+        "IS",
+        "Republic of Iceland",
+        "Lýðveldið Ísland"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "IS",
       "land_borders": [],
       "maritime_links": [
+        "bahamas",
         "norway"
       ]
     },
@@ -579,15 +1575,48 @@
       "mapName": "India",
       "aliases": [
         "India",
-        "Bharat"
+        "Bharat",
+        "Republic of India",
+        "IN",
+        "Bhārat",
+        "Bharat Ganrajya",
+        "இந்தியா"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "IN",
       "land_borders": [
+        "bangladesh",
+        "bhutan",
         "china",
+        "myanmar",
+        "nepal",
         "pakistan"
       ],
-      "maritime_links": []
+      "maritime_links": [
+        "sri-lanka"
+      ]
+    },
+    {
+      "id": "indonesia",
+      "name": "Indonesia",
+      "mapName": "Indonesia",
+      "aliases": [
+        "Indonesia",
+        "Republic of Indonesia",
+        "ID",
+        "Republik Indonesia"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "ID",
+      "land_borders": [
+        "malaysia",
+        "papua-new-guinea",
+        "timor-leste"
+      ],
+      "maritime_links": [
+        "australia",
+        "south-korea"
+      ]
     },
     {
       "id": "iran",
@@ -595,7 +1624,10 @@
       "mapName": "Iran",
       "aliases": [
         "Iran",
-        "Islamic Republic of Iran"
+        "Islamic Republic of Iran",
+        "IR",
+        "Iran, Islamic Republic of",
+        "Jomhuri-ye Eslāmi-ye Irān"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "IR",
@@ -615,13 +1647,18 @@
       "name": "Iraq",
       "mapName": "Iraq",
       "aliases": [
-        "Iraq"
+        "Iraq",
+        "Republic of Iraq",
+        "IQ",
+        "Jumhūriyyat al-‘Irāq"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "IQ",
       "land_borders": [
         "iran",
         "jordan",
+        "kuwait",
+        "saudi-arabia",
         "syria",
         "turkey"
       ],
@@ -635,7 +1672,9 @@
         "Ireland",
         "Republic of Ireland",
         "Eire",
-        "Éire"
+        "Éire",
+        "IE",
+        "Poblacht na hÉireann"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "IE",
@@ -651,9 +1690,12 @@
       "name": "Israel",
       "mapName": "Israel",
       "aliases": [
-        "Israel"
+        "Israel",
+        "State of Israel",
+        "IL",
+        "Medīnat Yisrā'el"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "IL",
       "land_borders": [
         "egypt",
@@ -670,15 +1712,43 @@
       "mapName": "Italy",
       "aliases": [
         "Italy",
-        "Italia"
+        "Italia",
+        "Italian Republic",
+        "IT",
+        "Repubblica italiana"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "IT",
       "land_borders": [
         "austria",
         "france",
+        "san-marino",
         "slovenia",
-        "switzerland"
+        "switzerland",
+        "vatican-city"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "ivory-coast",
+      "name": "Ivory Coast",
+      "mapName": "Côte d'Ivoire",
+      "aliases": [
+        "Ivory Coast",
+        "Republic of Côte d'Ivoire",
+        "CI",
+        "Côte d'Ivoire",
+        "Cote d'Ivoire",
+        "République de Côte d'Ivoire"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "CI",
+      "land_borders": [
+        "burkina-faso",
+        "ghana",
+        "guinea",
+        "liberia",
+        "mali"
       ],
       "maritime_links": []
     },
@@ -687,14 +1757,16 @@
       "name": "Jamaica",
       "mapName": "Jamaica",
       "aliases": [
-        "Jamaica"
+        "Jamaica",
+        "JM"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "JM",
       "land_borders": [],
       "maritime_links": [
         "cuba",
-        "haiti"
+        "haiti",
+        "panama"
       ]
     },
     {
@@ -702,7 +1774,10 @@
       "name": "Japan",
       "mapName": "Japan",
       "aliases": [
-        "Japan"
+        "Japan",
+        "JP",
+        "Nippon",
+        "Nihon"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "JP",
@@ -717,14 +1792,18 @@
       "name": "Jordan",
       "mapName": "Jordan",
       "aliases": [
-        "Jordan"
+        "Jordan",
+        "Hashemite Kingdom of Jordan",
+        "JO",
+        "al-Mamlakah al-Urdunīyah al-Hāshimīyah"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "JO",
       "land_borders": [
         "iraq",
         "israel",
         "palestine",
+        "saudi-arabia",
         "syria"
       ],
       "maritime_links": []
@@ -734,7 +1813,15 @@
       "name": "Kazakhstan",
       "mapName": "Kazakhstan",
       "aliases": [
-        "Kazakhstan"
+        "Kazakhstan",
+        "Republic of Kazakhstan",
+        "KZ",
+        "Qazaqstan",
+        "Казахстан",
+        "Қазақстан Республикасы",
+        "Qazaqstan Respublïkası",
+        "Республика Казахстан",
+        "Respublika Kazakhstan"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "KZ",
@@ -748,19 +1835,58 @@
       "maritime_links": []
     },
     {
-      "id": "kosovo",
-      "name": "Kosovo",
-      "mapName": "Kosovo",
+      "id": "kenya",
+      "name": "Kenya",
+      "mapName": "Kenya",
       "aliases": [
-        "Kosovo"
+        "Kenya",
+        "Republic of Kenya",
+        "KE",
+        "Jamhuri ya Kenya"
       ],
       "inDailyPool": true,
-      "iso3166Alpha2": "XK",
+      "iso3166Alpha2": "KE",
       "land_borders": [
-        "albania",
-        "macedonia",
-        "montenegro",
-        "serbia"
+        "ethiopia",
+        "somalia",
+        "south-sudan",
+        "tanzania",
+        "uganda"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "kiribati",
+      "name": "Kiribati",
+      "mapName": "Kiribati",
+      "aliases": [
+        "Kiribati",
+        "KI",
+        "Republic of Kiribati",
+        "Ribaberiki Kiribati"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "KI",
+      "land_borders": [],
+      "maritime_links": [
+        "samoa"
+      ]
+    },
+    {
+      "id": "kuwait",
+      "name": "Kuwait",
+      "mapName": "Kuwait",
+      "aliases": [
+        "Kuwait",
+        "State of Kuwait",
+        "KW",
+        "Dawlat al-Kuwait"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "KW",
+      "land_borders": [
+        "iraq",
+        "saudi-arabia"
       ],
       "maritime_links": []
     },
@@ -770,14 +1896,41 @@
       "mapName": "Kyrgyzstan",
       "aliases": [
         "Kyrgyzstan",
-        "Kyrgyz Republic"
+        "Kyrgyz Republic",
+        "KG",
+        "Киргизия",
+        "Кыргыз Республикасы",
+        "Kyrgyz Respublikasy"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "KG",
       "land_borders": [
         "china",
         "kazakhstan",
+        "tajikistan",
         "uzbekistan"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "laos",
+      "name": "Laos",
+      "mapName": "Laos",
+      "aliases": [
+        "Laos",
+        "Lao People's Democratic Republic",
+        "LA",
+        "Lao",
+        "Sathalanalat Paxathipatai Paxaxon Lao"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "LA",
+      "land_borders": [
+        "cambodia",
+        "china",
+        "myanmar",
+        "thailand",
+        "vietnam"
       ],
       "maritime_links": []
     },
@@ -786,7 +1939,10 @@
       "name": "Latvia",
       "mapName": "Latvia",
       "aliases": [
-        "Latvia"
+        "Latvia",
+        "Republic of Latvia",
+        "LV",
+        "Latvijas Republika"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "LV",
@@ -803,9 +1959,12 @@
       "name": "Lebanon",
       "mapName": "Lebanon",
       "aliases": [
-        "Lebanon"
+        "Lebanon",
+        "Lebanese Republic",
+        "LB",
+        "Al-Jumhūrīyah Al-Libnānīyah"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "LB",
       "land_borders": [
         "israel",
@@ -816,17 +1975,77 @@
       ]
     },
     {
+      "id": "lesotho",
+      "name": "Lesotho",
+      "mapName": "Lesotho",
+      "aliases": [
+        "Lesotho",
+        "Kingdom of Lesotho",
+        "LS",
+        "Muso oa Lesotho"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "LS",
+      "land_borders": [
+        "south-africa"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "liberia",
+      "name": "Liberia",
+      "mapName": "Liberia",
+      "aliases": [
+        "Liberia",
+        "Republic of Liberia",
+        "LR"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "LR",
+      "land_borders": [
+        "guinea",
+        "ivory-coast",
+        "sierra-leone"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "libya",
       "name": "Libya",
       "mapName": "Libya",
       "aliases": [
-        "Libya"
+        "Libya",
+        "State of Libya",
+        "LY",
+        "Dawlat Libya"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "LY",
       "land_borders": [
+        "algeria",
+        "chad",
         "egypt",
-        "sudan"
+        "niger",
+        "sudan",
+        "tunisia"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "liechtenstein",
+      "name": "Liechtenstein",
+      "mapName": "Liechtenstein",
+      "aliases": [
+        "Liechtenstein",
+        "Principality of Liechtenstein",
+        "LI",
+        "Fürstentum Liechtenstein"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "LI",
+      "land_borders": [
+        "austria",
+        "switzerland"
       ],
       "maritime_links": []
     },
@@ -835,7 +2054,10 @@
       "name": "Lithuania",
       "mapName": "Lithuania",
       "aliases": [
-        "Lithuania"
+        "Lithuania",
+        "Republic of Lithuania",
+        "LT",
+        "Lietuvos Respublika"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "LT",
@@ -852,7 +2074,12 @@
       "name": "Luxembourg",
       "mapName": "Luxembourg",
       "aliases": [
-        "Luxembourg"
+        "Luxembourg",
+        "Grand Duchy of Luxembourg",
+        "LU",
+        "Grand-Duché de Luxembourg",
+        "Großherzogtum Luxemburg",
+        "Groussherzogtum Lëtzebuerg"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "LU",
@@ -870,7 +2097,10 @@
       "aliases": [
         "North Macedonia",
         "Macedonia",
-        "FYROM"
+        "FYROM",
+        "Republic of North Macedonia",
+        "MK",
+        "Република Северна Македонија"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "MK",
@@ -878,7 +2108,6 @@
         "albania",
         "bulgaria",
         "greece",
-        "kosovo",
         "serbia"
       ],
       "maritime_links": []
@@ -888,13 +2117,203 @@
       "name": "Madagascar",
       "mapName": "Madagascar",
       "aliases": [
-        "Madagascar"
+        "Madagascar",
+        "Republic of Madagascar",
+        "MG",
+        "Repoblikan'i Madagasikara",
+        "République de Madagascar"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "MG",
       "land_borders": [],
       "maritime_links": [
+        "comoros",
+        "mauritius",
         "mozambique"
+      ]
+    },
+    {
+      "id": "malawi",
+      "name": "Malawi",
+      "mapName": "Malawi",
+      "aliases": [
+        "Malawi",
+        "Republic of Malawi",
+        "MW"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "MW",
+      "land_borders": [
+        "mozambique",
+        "tanzania",
+        "zambia"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "malaysia",
+      "name": "Malaysia",
+      "mapName": "Malaysia",
+      "aliases": [
+        "Malaysia",
+        "MY"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "MY",
+      "land_borders": [
+        "brunei",
+        "indonesia",
+        "thailand"
+      ],
+      "maritime_links": [
+        "singapore"
+      ]
+    },
+    {
+      "id": "maldives",
+      "name": "Maldives",
+      "mapName": "Maldives",
+      "aliases": [
+        "Maldives",
+        "Republic of the Maldives",
+        "MV",
+        "Maldive Islands",
+        "Dhivehi Raajjeyge Jumhooriyya"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "MV",
+      "land_borders": [],
+      "maritime_links": [
+        "sri-lanka"
+      ]
+    },
+    {
+      "id": "mali",
+      "name": "Mali",
+      "mapName": "Mali",
+      "aliases": [
+        "Mali",
+        "Republic of Mali",
+        "ML",
+        "République du Mali"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "ML",
+      "land_borders": [
+        "algeria",
+        "burkina-faso",
+        "guinea",
+        "ivory-coast",
+        "mauritania",
+        "niger",
+        "senegal"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "malta",
+      "name": "Malta",
+      "mapName": "Malta",
+      "aliases": [
+        "Malta",
+        "Republic of Malta",
+        "MT",
+        "Repubblika ta' Malta"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "MT",
+      "land_borders": [],
+      "maritime_links": [
+        "tunisia"
+      ]
+    },
+    {
+      "id": "marshall-islands",
+      "name": "Marshall Islands",
+      "mapName": "Marshall Is.",
+      "aliases": [
+        "Marshall Islands",
+        "Republic of the Marshall Islands",
+        "MH",
+        "Aolepān Aorōkin M̧ajeļ"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "MH",
+      "land_borders": [],
+      "maritime_links": [
+        "nauru"
+      ]
+    },
+    {
+      "id": "mauritania",
+      "name": "Mauritania",
+      "mapName": "Mauritania",
+      "aliases": [
+        "Mauritania",
+        "Islamic Republic of Mauritania",
+        "MR"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "MR",
+      "land_borders": [
+        "algeria",
+        "mali",
+        "senegal"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "mauritius",
+      "name": "Mauritius",
+      "mapName": "Mauritius",
+      "aliases": [
+        "Mauritius",
+        "Republic of Mauritius",
+        "MU",
+        "République de Maurice"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "MU",
+      "land_borders": [],
+      "maritime_links": [
+        "madagascar"
+      ]
+    },
+    {
+      "id": "mexico",
+      "name": "Mexico",
+      "mapName": "Mexico",
+      "aliases": [
+        "Mexico",
+        "United Mexican States",
+        "MX",
+        "Mexicanos",
+        "Estados Unidos Mexicanos"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "MX",
+      "land_borders": [
+        "belize",
+        "guatemala",
+        "united-states"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "micronesia",
+      "name": "Micronesia",
+      "mapName": "Micronesia",
+      "aliases": [
+        "Micronesia",
+        "Federated States of Micronesia",
+        "FM",
+        "Micronesia, Federated States of"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "FM",
+      "land_borders": [],
+      "maritime_links": [
+        "nauru"
       ]
     },
     {
@@ -902,7 +2321,11 @@
       "name": "Moldova",
       "mapName": "Moldova",
       "aliases": [
-        "Moldova"
+        "Moldova",
+        "Republic of Moldova",
+        "MD",
+        "Moldova, Republic of",
+        "Republica Moldova"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "MD",
@@ -913,13 +2336,31 @@
       "maritime_links": []
     },
     {
+      "id": "monaco",
+      "name": "Monaco",
+      "mapName": "Monaco",
+      "aliases": [
+        "Monaco",
+        "Principality of Monaco",
+        "MC",
+        "Principauté de Monaco"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "MC",
+      "land_borders": [
+        "france"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "mongolia",
       "name": "Mongolia",
       "mapName": "Mongolia",
       "aliases": [
-        "Mongolia"
+        "Mongolia",
+        "MN"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "MN",
       "land_borders": [
         "china",
@@ -932,7 +2373,9 @@
       "name": "Montenegro",
       "mapName": "Montenegro",
       "aliases": [
-        "Montenegro"
+        "Montenegro",
+        "ME",
+        "Crna Gora"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "ME",
@@ -940,8 +2383,24 @@
         "albania",
         "bosnia-and-herz",
         "croatia",
-        "kosovo",
         "serbia"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "morocco",
+      "name": "Morocco",
+      "mapName": "Morocco",
+      "aliases": [
+        "Morocco",
+        "Kingdom of Morocco",
+        "MA",
+        "Al-Mamlakah al-Maġribiyah"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "MA",
+      "land_borders": [
+        "algeria"
       ],
       "maritime_links": []
     },
@@ -950,16 +2409,105 @@
       "name": "Mozambique",
       "mapName": "Mozambique",
       "aliases": [
-        "Mozambique"
+        "Mozambique",
+        "Republic of Mozambique",
+        "MZ",
+        "República de Moçambique"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "MZ",
       "land_borders": [
-        "tanzania"
+        "eswatini",
+        "malawi",
+        "south-africa",
+        "tanzania",
+        "zambia",
+        "zimbabwe"
       ],
       "maritime_links": [
         "madagascar"
       ]
+    },
+    {
+      "id": "myanmar",
+      "name": "Myanmar",
+      "mapName": "Myanmar",
+      "aliases": [
+        "Myanmar",
+        "Republic of the Union of Myanmar",
+        "MM",
+        "Burma",
+        "Pyidaunzu Thanmăda Myăma Nainngandaw"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "MM",
+      "land_borders": [
+        "bangladesh",
+        "china",
+        "india",
+        "laos",
+        "thailand"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "namibia",
+      "name": "Namibia",
+      "mapName": "Namibia",
+      "aliases": [
+        "Namibia",
+        "Republic of Namibia",
+        "NA",
+        "Namibië"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "NA",
+      "land_borders": [
+        "angola",
+        "botswana",
+        "south-africa",
+        "zambia"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "nauru",
+      "name": "Nauru",
+      "mapName": "Nauru",
+      "aliases": [
+        "Nauru",
+        "Republic of Nauru",
+        "NR",
+        "Naoero",
+        "Pleasant Island",
+        "Ripublik Naoero"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "NR",
+      "land_borders": [],
+      "maritime_links": [
+        "marshall-islands",
+        "micronesia",
+        "solomon-islands"
+      ]
+    },
+    {
+      "id": "nepal",
+      "name": "Nepal",
+      "mapName": "Nepal",
+      "aliases": [
+        "Nepal",
+        "Federal Democratic Republic of Nepal",
+        "NP",
+        "Loktāntrik Ganatantra Nepāl"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "NP",
+      "land_borders": [
+        "china",
+        "india"
+      ],
+      "maritime_links": []
     },
     {
       "id": "netherlands",
@@ -968,7 +2516,10 @@
       "aliases": [
         "Netherlands",
         "Holland",
-        "The Netherlands"
+        "The Netherlands",
+        "Kingdom of the Netherlands",
+        "NL",
+        "Nederland"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "NL",
@@ -983,7 +2534,9 @@
       "name": "New Zealand",
       "mapName": "New Zealand",
       "aliases": [
-        "New Zealand"
+        "New Zealand",
+        "NZ",
+        "Aotearoa"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "NZ",
@@ -993,18 +2546,103 @@
       ]
     },
     {
+      "id": "nicaragua",
+      "name": "Nicaragua",
+      "mapName": "Nicaragua",
+      "aliases": [
+        "Nicaragua",
+        "Republic of Nicaragua",
+        "NI",
+        "República de Nicaragua"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "NI",
+      "land_borders": [
+        "costa-rica",
+        "honduras"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "niger",
+      "name": "Niger",
+      "mapName": "Niger",
+      "aliases": [
+        "Niger",
+        "Republic of Niger",
+        "NE",
+        "Nijar"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "NE",
+      "land_borders": [
+        "algeria",
+        "benin",
+        "burkina-faso",
+        "chad",
+        "libya",
+        "mali",
+        "nigeria"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "nigeria",
+      "name": "Nigeria",
+      "mapName": "Nigeria",
+      "aliases": [
+        "Nigeria",
+        "Federal Republic of Nigeria",
+        "NG",
+        "Nijeriya",
+        "Naíjíríà"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "NG",
+      "land_borders": [
+        "benin",
+        "cameroon",
+        "chad",
+        "niger"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "niue",
+      "name": "Niue",
+      "mapName": "Niue",
+      "aliases": [
+        "Niue",
+        "NU"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "NU",
+      "land_borders": [],
+      "maritime_links": [
+        "cook-islands",
+        "samoa",
+        "tonga"
+      ]
+    },
+    {
       "id": "north-korea",
       "name": "North Korea",
       "mapName": "North Korea",
       "aliases": [
         "North Korea",
-        "DPRK"
+        "DPRK",
+        "Democratic People's Republic of Korea",
+        "KP",
+        "조선민주주의인민공화국",
+        "Chosŏn Minjujuŭi Inmin Konghwaguk",
+        "Korea, Democratic People's Republic of",
+        "북한",
+        "북조선"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "KP",
       "land_borders": [
         "china",
-        "north-korea",
         "russia",
         "south-korea"
       ],
@@ -1016,7 +2654,12 @@
       "mapName": "Norway",
       "aliases": [
         "Norway",
-        "Norge"
+        "Norge",
+        "Kingdom of Norway",
+        "NO",
+        "Noreg",
+        "Kongeriket Norge",
+        "Kongeriket Noreg"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "NO",
@@ -1030,13 +2673,36 @@
       ]
     },
     {
+      "id": "oman",
+      "name": "Oman",
+      "mapName": "Oman",
+      "aliases": [
+        "Oman",
+        "Sultanate of Oman",
+        "OM",
+        "Salṭanat ʻUmān"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "OM",
+      "land_borders": [
+        "saudi-arabia",
+        "united-arab-emirates",
+        "yemen"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "pakistan",
       "name": "Pakistan",
       "mapName": "Pakistan",
       "aliases": [
-        "Pakistan"
+        "Pakistan",
+        "Islamic Republic of Pakistan",
+        "PK",
+        "Pākistān",
+        "Islāmī Jumhūriya'eh Pākistān"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "PK",
       "land_borders": [
         "afghanistan",
@@ -1047,6 +2713,23 @@
       "maritime_links": []
     },
     {
+      "id": "palau",
+      "name": "Palau",
+      "mapName": "Palau",
+      "aliases": [
+        "Palau",
+        "Republic of Palau",
+        "PW",
+        "Beluu er a Belau"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "PW",
+      "land_borders": [],
+      "maritime_links": [
+        "philippines"
+      ]
+    },
+    {
       "id": "palestine",
       "name": "Palestine",
       "mapName": "Palestine",
@@ -1054,11 +2737,16 @@
         "Palestine",
         "Gaza",
         "Gaza Strip",
-        "Palestinian Territories"
+        "Palestinian Territories",
+        "State of Palestine",
+        "PS",
+        "Palestine, State of",
+        "Dawlat Filasṭin"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "PS",
       "land_borders": [
+        "egypt",
         "israel",
         "jordan"
       ],
@@ -1071,7 +2759,10 @@
       "name": "Panama",
       "mapName": "Panama",
       "aliases": [
-        "Panama"
+        "Panama",
+        "Republic of Panama",
+        "PA",
+        "República de Panamá"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "PA",
@@ -1079,7 +2770,89 @@
         "colombia",
         "costa-rica"
       ],
+      "maritime_links": [
+        "jamaica"
+      ]
+    },
+    {
+      "id": "papua-new-guinea",
+      "name": "Papua New Guinea",
+      "mapName": "Papua New Guinea",
+      "aliases": [
+        "Papua New Guinea",
+        "PNG",
+        "Independent State of Papua New Guinea",
+        "PG",
+        "Independen Stet bilong Papua Niugini"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "PG",
+      "land_borders": [
+        "indonesia"
+      ],
+      "maritime_links": [
+        "australia",
+        "solomon-islands"
+      ]
+    },
+    {
+      "id": "paraguay",
+      "name": "Paraguay",
+      "mapName": "Paraguay",
+      "aliases": [
+        "Paraguay",
+        "Republic of Paraguay",
+        "PY",
+        "República del Paraguay",
+        "Tetã Paraguái"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "PY",
+      "land_borders": [
+        "argentina",
+        "bolivia",
+        "brazil"
+      ],
       "maritime_links": []
+    },
+    {
+      "id": "peru",
+      "name": "Peru",
+      "mapName": "Peru",
+      "aliases": [
+        "Peru",
+        "Republic of Peru",
+        "PE",
+        "República del Perú"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "PE",
+      "land_borders": [
+        "bolivia",
+        "brazil",
+        "chile",
+        "colombia",
+        "ecuador"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "philippines",
+      "name": "Philippines",
+      "mapName": "Philippines",
+      "aliases": [
+        "Philippines",
+        "Republic of the Philippines",
+        "PH",
+        "Repúblika ng Pilipinas"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "PH",
+      "land_borders": [],
+      "maritime_links": [
+        "brunei",
+        "palau"
+      ]
     },
     {
       "id": "poland",
@@ -1087,7 +2860,10 @@
       "mapName": "Poland",
       "aliases": [
         "Poland",
-        "Polska"
+        "Polska",
+        "Republic of Poland",
+        "PL",
+        "Rzeczpospolita Polska"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "PL",
@@ -1107,7 +2883,11 @@
       "name": "Portugal",
       "mapName": "Portugal",
       "aliases": [
-        "Portugal"
+        "Portugal",
+        "Portuguese Republic",
+        "PT",
+        "Portuguesa",
+        "República Portuguesa"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "PT",
@@ -1117,12 +2897,34 @@
       "maritime_links": []
     },
     {
+      "id": "qatar",
+      "name": "Qatar",
+      "mapName": "Qatar",
+      "aliases": [
+        "Qatar",
+        "State of Qatar",
+        "QA",
+        "Dawlat Qaṭar"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "QA",
+      "land_borders": [
+        "saudi-arabia"
+      ],
+      "maritime_links": [
+        "bahrain"
+      ]
+    },
+    {
       "id": "romania",
       "name": "Romania",
       "mapName": "Romania",
       "aliases": [
         "Romania",
-        "Roumania"
+        "Roumania",
+        "RO",
+        "Rumania",
+        "România"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "RO",
@@ -1141,7 +2943,9 @@
       "mapName": "Russia",
       "aliases": [
         "Russia",
-        "Russian Federation"
+        "Russian Federation",
+        "RU",
+        "Российская Федерация"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "RU",
@@ -1166,11 +2970,183 @@
       ]
     },
     {
+      "id": "rwanda",
+      "name": "Rwanda",
+      "mapName": "Rwanda",
+      "aliases": [
+        "Rwanda",
+        "Republic of Rwanda",
+        "RW",
+        "Repubulika y'u Rwanda",
+        "République du Rwanda"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "RW",
+      "land_borders": [
+        "burundi",
+        "dr-congo",
+        "tanzania",
+        "uganda"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "saint-kitts-and-nevis",
+      "name": "Saint Kitts and Nevis",
+      "mapName": "St. Kitts and Nevis",
+      "aliases": [
+        "Saint Kitts and Nevis",
+        "KN"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "KN",
+      "land_borders": [],
+      "maritime_links": [
+        "antigua-and-barbuda"
+      ]
+    },
+    {
+      "id": "saint-lucia",
+      "name": "Saint Lucia",
+      "mapName": "Saint Lucia",
+      "aliases": [
+        "Saint Lucia",
+        "LC"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "LC",
+      "land_borders": [],
+      "maritime_links": [
+        "barbados",
+        "dominica",
+        "saint-vincent-and-the-grenadines"
+      ]
+    },
+    {
+      "id": "saint-vincent-and-the-grenadines",
+      "name": "Saint Vincent and the Grenadines",
+      "mapName": "St. Vin. and Gren.",
+      "aliases": [
+        "Saint Vincent and the Grenadines",
+        "VC"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "VC",
+      "land_borders": [],
+      "maritime_links": [
+        "grenada",
+        "saint-lucia"
+      ]
+    },
+    {
+      "id": "samoa",
+      "name": "Samoa",
+      "mapName": "Samoa",
+      "aliases": [
+        "Samoa",
+        "Independent State of Samoa",
+        "WS",
+        "Malo Saʻoloto Tutoʻatasi o Sāmoa"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "WS",
+      "land_borders": [],
+      "maritime_links": [
+        "kiribati",
+        "niue"
+      ]
+    },
+    {
+      "id": "san-marino",
+      "name": "San Marino",
+      "mapName": "San Marino",
+      "aliases": [
+        "San Marino",
+        "Most Serene Republic of San Marino",
+        "SM",
+        "Republic of San Marino",
+        "Repubblica di San Marino"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SM",
+      "land_borders": [
+        "italy"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "sao-tome-and-principe",
+      "name": "São Tomé and Príncipe",
+      "mapName": "São Tomé and Principe",
+      "aliases": [
+        "São Tomé and Príncipe",
+        "ST",
+        "Sao Tome and Principe"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "ST",
+      "land_borders": [],
+      "maritime_links": [
+        "equatorial-guinea"
+      ]
+    },
+    {
+      "id": "saudi-arabia",
+      "name": "Saudi Arabia",
+      "mapName": "Saudi Arabia",
+      "aliases": [
+        "Saudi Arabia",
+        "Kingdom of Saudi Arabia",
+        "Saudi",
+        "SA",
+        "Al-Mamlakah al-‘Arabiyyah as-Su‘ūdiyyah"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SA",
+      "land_borders": [
+        "iraq",
+        "jordan",
+        "kuwait",
+        "oman",
+        "qatar",
+        "united-arab-emirates",
+        "yemen"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "senegal",
+      "name": "Senegal",
+      "mapName": "Senegal",
+      "aliases": [
+        "Senegal",
+        "Republic of Senegal",
+        "SN",
+        "République du Sénégal"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SN",
+      "land_borders": [
+        "gambia",
+        "guinea",
+        "guinea-bissau",
+        "mali",
+        "mauritania"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "serbia",
       "name": "Serbia",
       "mapName": "Serbia",
       "aliases": [
-        "Serbia"
+        "Serbia",
+        "Republic of Serbia",
+        "RS",
+        "Srbija",
+        "Republika Srbija",
+        "Србија",
+        "Република Србија"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "RS",
@@ -1179,7 +3155,6 @@
         "bulgaria",
         "croatia",
         "hungary",
-        "kosovo",
         "macedonia",
         "montenegro",
         "romania"
@@ -1187,12 +3162,68 @@
       "maritime_links": []
     },
     {
+      "id": "seychelles",
+      "name": "Seychelles",
+      "mapName": "Seychelles",
+      "aliases": [
+        "Seychelles",
+        "Republic of Seychelles",
+        "SC",
+        "Repiblik Sesel",
+        "République des Seychelles"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SC",
+      "land_borders": [],
+      "maritime_links": [
+        "somalia"
+      ]
+    },
+    {
+      "id": "sierra-leone",
+      "name": "Sierra Leone",
+      "mapName": "Sierra Leone",
+      "aliases": [
+        "Sierra Leone",
+        "Republic of Sierra Leone",
+        "SL"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SL",
+      "land_borders": [
+        "guinea",
+        "liberia"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "singapore",
+      "name": "Singapore",
+      "mapName": "Singapore",
+      "aliases": [
+        "Singapore",
+        "Republic of Singapore",
+        "SG",
+        "Singapura",
+        "Republik Singapura",
+        "新加坡共和国"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SG",
+      "land_borders": [],
+      "maritime_links": [
+        "malaysia"
+      ]
+    },
+    {
       "id": "slovakia",
       "name": "Slovakia",
       "mapName": "Slovakia",
       "aliases": [
         "Slovakia",
-        "Slovak Republic"
+        "Slovak Republic",
+        "SK",
+        "Slovenská republika"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "SK",
@@ -1210,7 +3241,10 @@
       "name": "Slovenia",
       "mapName": "Slovenia",
       "aliases": [
-        "Slovenia"
+        "Slovenia",
+        "Republic of Slovenia",
+        "SI",
+        "Republika Slovenija"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "SI",
@@ -1223,13 +3257,79 @@
       "maritime_links": []
     },
     {
+      "id": "solomon-islands",
+      "name": "Solomon Islands",
+      "mapName": "Solomon Is.",
+      "aliases": [
+        "Solomon Islands",
+        "SB"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SB",
+      "land_borders": [],
+      "maritime_links": [
+        "nauru",
+        "papua-new-guinea",
+        "vanuatu"
+      ]
+    },
+    {
+      "id": "somalia",
+      "name": "Somalia",
+      "mapName": "Somalia",
+      "aliases": [
+        "Somalia",
+        "Federal Republic of Somalia",
+        "SO",
+        "aṣ-Ṣūmāl",
+        "Jamhuuriyadda Federaalka Soomaaliya",
+        "Jumhūriyyat aṣ-Ṣūmāl al-Fiderāliyya"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SO",
+      "land_borders": [
+        "ethiopia",
+        "kenya"
+      ],
+      "maritime_links": [
+        "seychelles"
+      ]
+    },
+    {
+      "id": "south-africa",
+      "name": "South Africa",
+      "mapName": "South Africa",
+      "aliases": [
+        "South Africa",
+        "Republic of South Africa",
+        "ZA",
+        "RSA",
+        "Suid-Afrika"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "ZA",
+      "land_borders": [
+        "botswana",
+        "eswatini",
+        "lesotho",
+        "mozambique",
+        "namibia",
+        "zimbabwe"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "south-korea",
       "name": "South Korea",
       "mapName": "South Korea",
       "aliases": [
         "South Korea",
         "Korea",
-        "Republic of Korea"
+        "Republic of Korea",
+        "KR",
+        "Korea, Republic of",
+        "남한",
+        "남조선"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "KR",
@@ -1237,8 +3337,30 @@
         "north-korea"
       ],
       "maritime_links": [
+        "indonesia",
         "japan"
       ]
+    },
+    {
+      "id": "south-sudan",
+      "name": "South Sudan",
+      "mapName": "S. Sudan",
+      "aliases": [
+        "South Sudan",
+        "Republic of South Sudan",
+        "SS"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SS",
+      "land_borders": [
+        "central-african-republic",
+        "dr-congo",
+        "ethiopia",
+        "kenya",
+        "sudan",
+        "uganda"
+      ],
+      "maritime_links": []
     },
     {
       "id": "spain",
@@ -1246,28 +3368,80 @@
       "mapName": "Spain",
       "aliases": [
         "Spain",
-        "España"
+        "España",
+        "Kingdom of Spain",
+        "ES",
+        "Reino de España"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "ES",
       "land_borders": [
+        "andorra",
         "france",
         "portugal"
       ],
       "maritime_links": []
     },
     {
+      "id": "sri-lanka",
+      "name": "Sri Lanka",
+      "mapName": "Sri Lanka",
+      "aliases": [
+        "Sri Lanka",
+        "LK",
+        "ilaṅkai"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "LK",
+      "land_borders": [],
+      "maritime_links": [
+        "india",
+        "maldives"
+      ]
+    },
+    {
       "id": "sudan",
       "name": "Sudan",
       "mapName": "Sudan",
       "aliases": [
-        "Sudan"
+        "Sudan",
+        "Republic of the Sudan",
+        "SD",
+        "Jumhūrīyat as-Sūdān"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "SD",
       "land_borders": [
+        "central-african-republic",
+        "chad",
         "egypt",
-        "libya"
+        "eritrea",
+        "ethiopia",
+        "libya",
+        "south-sudan"
+      ],
+      "maritime_links": [
+        "tanzania"
+      ]
+    },
+    {
+      "id": "suriname",
+      "name": "Suriname",
+      "mapName": "Suriname",
+      "aliases": [
+        "Suriname",
+        "Republic of Suriname",
+        "SR",
+        "Sarnam",
+        "Sranangron",
+        "Republiek Suriname"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "SR",
+      "land_borders": [
+        "brazil",
+        "france",
+        "guyana"
       ],
       "maritime_links": []
     },
@@ -1277,7 +3451,10 @@
       "mapName": "Sweden",
       "aliases": [
         "Sweden",
-        "Sverige"
+        "Sverige",
+        "Kingdom of Sweden",
+        "SE",
+        "Konungariket Sverige"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "SE",
@@ -1293,7 +3470,13 @@
       "mapName": "Switzerland",
       "aliases": [
         "Switzerland",
-        "Swiss"
+        "Swiss",
+        "Swiss Confederation",
+        "CH",
+        "Schweiz",
+        "Suisse",
+        "Svizzera",
+        "Svizra"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "CH",
@@ -1301,7 +3484,8 @@
         "austria",
         "france",
         "germany",
-        "italy"
+        "italy",
+        "liechtenstein"
       ],
       "maritime_links": []
     },
@@ -1310,9 +3494,12 @@
       "name": "Syria",
       "mapName": "Syria",
       "aliases": [
-        "Syria"
+        "Syria",
+        "Syrian Arab Republic",
+        "SY",
+        "Al-Jumhūrīyah Al-ʻArabīyah As-Sūrīyah"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "SY",
       "land_borders": [
         "iraq",
@@ -1326,18 +3513,135 @@
       ]
     },
     {
+      "id": "tajikistan",
+      "name": "Tajikistan",
+      "mapName": "Tajikistan",
+      "aliases": [
+        "Tajikistan",
+        "Republic of Tajikistan",
+        "TJ",
+        "Toçikiston",
+        "Ҷумҳурии Тоҷикистон",
+        "Çumhuriyi Toçikiston"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "TJ",
+      "land_borders": [
+        "afghanistan",
+        "china",
+        "kyrgyzstan",
+        "uzbekistan"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "tanzania",
       "name": "Tanzania",
       "mapName": "Tanzania",
       "aliases": [
-        "Tanzania"
+        "Tanzania",
+        "United Republic of Tanzania",
+        "TZ",
+        "Tanzania, United Republic of",
+        "Jamhuri ya Muungano wa Tanzania"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "TZ",
       "land_borders": [
-        "mozambique"
+        "burundi",
+        "dr-congo",
+        "kenya",
+        "malawi",
+        "mozambique",
+        "rwanda",
+        "uganda",
+        "zambia"
+      ],
+      "maritime_links": [
+        "sudan"
+      ]
+    },
+    {
+      "id": "thailand",
+      "name": "Thailand",
+      "mapName": "Thailand",
+      "aliases": [
+        "Thailand",
+        "Kingdom of Thailand",
+        "TH",
+        "Prathet",
+        "Thai",
+        "ราชอาณาจักรไทย",
+        "Ratcha Anachak Thai"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "TH",
+      "land_borders": [
+        "cambodia",
+        "laos",
+        "malaysia",
+        "myanmar"
       ],
       "maritime_links": []
+    },
+    {
+      "id": "timor-leste",
+      "name": "Timor-Leste",
+      "mapName": "Timor-Leste",
+      "aliases": [
+        "Timor-Leste",
+        "Democratic Republic of Timor-Leste",
+        "TL",
+        "East Timor",
+        "Timor",
+        "República Democrática de Timor-Leste",
+        "Repúblika Demokrátika Timór-Leste",
+        "Timór Lorosa'e",
+        "Timor Lorosae"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "TL",
+      "land_borders": [
+        "indonesia"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "togo",
+      "name": "Togo",
+      "mapName": "Togo",
+      "aliases": [
+        "Togo",
+        "Togolese Republic",
+        "TG",
+        "Togolese",
+        "République Togolaise"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "TG",
+      "land_borders": [
+        "benin",
+        "burkina-faso",
+        "ghana"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "tonga",
+      "name": "Tonga",
+      "mapName": "Tonga",
+      "aliases": [
+        "Tonga",
+        "Kingdom of Tonga",
+        "TO"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "TO",
+      "land_borders": [],
+      "maritime_links": [
+        "fiji",
+        "niue"
+      ]
     },
     {
       "id": "trinidad-and-tobago",
@@ -1345,13 +3649,37 @@
       "mapName": "Trinidad and Tobago",
       "aliases": [
         "Trinidad and Tobago",
-        "Trinidad"
+        "Trinidad",
+        "Republic of Trinidad and Tobago",
+        "TT"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "TT",
       "land_borders": [],
       "maritime_links": [
+        "grenada",
         "venezuela"
+      ]
+    },
+    {
+      "id": "tunisia",
+      "name": "Tunisia",
+      "mapName": "Tunisia",
+      "aliases": [
+        "Tunisia",
+        "Tunisian Republic",
+        "TN",
+        "Republic of Tunisia",
+        "al-Jumhūriyyah at-Tūnisiyyah"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "TN",
+      "land_borders": [
+        "algeria",
+        "libya"
+      ],
+      "maritime_links": [
+        "malta"
       ]
     },
     {
@@ -1361,12 +3689,17 @@
       "aliases": [
         "Turkey",
         "Türkiye",
-        "Turkiye"
+        "Turkiye",
+        "Republic of Türkiye",
+        "TR",
+        "Republic of Turkey",
+        "Türkiye Cumhuriyeti"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "TR",
       "land_borders": [
         "armenia",
+        "azerbaijan",
         "bulgaria",
         "georgia",
         "greece",
@@ -1384,9 +3717,10 @@
       "name": "Turkmenistan",
       "mapName": "Turkmenistan",
       "aliases": [
-        "Turkmenistan"
+        "Turkmenistan",
+        "TM"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "TM",
       "land_borders": [
         "afghanistan",
@@ -1397,11 +3731,49 @@
       "maritime_links": []
     },
     {
+      "id": "tuvalu",
+      "name": "Tuvalu",
+      "mapName": "Tuvalu",
+      "aliases": [
+        "Tuvalu",
+        "TV"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "TV",
+      "land_borders": [],
+      "maritime_links": [
+        "fiji"
+      ]
+    },
+    {
+      "id": "uganda",
+      "name": "Uganda",
+      "mapName": "Uganda",
+      "aliases": [
+        "Uganda",
+        "Republic of Uganda",
+        "UG",
+        "Jamhuri ya Uganda"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "UG",
+      "land_borders": [
+        "dr-congo",
+        "kenya",
+        "rwanda",
+        "south-sudan",
+        "tanzania"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "ukraine",
       "name": "Ukraine",
       "mapName": "Ukraine",
       "aliases": [
-        "Ukraine"
+        "Ukraine",
+        "UA",
+        "Ukrayina"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "UA",
@@ -1417,6 +3789,24 @@
       "maritime_links": []
     },
     {
+      "id": "united-arab-emirates",
+      "name": "United Arab Emirates",
+      "mapName": "United Arab Emirates",
+      "aliases": [
+        "United Arab Emirates",
+        "AE",
+        "UAE",
+        "Emirates"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "AE",
+      "land_borders": [
+        "oman",
+        "saudi-arabia"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "united-kingdom",
       "name": "United Kingdom",
       "mapName": "United Kingdom",
@@ -1428,7 +3818,8 @@
         "Britain",
         "England",
         "Scotland",
-        "Wales"
+        "Wales",
+        "GB"
       ],
       "inDailyPool": true,
       "iso3166Alpha2": "GB",
@@ -1441,19 +3832,98 @@
       ]
     },
     {
+      "id": "united-states",
+      "name": "United States",
+      "mapName": "United States of America",
+      "aliases": [
+        "United States",
+        "United States of America",
+        "US",
+        "USA"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "US",
+      "land_borders": [
+        "canada",
+        "mexico"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "uruguay",
+      "name": "Uruguay",
+      "mapName": "Uruguay",
+      "aliases": [
+        "Uruguay",
+        "Oriental Republic of Uruguay",
+        "UY",
+        "República Oriental del Uruguay"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "UY",
+      "land_borders": [
+        "argentina",
+        "brazil"
+      ],
+      "maritime_links": []
+    },
+    {
       "id": "uzbekistan",
       "name": "Uzbekistan",
       "mapName": "Uzbekistan",
       "aliases": [
-        "Uzbekistan"
+        "Uzbekistan",
+        "Republic of Uzbekistan",
+        "UZ",
+        "O‘zbekiston Respublikasi",
+        "Ўзбекистон Республикаси"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "UZ",
       "land_borders": [
         "afghanistan",
         "kazakhstan",
         "kyrgyzstan",
+        "tajikistan",
         "turkmenistan"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "vanuatu",
+      "name": "Vanuatu",
+      "mapName": "Vanuatu",
+      "aliases": [
+        "Vanuatu",
+        "Republic of Vanuatu",
+        "VU",
+        "Ripablik blong Vanuatu",
+        "République de Vanuatu"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "VU",
+      "land_borders": [],
+      "maritime_links": [
+        "fiji",
+        "solomon-islands"
+      ]
+    },
+    {
+      "id": "vatican-city",
+      "name": "Vatican City",
+      "mapName": "Vatican",
+      "aliases": [
+        "Vatican City",
+        "Vatican City State",
+        "VA",
+        "Holy See (Vatican City State)",
+        "Vatican",
+        "Stato della Città del Vaticano"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "VA",
+      "land_borders": [
+        "italy"
       ],
       "maritime_links": []
     },
@@ -1462,16 +3932,102 @@
       "name": "Venezuela",
       "mapName": "Venezuela",
       "aliases": [
-        "Venezuela"
+        "Venezuela",
+        "Bolivarian Republic of Venezuela",
+        "VE",
+        "Venezuela, Bolivarian Republic of",
+        "República Bolivariana de Venezuela"
       ],
-      "inDailyPool": false,
+      "inDailyPool": true,
       "iso3166Alpha2": "VE",
       "land_borders": [
-        "colombia"
+        "brazil",
+        "colombia",
+        "guyana"
       ],
       "maritime_links": [
         "trinidad-and-tobago"
       ]
+    },
+    {
+      "id": "vietnam",
+      "name": "Vietnam",
+      "mapName": "Vietnam",
+      "aliases": [
+        "Vietnam",
+        "Socialist Republic of Vietnam",
+        "VN",
+        "Cộng hòa Xã hội chủ nghĩa Việt Nam",
+        "Viet Nam"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "VN",
+      "land_borders": [
+        "cambodia",
+        "china",
+        "laos"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "yemen",
+      "name": "Yemen",
+      "mapName": "Yemen",
+      "aliases": [
+        "Yemen",
+        "Republic of Yemen",
+        "YE",
+        "Yemeni Republic",
+        "al-Jumhūriyyah al-Yamaniyyah"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "YE",
+      "land_borders": [
+        "oman",
+        "saudi-arabia"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "zambia",
+      "name": "Zambia",
+      "mapName": "Zambia",
+      "aliases": [
+        "Zambia",
+        "Republic of Zambia",
+        "ZM"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "ZM",
+      "land_borders": [
+        "angola",
+        "dr-congo",
+        "malawi",
+        "mozambique",
+        "namibia",
+        "tanzania",
+        "zimbabwe"
+      ],
+      "maritime_links": []
+    },
+    {
+      "id": "zimbabwe",
+      "name": "Zimbabwe",
+      "mapName": "Zimbabwe",
+      "aliases": [
+        "Zimbabwe",
+        "Republic of Zimbabwe",
+        "ZW"
+      ],
+      "inDailyPool": true,
+      "iso3166Alpha2": "ZW",
+      "land_borders": [
+        "botswana",
+        "mozambique",
+        "south-africa",
+        "zambia"
+      ],
+      "maritime_links": []
     }
   ]
 }

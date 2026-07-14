@@ -23,14 +23,14 @@ export default function ClassroomPage() {
             <Link href="/tap" className="text-sky-400 hover:underline">
               Tap
             </Link>{" "}
-            for a clue-based warm-up, or{" "}
+            for a clue warm-up, or{" "}
             <Link href="/" className="text-sky-400 hover:underline">
               Sweep
             </Link>{" "}
-            for border geography.
+            to practice country borders.
           </li>
           <li>Students play individually on their devices, or vote as a class.</li>
-          <li>Share spoiler-free score cards — no answers leaked.</li>
+          <li>Share score cards that hide the answers.</li>
         </ol>
       </section>
 

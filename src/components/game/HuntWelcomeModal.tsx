@@ -18,8 +18,8 @@ const STEPS: WelcomeStep[] = [
         <path d="M12 7v4l2.5 2.5" />
       </svg>
     ),
-    title: "Hidden country",
-    hint: "No borders — just satellite imagery.",
+    title: "A country is hidden",
+    hint: "You won't see country lines — only the Earth.",
   },
   {
     icon: (
@@ -28,8 +28,8 @@ const STEPS: WelcomeStep[] = [
         <path d="M12 11v2" />
       </svg>
     ),
-    title: "Tap & measure",
-    hint: "See how many miles away you are.",
+    title: "Tap a guess",
+    hint: "We tell you how many miles away you are.",
   },
   {
     icon: (
@@ -38,7 +38,7 @@ const STEPS: WelcomeStep[] = [
       </svg>
     ),
     title: "Hot or cold",
-    hint: "Each miss reveals a trivia clue.",
+    hint: "Warmer means closer. Each miss also gives a clue.",
   },
   {
     icon: (
@@ -47,7 +47,7 @@ const STEPS: WelcomeStep[] = [
       </svg>
     ),
     title: "Five guesses",
-    hint: "Find it fast for up to 5 points.",
+    hint: "Find it sooner for a higher score.",
   },
 ];
 
@@ -57,13 +57,13 @@ export function HuntWelcomeModal({ onClose }: HuntWelcomeModalProps) {
   return (
     <WelcomeModalShell
       titleId="hunt-welcome-title"
-      title="Hunt the nation"
-      tagline="One secret country. Triangulate with distance and clues."
+      title="Hunt the country"
+      tagline="One secret country. Guess until you find it."
       steps={STEPS}
       footnote={
         unlimited
-          ? "Test mode — replay anytime."
-          : "One hunt per day. Win sooner for a higher score."
+          ? "Test mode — you can play again anytime."
+          : "One Hunt per day. Find it sooner for more points."
       }
       ctaLabel="Start hunting"
       onClose={onClose}

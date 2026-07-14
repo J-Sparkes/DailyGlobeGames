@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "validate-data": "node scripts/validate-data.mjs",
-    "sync-borders": "node scripts/sync-border-graph.mjs"
+    "sync-borders": "node scripts/sync-border-graph.mjs",
+    "connect-islands": "node scripts/connect-island-graph.mjs && npm run sync-borders"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

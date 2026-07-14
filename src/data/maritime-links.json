@@ -1,25 +1,226 @@
 [
-  ["United Kingdom", "France"],
-  ["United Kingdom", "Ireland"],
-  ["Turkey", "Azerbaijan"],
-  ["Egypt", "Palestine"],
-  ["Cyprus", "Turkey"],
-  ["Cyprus", "Greece"],
-  ["Cyprus", "Syria"],
-  ["Cyprus", "Lebanon"],
-  ["Iceland", "Norway"],
-  ["Japan", "South Korea"],
-  ["Japan", "Russia"],
-  ["Madagascar", "Mozambique"],
-  ["New Zealand", "Australia"],
-  ["Australia", "Papua New Guinea"],
-  ["Australia", "Indonesia"],
-  ["Papua New Guinea", "Australia"],
-  ["Indonesia", "Australia"],
-  ["Cuba", "Haiti"],
-  ["Cuba", "Jamaica"],
-  ["Cuba", "Bahamas"],
-  ["Jamaica", "Haiti"],
-  ["Bahamas", "Haiti"],
-  ["Trinidad and Tobago", "Venezuela"]
+  [
+    "Antigua and Barb.",
+    "Dominica"
+  ],
+  [
+    "Antigua and Barb.",
+    "St. Kitts and Nevis"
+  ],
+  [
+    "Australia",
+    "Indonesia"
+  ],
+  [
+    "Australia",
+    "New Zealand"
+  ],
+  [
+    "Australia",
+    "Papua New Guinea"
+  ],
+  [
+    "Azerbaijan",
+    "Turkey"
+  ],
+  [
+    "Bahamas",
+    "Cuba"
+  ],
+  [
+    "Bahamas",
+    "Haiti"
+  ],
+  [
+    "Bahamas",
+    "Iceland"
+  ],
+  [
+    "Bahrain",
+    "Qatar"
+  ],
+  [
+    "Barbados",
+    "Saint Lucia"
+  ],
+  [
+    "Brunei",
+    "Philippines"
+  ],
+  [
+    "Cabo Verde",
+    "Gambia"
+  ],
+  [
+    "Comoros",
+    "Madagascar"
+  ],
+  [
+    "Cook Is.",
+    "Niue"
+  ],
+  [
+    "Cuba",
+    "Haiti"
+  ],
+  [
+    "Cuba",
+    "Jamaica"
+  ],
+  [
+    "Cyprus",
+    "Greece"
+  ],
+  [
+    "Cyprus",
+    "Lebanon"
+  ],
+  [
+    "Cyprus",
+    "Syria"
+  ],
+  [
+    "Cyprus",
+    "Turkey"
+  ],
+  [
+    "Dominica",
+    "Saint Lucia"
+  ],
+  [
+    "Egypt",
+    "Palestine"
+  ],
+  [
+    "Eq. Guinea",
+    "São Tomé and Principe"
+  ],
+  [
+    "Fiji",
+    "Tonga"
+  ],
+  [
+    "Fiji",
+    "Tuvalu"
+  ],
+  [
+    "Fiji",
+    "Vanuatu"
+  ],
+  [
+    "France",
+    "United Kingdom"
+  ],
+  [
+    "Grenada",
+    "St. Vin. and Gren."
+  ],
+  [
+    "Grenada",
+    "Trinidad and Tobago"
+  ],
+  [
+    "Haiti",
+    "Jamaica"
+  ],
+  [
+    "Iceland",
+    "Norway"
+  ],
+  [
+    "India",
+    "Sri Lanka"
+  ],
+  [
+    "Indonesia",
+    "South Korea"
+  ],
+  [
+    "Ireland",
+    "United Kingdom"
+  ],
+  [
+    "Jamaica",
+    "Panama"
+  ],
+  [
+    "Japan",
+    "Russia"
+  ],
+  [
+    "Japan",
+    "South Korea"
+  ],
+  [
+    "Kiribati",
+    "Samoa"
+  ],
+  [
+    "Madagascar",
+    "Mauritius"
+  ],
+  [
+    "Madagascar",
+    "Mozambique"
+  ],
+  [
+    "Malaysia",
+    "Singapore"
+  ],
+  [
+    "Maldives",
+    "Sri Lanka"
+  ],
+  [
+    "Malta",
+    "Tunisia"
+  ],
+  [
+    "Marshall Is.",
+    "Nauru"
+  ],
+  [
+    "Micronesia",
+    "Nauru"
+  ],
+  [
+    "Nauru",
+    "Solomon Is."
+  ],
+  [
+    "Niue",
+    "Samoa"
+  ],
+  [
+    "Niue",
+    "Tonga"
+  ],
+  [
+    "Palau",
+    "Philippines"
+  ],
+  [
+    "Papua New Guinea",
+    "Solomon Is."
+  ],
+  [
+    "Saint Lucia",
+    "St. Vin. and Gren."
+  ],
+  [
+    "Seychelles",
+    "Somalia"
+  ],
+  [
+    "Solomon Is.",
+    "Vanuatu"
+  ],
+  [
+    "Sudan",
+    "Tanzania"
+  ],
+  [
+    "Trinidad and Tobago",
+    "Venezuela"
+  ]
 ]

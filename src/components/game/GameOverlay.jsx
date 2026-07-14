@@ -194,7 +194,7 @@ export function GameOverlay({
             disabled={disabled || onFinalClue}
             className="touch-target mb-4 w-full rounded-xl border border-[var(--ui-accent-primary)]/35 bg-[var(--ui-accent-primary)]/10 px-4 py-3 text-sm font-semibold text-[var(--ui-accent-primary)] transition hover:bg-[var(--ui-accent-primary)]/18 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-[var(--ui-text-muted)]"
           >
-            Reveal Next Clue (-1000 pts)
+            Reveal Next Clue (−1000 points)
           </button>
 
           <form onSubmit={handleSubmit} ref={containerRef} className="relative">

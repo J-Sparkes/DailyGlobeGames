@@ -1,6 +1,6 @@
 {
   "tier1": [
-    "united-states-of-america",
+    "united-states",
     "china",
     "russia",
     "brazil",
@@ -34,11 +34,9 @@
   ],
   "tier3": [
     "lesotho",
-    "swaziland",
     "eswatini",
     "djibouti",
     "gambia",
-    "the-gambia",
     "togo",
     "benin",
     "burundi",
@@ -49,20 +47,43 @@
     "maldives",
     "brunei",
     "bhutan",
-    "east-timor",
     "timor-leste",
     "suriname",
     "guyana",
     "belize",
     "fiji",
-    "solomon-is",
-    "vanuatu"
+    "solomon-islands",
+    "vanuatu",
+    "kiribati",
+    "tuvalu",
+    "nauru",
+    "palau",
+    "marshall-islands",
+    "micronesia",
+    "cook-islands",
+    "niue",
+    "andorra",
+    "san-marino",
+    "monaco",
+    "liechtenstein",
+    "vatican-city",
+    "dominica",
+    "saint-kitts-and-nevis",
+    "saint-lucia",
+    "saint-vincent-and-the-grenadines",
+    "grenada",
+    "antigua-and-barbuda",
+    "barbados",
+    "seychelles",
+    "mauritius",
+    "cape-verde",
+    "malta",
+    "bahrain"
   ],
   "excluded": [
     "antarctica",
     "greenland",
     "western-sahara",
-    "somalia",
-    "kosovo"
+    "somalia"
   ]
 }

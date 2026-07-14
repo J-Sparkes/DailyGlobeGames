@@ -35,7 +35,7 @@ export function TrifectaNudge({
     if (status.complete) {
       return (
         <p className="text-[10px] font-medium text-[var(--ui-success)]">
-          All {DAILY_MODE_COUNT} modes complete today
+          All {DAILY_MODE_COUNT} games done today
         </p>
       );
     }
@@ -56,7 +56,7 @@ export function TrifectaNudge({
     return (
       <div className="mt-3 rounded-lg border border-[color-mix(in_srgb,var(--ui-success)_35%,transparent)] bg-[color-mix(in_srgb,var(--ui-success)_10%,transparent)] px-3 py-2">
         <p className="text-xs font-semibold text-[var(--ui-success)]">
-          All {DAILY_MODE_COUNT} modes complete today.
+          All {DAILY_MODE_COUNT} games done today.
         </p>
       </div>
     );
@@ -68,10 +68,10 @@ export function TrifectaNudge({
   return (
     <div className="mt-3 rounded-lg border border-[var(--ui-border-subtle)] bg-[var(--ui-surface-raised)] px-3 py-2">
       <p className="text-xs text-[var(--ui-text-muted)]">
-        Daily trip: {status.completed}/{DAILY_MODE_COUNT} complete
+        Today&apos;s games: {status.completed}/{DAILY_MODE_COUNT} done
       </p>
       <p className="mt-1 text-sm text-[var(--ui-text-primary)]">
-        Still open today —{" "}
+        Still left —{" "}
         {remaining.map((label, index) => {
           const mode = label.toLowerCase() as TrifectaMode;
           return (
@@ -103,7 +103,7 @@ export function TrifectaDots({ status }: { status: TrifectaStatus }) {
   return (
     <div
       className="flex items-center justify-center gap-1 pt-1"
-      aria-label={`${status.completed} of ${DAILY_MODE_COUNT} modes complete today`}
+      aria-label={`${status.completed} of ${DAILY_MODE_COUNT} games done today`}
     >
       {modes.map(({ key, label }) => (
         <span

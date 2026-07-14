@@ -1,5 +1,5 @@
 /**
- * Country names as they appear in `public/world-countries-110m.json` (world-atlas@2).
+ * Country names as they appear in `public/world-countries-50m.json` (world-atlas@2).
  * In-focus: Europe plus connecting landmasses (Russia, Turkey, Morocco, Caucasus).
  * Everything else is dimmed on the map.
  */
