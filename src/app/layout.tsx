@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import { Suspense } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import { AnalyticsBootstrap } from "@/components/analytics/AnalyticsBootstrap";
 import { PlausibleAnalytics } from "@/components/analytics/PlausibleAnalytics";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -71,6 +72,7 @@ export default function RootLayout({
     >
       <body className="flex h-dvh flex-col overflow-hidden bg-[var(--ui-bg-deep)] text-[var(--ui-text-primary)]">
         <PlausibleAnalytics />
+        <Analytics />
         <AuthProvider>
           <Suspense fallback={null}>
             <AnalyticsBootstrap />
