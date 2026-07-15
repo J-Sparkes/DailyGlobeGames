@@ -2,7 +2,7 @@ import { haversineKm } from "@/lib/geo-distance";
 
 export const TAP_PIN_SIZE = 0.52;
 export const HOLD_CONFIRM_MS = 700;
-export const HOLD_MOVE_THRESHOLD_PX = 14;
+export const HOLD_MOVE_THRESHOLD_PX = 28;
 
 export interface TapGlobePoint {
   id: string;

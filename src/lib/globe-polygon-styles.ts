@@ -118,37 +118,32 @@ export function buildPolygonStyleMap(
   return styles;
 }
 
+/**
+ * Only mount guessed/revealed countries as polygon meshes.
+ * Full-world transparent hit meshes blew up WebGL after the 50m map upgrade.
+ * Country picking for taps uses geoContains via onGlobeClick instead.
+ */
 export function getHuntOverlayCountryIds(
-  countryIds: string[],
   guessedIds: Set<string>,
   hiddenCountryId: string | null,
   revealHidden: boolean,
-  interactive: boolean,
 ): Set<string> {
-  if (interactive) {
-    return new Set(countryIds);
-  }
-
   const ids = new Set(guessedIds);
   if (revealHidden && hiddenCountryId) ids.add(hiddenCountryId);
   return ids;
 }
 
 export function buildHuntPolygonStyleMap(
-  countryIds: string[],
   guessedIds: Set<string>,
   hiddenCountryId: string | null,
   revealHidden: boolean,
   won: boolean,
-  interactive: boolean,
 ): Map<string, PolygonStyle> {
   const styles = new Map<string, PolygonStyle>();
   const overlayIds = getHuntOverlayCountryIds(
-    countryIds,
     guessedIds,
     hiddenCountryId,
     revealHidden,
-    interactive,
   );
 
   for (const countryId of overlayIds) {
@@ -167,10 +162,7 @@ export function buildHuntPolygonStyleMap(
         strokeColor: MAP.invalid.stroke,
         altitude: 0.01,
       });
-      continue;
     }
-
-    styles.set(countryId, TRANSPARENT_POLYGON);
   }
 
   return styles;

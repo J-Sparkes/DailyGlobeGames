@@ -3,6 +3,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Globe, { type GlobeMethods } from "react-globe.gl";
 import { buildHuntPolygonStyleMap } from "@/lib/globe-polygon-styles";
+import { findCountryIdAtLatLng } from "@/lib/country-at-point";
 import { isTouchDevice, prefersReducedMotion } from "@/lib/device";
 import { GLOBE } from "@/lib/design-tokens";
 import { applyPolygonStyles } from "@/lib/styled-country-features";
@@ -47,35 +48,28 @@ function HuntGlobeComponent({
   const [globeReady, setGlobeReady] = useState(false);
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);
   const dims = useContainerDims(containerRef);
+  const interactiveRef = useRef(interactive);
+  const onCountryClickRef = useRef(onCountryClick);
+
+  useEffect(() => {
+    interactiveRef.current = interactive;
+    onCountryClickRef.current = onCountryClick;
+  }, [interactive, onCountryClick]);
 
   const guessedIds = useMemo(
     () => new Set(guesses.map((guess) => guess.id.replace(/^guess-/, ""))),
     [guesses],
   );
 
-  const countryIds = useMemo(
-    () => features.map((feature) => feature.properties.countryId),
-    [features],
-  );
-
   const polygonStyles = useMemo(
     () =>
       buildHuntPolygonStyleMap(
-        countryIds,
         guessedIds,
         hiddenCountryId,
         revealHidden,
         won,
-        interactive,
       ),
-    [
-      countryIds,
-      guessedIds,
-      hiddenCountryId,
-      revealHidden,
-      won,
-      interactive,
-    ],
+    [guessedIds, hiddenCountryId, revealHidden, won],
   );
 
   const styledFeatures = useMemo(
@@ -84,7 +78,7 @@ function HuntGlobeComponent({
   );
 
   useEffect(() => {
-    loadCountryFeatures().then(setFeatures);
+    loadCountryFeatures().then(setFeatures).catch(() => setFeatures([]));
   }, []);
 
   useEffect(() => {
@@ -133,13 +127,37 @@ function HuntGlobeComponent({
     [guesses],
   );
 
+  const pickCountry = useCallback(
+    (lat: number, lng: number) => {
+      if (!interactiveRef.current || features.length === 0) return;
+      const countryId = findCountryIdAtLatLng(
+        features,
+        lat,
+        lng,
+        guessedIds,
+      );
+      if (countryId) {
+        onCountryClickRef.current(countryId);
+      }
+    },
+    [features, guessedIds],
+  );
+
   const handlePolygonClick = useCallback(
     (polygon: object) => {
-      if (!interactive) return;
+      if (!interactiveRef.current) return;
       const countryId = (polygon as CountryFeature).properties.countryId;
-      onCountryClick(countryId);
+      onCountryClickRef.current(countryId);
     },
-    [interactive, onCountryClick],
+    [],
+  );
+
+  const handleGlobeClick = useCallback(
+    (coords: { lat: number; lng: number } | null) => {
+      if (!coords) return;
+      pickCountry(coords.lat, coords.lng);
+    },
+    [pickCountry],
   );
 
   const polygonSideColor = useCallback(() => "rgba(0, 0, 0, 0)", []);
@@ -166,6 +184,7 @@ function HuntGlobeComponent({
         polygonsTransitionDuration={0}
         onGlobeReady={handleGlobeReady}
         onPolygonClick={handlePolygonClick}
+        onGlobeClick={handleGlobeClick}
         pointsData={pointsData}
         pointLat="lat"
         pointLng="lng"

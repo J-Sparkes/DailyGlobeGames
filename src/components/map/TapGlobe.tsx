@@ -174,13 +174,19 @@ function TapGlobeComponent({
 
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
-      if (!interactiveRef.current || !globeReady || event.button !== 0) return;
+      if (!interactiveRef.current || !globeReady) return;
+      // Touch/pen: button is often 0; mouse secondary buttons must be ignored.
+      if (event.pointerType === "mouse" && event.button !== 0) return;
 
       const coords = resolveGlobeCoords(event.clientX, event.clientY);
       if (!coords) return;
 
       event.preventDefault();
-      event.currentTarget.setPointerCapture(event.pointerId);
+      try {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      } catch {
+        // Some WebViews reject capture mid-gesture; hold still works.
+      }
 
       startHold({
         lat: coords.lat,
@@ -367,10 +373,10 @@ function TapGlobeComponent({
     <div
       ref={containerRef}
       className="globe-container absolute inset-0 h-full w-full overflow-hidden bg-black"
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerCancel}
+      onPointerDownCapture={handlePointerDown}
+      onPointerMoveCapture={handlePointerMove}
+      onPointerUpCapture={handlePointerUp}
+      onPointerCancelCapture={handlePointerCancel}
       onContextMenu={(event) => event.preventDefault()}
     >
       <Globe
