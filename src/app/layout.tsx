@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import { Suspense } from "react";
 import { AnalyticsBootstrap } from "@/components/analytics/AnalyticsBootstrap";
@@ -77,6 +78,7 @@ export default function RootLayout({
           </Suspense>
           {children}
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
