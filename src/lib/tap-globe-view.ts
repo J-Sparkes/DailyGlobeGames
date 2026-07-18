@@ -3,6 +3,10 @@ import { haversineKm } from "@/lib/geo-distance";
 export const TAP_PIN_SIZE = 0.52;
 export const HOLD_CONFIRM_MS = 700;
 export const HOLD_MOVE_THRESHOLD_PX = 28;
+// A touch only becomes a hold-to-guess after staying still this long;
+// moving beyond the drag threshold first lets the gesture rotate the globe.
+export const HOLD_ENGAGE_DELAY_MS = 220;
+export const HOLD_DRAG_CANCEL_PX = 12;
 
 export interface TapGlobePoint {
   id: string;

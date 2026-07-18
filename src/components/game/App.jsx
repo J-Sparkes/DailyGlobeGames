@@ -241,11 +241,13 @@ export default function App() {
 
   return (
     <div className="relative h-full w-full pointer-events-none">
+      {/* Guessing happens in the search bar, so the globe stays browsable
+          even after today's quiz is done. */}
       <TriviaGlobe
         pins={pins}
         cameraTarget={cameraTarget}
         successCountryId={successCountryId}
-        interactive={isPlaying}
+        interactive
         isActive
       />
 

@@ -129,7 +129,7 @@ function TriviaGlobeComponent({
   return (
     <div
       ref={containerRef}
-      className="globe-container absolute inset-0 h-full w-full overflow-hidden bg-black"
+      className="globe-container pointer-events-auto absolute inset-0 h-full w-full overflow-hidden bg-black"
     >
       <Globe
         ref={globeRef}

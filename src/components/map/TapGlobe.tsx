@@ -14,6 +14,8 @@ import { GLOBE, UI } from "@/lib/design-tokens";
 import {
   expandTapMarkerLayers,
   HOLD_CONFIRM_MS,
+  HOLD_DRAG_CANCEL_PX,
+  HOLD_ENGAGE_DELAY_MS,
   HOLD_MOVE_THRESHOLD_PX,
   povForRevealPair,
   TAP_PIN_SIZE,
@@ -49,7 +51,11 @@ interface ActiveHold {
   pointerId: number;
   startClientX: number;
   startClientY: number;
+  lastClientX: number;
+  lastClientY: number;
   startedAt: number;
+  /** False while the touch may still turn into a drag-to-rotate gesture. */
+  engaged: boolean;
 }
 
 function TapGlobeComponent({
@@ -113,51 +119,6 @@ function TapGlobeComponent({
     [resetHold],
   );
 
-  const tickHold = useCallback(() => {
-    const hold = holdRef.current;
-    if (!hold) return;
-
-    const progress = Math.min(
-      1,
-      (Date.now() - hold.startedAt) / holdDurationMs,
-    );
-    setHoldProgress(progress);
-
-    if (progress >= 1) {
-      completeHold(hold);
-      return;
-    }
-
-    holdRafRef.current = requestAnimationFrame(tickHold);
-  }, [completeHold, holdDurationMs]);
-
-  const startHold = useCallback(
-    (hold: ActiveHold) => {
-      clearHoldAnimation();
-      holdRef.current = hold;
-      setHoldProgress(0);
-      setHoldScreen({ x: hold.screenX, y: hold.screenY });
-      setPreviewPin({ lat: hold.lat, lng: hold.lng });
-
-      const globe = globeRef.current;
-      if (globe) {
-        globe.controls().enabled = false;
-      }
-
-      holdRafRef.current = requestAnimationFrame(tickHold);
-    },
-    [clearHoldAnimation, tickHold],
-  );
-
-  const updateHoldScreen = useCallback((screenX: number, screenY: number) => {
-    setHoldScreen({ x: screenX, y: screenY });
-    const hold = holdRef.current;
-    if (hold) {
-      hold.screenX = screenX;
-      hold.screenY = screenY;
-    }
-  }, []);
-
   const resolveGlobeCoords = useCallback((clientX: number, clientY: number) => {
     const globe = globeRef.current;
     const container = containerRef.current;
@@ -172,22 +133,93 @@ function TapGlobeComponent({
     return { lat: coords.lat, lng: coords.lng, screenX: x, screenY: y };
   }, []);
 
+  const tickHold = useCallback(() => {
+    const hold = holdRef.current;
+    if (!hold) return;
+
+    const elapsed = Date.now() - hold.startedAt;
+
+    if (!hold.engaged) {
+      if (elapsed >= HOLD_ENGAGE_DELAY_MS) {
+        // The globe may have rotated slightly during the grace period, so
+        // re-resolve the coordinate under the finger before locking in.
+        const coords = resolveGlobeCoords(hold.lastClientX, hold.lastClientY);
+        if (!coords) {
+          resetHold();
+          return;
+        }
+
+        hold.engaged = true;
+        hold.lat = coords.lat;
+        hold.lng = coords.lng;
+        hold.screenX = coords.screenX;
+        hold.screenY = coords.screenY;
+
+        const globe = globeRef.current;
+        if (globe) {
+          globe.controls().enabled = false;
+        }
+
+        setHoldScreen({ x: coords.screenX, y: coords.screenY });
+        setPreviewPin({ lat: coords.lat, lng: coords.lng });
+      }
+
+      holdRafRef.current = requestAnimationFrame(tickHold);
+      return;
+    }
+
+    const progress = Math.min(
+      1,
+      (elapsed - HOLD_ENGAGE_DELAY_MS) / holdDurationMs,
+    );
+    setHoldProgress(progress);
+
+    if (progress >= 1) {
+      completeHold(hold);
+      return;
+    }
+
+    holdRafRef.current = requestAnimationFrame(tickHold);
+  }, [completeHold, holdDurationMs, resetHold, resolveGlobeCoords]);
+
+  const startHold = useCallback(
+    (hold: ActiveHold) => {
+      clearHoldAnimation();
+      holdRef.current = hold;
+      setHoldProgress(0);
+      // Controls stay enabled and no ring shows yet — the hold only engages
+      // in tickHold after the finger stays still past the grace period.
+      holdRafRef.current = requestAnimationFrame(tickHold);
+    },
+    [clearHoldAnimation, tickHold],
+  );
+
+  const updateHoldScreen = useCallback((screenX: number, screenY: number) => {
+    setHoldScreen({ x: screenX, y: screenY });
+    const hold = holdRef.current;
+    if (hold) {
+      hold.screenX = screenX;
+      hold.screenY = screenY;
+    }
+  }, []);
+
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
       if (!interactiveRef.current || !globeReady) return;
       // Touch/pen: button is often 0; mouse secondary buttons must be ignored.
       if (event.pointerType === "mouse" && event.button !== 0) return;
 
+      // A second finger means pinch-zoom: hand the gesture to the controls.
+      if (holdRef.current) {
+        resetHold();
+        return;
+      }
+
       const coords = resolveGlobeCoords(event.clientX, event.clientY);
       if (!coords) return;
 
-      event.preventDefault();
-      try {
-        event.currentTarget.setPointerCapture(event.pointerId);
-      } catch {
-        // Some WebViews reject capture mid-gesture; hold still works.
-      }
-
+      // No preventDefault / pointer capture here: the gesture must stay free
+      // to become a normal drag-to-rotate until the hold engages.
       startHold({
         lat: coords.lat,
         lng: coords.lng,
@@ -196,10 +228,13 @@ function TapGlobeComponent({
         pointerId: event.pointerId,
         startClientX: event.clientX,
         startClientY: event.clientY,
+        lastClientX: event.clientX,
+        lastClientY: event.clientY,
         startedAt: Date.now(),
+        engaged: false,
       });
     },
-    [globeReady, resolveGlobeCoords, startHold],
+    [globeReady, resetHold, resolveGlobeCoords, startHold],
   );
 
   const handlePointerMove = useCallback(
@@ -207,10 +242,23 @@ function TapGlobeComponent({
       const hold = holdRef.current;
       if (!hold || hold.pointerId !== event.pointerId) return;
 
+      hold.lastClientX = event.clientX;
+      hold.lastClientY = event.clientY;
+
       const moved = Math.hypot(
         event.clientX - hold.startClientX,
         event.clientY - hold.startClientY,
       );
+
+      if (!hold.engaged) {
+        // Finger started dragging before the hold engaged: it's a rotate
+        // gesture, so drop the pending hold and let the controls handle it.
+        if (moved > HOLD_DRAG_CANCEL_PX) {
+          resetHold();
+        }
+        return;
+      }
+
       if (moved > HOLD_MOVE_THRESHOLD_PX) {
         resetHold();
         return;
@@ -235,19 +283,10 @@ function TapGlobeComponent({
       const hold = holdRef.current;
       if (!hold || hold.pointerId !== event.pointerId) return;
 
-      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-        event.currentTarget.releasePointerCapture(event.pointerId);
-      }
-
-      const progress = Math.min(
-        1,
-        (Date.now() - hold.startedAt) / holdDurationMs,
-      );
-      if (progress < 1) {
-        resetHold();
-      }
+      // Releasing before the ring fills abandons the guess.
+      resetHold();
     },
-    [holdDurationMs, resetHold],
+    [resetHold],
   );
 
   const handlePointerCancel = useCallback(
