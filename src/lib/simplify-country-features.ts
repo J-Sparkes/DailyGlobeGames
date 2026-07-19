@@ -55,8 +55,8 @@ export function simplifyCountryFeature(
       coordinates: simplifyCoords(
         feature.geometry.coordinates,
         minDist,
-      ) as typeof feature.geometry.coordinates,
-    },
+      ),
+    } as CountryFeature["geometry"],
   };
 }
 
